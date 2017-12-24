@@ -18,8 +18,33 @@ trait Expression[A] {
     }
   }
 
-  def solve(x: A): List[Expression[A]] = {
-    ???
+  def solve(x: A, lhs: Expression[A] = RationalNumber(0)): List[Expression[A]] = {
+    assert(!lhs.vars.contains(x))
+    this match {
+      case Sum(set) => {
+        val (termsWithX, termsWithoutX) = set.partition(_.vars.contains(x))
+
+        termsWithX.size match {
+          // if x isn't here, we're hosed
+          case 0 => List()
+          // if x is in exactly one of our terms (eg we know x*y + z == 0) then we solve for x in the term x is in
+          case 1 => {
+            val nonXTerms = lhs - Expression.makeSum(termsWithoutX)
+            termsWithX.head.solve(x, nonXTerms)
+          }
+          case _ => List() // TODO: handle this case
+        }
+      }
+      case Variable(y) => if (x == y) List(lhs) else List()
+      case _: Constant[A] => List()
+      case Power(base, power) => (base.vars.contains(x), power.vars.contains(x)) match {
+        case (true, false) => // eg x^2
+          List(lhs ** (RationalNumber(1)/power))
+        case (false, false) => List()
+        case (false, true) => ??? // We should be able to handle this with a logarithm
+        case (true, true) => List() // Transcendental equation, you're hosed
+      }
+    }
   }
 
   def sqrt: Expression[A] = this ** RationalNumber(1, 2)
@@ -28,12 +53,19 @@ trait Expression[A] {
 
   def subs(x: A): Expression[A] = ???
 
+  def vars: Set[A] = this match {
+    case Sum(terms) => terms.flatMap(_.vars)
+    case Product(factors) => factors.flatMap(_.vars)
+    case Power(lhs, rhs) => lhs.vars ++ rhs.vars
+    case Variable(thing) => Set(thing)
+    case _: Constant[_] => Set()
+  }
+
   def +(other: Expression[A]): Expression[A] = (this, other) match {
     case (RationalNumber(n1, d1), RationalNumber(n2, d2)) => {
       val numerator = n1 * d2 + n2 * d1
       val denominator = d1 * d2
-      val gcd = Expression.euclidsAlgorithm(numerator, denominator)
-      RationalNumber(numerator / gcd, denominator / gcd)
+      RationalNumber.build(numerator, denominator)
     }
     case (Sum(lhs), Sum(rhs)) => {
       val lhsTermTuples = lhs.map(_.asTerm).toMap
@@ -65,8 +97,7 @@ trait Expression[A] {
     case (RationalNumber(n1, d1), RationalNumber(n2, d2)) => {
       val numerator = n1 * n2
       val denominator = d1 * d2
-      val gcd = Expression.euclidsAlgorithm(numerator, denominator)
-      RationalNumber(numerator / gcd, denominator / gcd)
+      RationalNumber.build(numerator, denominator)
     }
     case (Product(lhs), Product(rhs)) => {
       val lhsFactorTuples = lhs.map(_.asFactor).toMap
@@ -77,8 +108,10 @@ trait Expression[A] {
       ).filter(_._1 != RationalNumber(1))
 
       val factors = factorTuples.map({ case (x, y) => x ** y}).toSet
+      val (numericFactors, nonNumericFactors) = factors.partition(_.isInstanceOf[Constant[_]])
+      val numericFactor = numericFactors.foldLeft(RationalNumber(1): Expression[A]) ({ case (acc, factor) => acc * factor })
 
-      if (factors.contains(RationalNumber(0))) RationalNumber(0) else Expression.makeProduct(factors)
+      if (numericFactor == RationalNumber(0)) RationalNumber(0) else Expression.makeProduct(nonNumericFactors + numericFactor)
     }
     case (_: Product[_], _) => this * Product(Set(other))
     case (_, _: Product[_]) => Product(Set(this)) * other
@@ -92,6 +125,19 @@ trait Expression[A] {
   def **(other: Expression[A]): Expression[A] = (this, other) match {
     case (RationalNumber(1, 1), _) => RationalNumber(1)
     case (RationalNumber(0, 1), _) => RationalNumber(0)
+    case (RationalNumber(a, b), RationalNumber(c, d)) => {
+      if(c < 0) {
+        RationalNumber(b, a) ** RationalNumber(-c, d)
+      } else {
+        if (d == 1) {
+          val (num, den) = (scala.math.pow(a, c).toInt, scala.math.pow(b, c).toInt)
+          RationalNumber.build(num, den)
+        } else {
+          // todo: this can be somewhat simplified sometimes. Eg sqrt(3/4) => sqrt(3)/2
+          Power(this, other)
+        }
+      }
+    }
     case (_, RationalNumber(1, 1)) => this
     case (_, RationalNumber(0, 1)) => RationalNumber(1)
     case _ => Power(this, other)
@@ -136,7 +182,23 @@ case class Variable[A](thing: A) extends Expression[A]
 trait Constant[A] extends Expression[A]
 
 case class RealNumber[A](value: Double) extends Constant[A]
-case class RationalNumber[A](numerator: Int, denominator: Int = 1) extends Constant[A]
+case class RationalNumber[A](numerator: Int, denominator: Int = 1) extends Constant[A] {
+  assert(denominator > 0, "denominator must be > 0")
+}
+object RationalNumber {
+  def build[A](numerator: Int, denominator: Int): RationalNumber[A] = {
+    assert(denominator != 0, "denominator is zero")
+    if (denominator < 0)
+      build(-numerator, -denominator)
+    else {
+      val gcd = Expression.euclidsAlgorithm(math.abs(numerator), math.abs(denominator))
+      if(denominator <= 0) {
+        println("oh dear")
+      }
+      RationalNumber(numerator / gcd, denominator / gcd)
+    }
+  }
+}
 
 object Expression {
   val Zero = RationalNumber(0)
@@ -147,6 +209,15 @@ object Expression {
       case 0 => RationalNumber(1)
       case 1 => nonOneFactors.head
       case _ => Product(nonOneFactors)
+    }
+  }
+
+  def makeSum[A](terms: Set[Expression[A]]): Expression[A] = {
+    val nonZeroTerms = terms.filterNot(_ == RationalNumber(0))
+    nonZeroTerms.size match {
+      case 0 => RationalNumber(0)
+      case 1 => nonZeroTerms.head
+      case _ => Sum(nonZeroTerms)
     }
   }
 

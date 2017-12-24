@@ -2,14 +2,21 @@ import org.scalatest.FunSpec
 import cas._
 
 class CasTests extends FunSpec {
-  describe("simplification") {
-    val x = Variable("x")
-    val y = Variable("y")
-    val z = Variable("z")
-    val zero = RationalNumber[String](0)
-    val one = RationalNumber[String](1)
-    val two = RationalNumber[String](2)
+  val ke = Variable("ke")
+  val pe = Variable("pe")
+  val m = Variable("m")
+  val v = Variable("v")
+  val g = Variable("g")
+  val h = Variable("h")
 
+  val x = Variable("x")
+  val y = Variable("y")
+  val z = Variable("z")
+  val zero = RationalNumber[String](0)
+  val one = RationalNumber[String](1)
+  val two = RationalNumber[String](2)
+
+  describe("simplification") {
     describe("addition") {
       it("is commutative") {
         assert(x + y == y + x)
@@ -55,6 +62,7 @@ class CasTests extends FunSpec {
     describe("division") {
       it("is the same as multiplying by the reciprocal") { assert(x / y == x * (y ** RationalNumber(-1))) }
       it("simplifies") { assert((x / y) * y == x) }
+      it("simplifies numbers") { assert((x / two) * two == x) }
     }
 
     describe("exponentiation") {
@@ -75,33 +83,68 @@ class CasTests extends FunSpec {
         assert(RationalNumber(3, 4) + RationalNumber(1, 4) == RationalNumber(1))
       }
 
+      it("simplifies subtraction") {
+        assert(zero - RationalNumber(1, 2) == RationalNumber(-1, 2))
+      }
+
       it("simplifies multiplication") {
         assert(RationalNumber(2) * RationalNumber(3) == RationalNumber(6))
         assert(RationalNumber(1, 2) * RationalNumber(1, 2) == RationalNumber(1, 4))
         assert(RationalNumber(1, 6) * RationalNumber(3, 4) == RationalNumber(1, 8))
+        assert(RationalNumber(1, 6) * RationalNumber(4, 3) == RationalNumber(2, 9))
+      }
+
+      it("simplifies division") {
+
+        assert(one / two == RationalNumber(1, 2))
+        assert(RationalNumber(-1, 1) / two == RationalNumber(-1, 2))
+        assert(RationalNumber(1, 6) / RationalNumber(3, 4) == RationalNumber(2, 9))
+      }
+
+      it("exponentiates correctly") {
+        assert(RationalNumber(5, 6) ** RationalNumber(1) == RationalNumber(5, 6))
+        assert(RationalNumber(5, 6) ** RationalNumber(-1) == RationalNumber(6, 5))
+
+        assert(RationalNumber(5, 6) ** RationalNumber(3) == RationalNumber(125, 216))
+        assert(RationalNumber(5, 6) ** RationalNumber(-3) == RationalNumber(216, 125))
+      }
+    }
+
+    describe("regressions") {
+      it("handles kinetic energy") {
+        val half = one / two
+        val keDefinition = ke - half //* m * (v ** two))
       }
     }
   }
 
   describe("solving") {
-    val ke = Variable("ke")
-    val pe = Variable("pe")
-    val m = Variable("m")
-    val v = Variable("v")
-    val g = Variable("g")
-    val h = Variable("h")
-
-    val keDefinition = ke - RationalNumber(1, 2) * m * (v ** RationalNumber(2))
+    val keDefinition = ke - (RationalNumber(1, 2) * m * (v ** RationalNumber(2)))
 
     it("can solve products") {
       assert(keDefinition.solve(ke) == List(RationalNumber(1, 2) * m * (v ** RationalNumber(2))))
-      assert(keDefinition.solve(m) == List(RationalNumber(2, 1) * ke * (v ** RationalNumber(-2))))
-      assert(keDefinition.solve(v) == List(RationalNumber(2, 1).sqrt * ke.sqrt * (m ** RationalNumber(-1, 2))))
+      assert(keDefinition.solve(m) == List(RationalNumber(2) * ke * (v ** RationalNumber(-2))))
+      assert(keDefinition.solve(v) == List(RationalNumber(2).sqrt * ke.sqrt * (m ** RationalNumber(-1, 2))))
     }
 
     it("can solve sums") {
       assert((ke + pe).solve(ke) == List(pe * RationalNumber(-1)))
       assert((ke - pe).solve(ke) == List(pe))
+    }
+  }
+
+  describe("vars") {
+    val x = Variable("x")
+    val y = Variable("y")
+
+    it("knows about vars") {
+      assert((x + y).vars == Set("x", "y"))
+      assert((x * y).vars == Set("x", "y"))
+      assert((x ** y).vars == Set("x", "y"))
+      assert((x ** y + RationalNumber(4, 3)).vars == Set("x", "y"))
+      assert((x * y + RationalNumber(3, 1)).vars == Set("x", "y"))
+      assert((x * RationalNumber(3, 1)).vars == Set("x"))
+      assert(RationalNumber(3, 1).vars == Set())
     }
   }
 }
