@@ -20,6 +20,10 @@ case class Equation(name: String,
   def exprWithEquationId(id: Int): Expression[VarId] = expr.map((name) => (id, name))
 
   def vars: Set[String] = expr.vars
+
+  def show(varNumbers: Map[String, Int]): String = {
+    ???
+  }
 }
 
 case class PhysicalNumber(value: Double, dimension: Dimension)
@@ -169,6 +173,16 @@ case class Workspace(equations: Map[Int, Equation],
     }
     case AddEquationAction(equation) => Try(this.addEquation(equation))
     case AddNumberAction(number) => Try(this.addNumber(number))
+  }
+
+  def showEquation(idx: Int): String = {
+    val equation = equations(idx)
+    val varNumbers: Map[String, Int] = equation.vars.map((varName) => {
+      varName -> allVarIds.filter({ case (idx2, name2) => idx2 < idx && varName == name2 })
+               .groupBy(equalities.getSet)
+               .size
+    }).toMap
+    equations(idx).show(varNumbers)
   }
 }
 

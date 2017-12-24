@@ -63,6 +63,26 @@ class WorkspaceTests extends FunSpec {
       assert(ws3.possibleActions.filter(_.isInstanceOf[DetachNumberAction]) ==
         Set(DetachNumberAction(0)))
     }
+  }
 
+  describe("subscript generation") {
+    val ws = Workspace.empty
+      .addEquation(EquationLibrary.getByEqId("ke_def"))
+      .addEquation(EquationLibrary.getByEqId("pe_def"))
+
+    it("displays equations reasonably") {
+      assert(ws.showEquation(0) == "E_K = 1/2 m_1 v^2")
+      assert(ws.showEquation(1) == "E_P = m_2 g h")
+    }
+
+    it("understands equalities") {
+      val ws2 = ws.addEquality((0, "m"), (1, "m"))
+      assert(ws.showEquation(0) == "E_K = 1/2 m v^2")
+      assert(ws.showEquation(1) == "E_P = m g h")
+    }
+
+    it("can show expressions") {
+      // TODO
+    }
   }
 }
