@@ -86,6 +86,10 @@ class WorkspaceTests extends FunSpec {
     }
 
     it("can show expressions") {
+      val ws2 = ws.addExpression(VarId(0, "v"))
+
+      println(ws2.showExpression(VarId(0, "v")))
+      println(ws2.exprs(VarId(0, "v")).toString)
       // TODO
 
       /// these are gonna be flaky because there are multiple reasonable things to do, and I'm just hardcoding one I like

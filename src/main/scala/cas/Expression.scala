@@ -16,7 +16,59 @@ trait Expression[A] {
       case RealNumber(r) => r.toString -> 3
       case RationalNumber(n, 1) => n.toString -> 3
       case RationalNumber(n, d) => s"$n/$d" -> 1
-      case _ => ???
+    }
+  }
+
+  def toLatex: String = this.toLatexWithBinding._1
+
+  def toLatexWithBinding: (String, Int) = {
+    def wrap(tuple: (String, Int), binding: Int) = if (tuple._2 >= binding) tuple._1 else s"(${tuple._1})"
+
+    this match {
+      case Sum(set) => set.map((x) => wrap(x.toLatexWithBinding, 0)).mkString(" + ") -> 0
+      case Product(set) => {
+        // TODO: Do something cleverer here: support grouped square roots and fractions
+        val denominatorItems = set.collect({ case x@Power(_, RationalNumber(n, _)) if n < 0 => x })
+        val numeratorItems = set -- denominatorItems
+
+        val flippedDenominatorItems = denominatorItems.collect(
+          { case Power(base, RationalNumber(n, d)) => Power(base, RationalNumber(-n, d)): Expression[A] }
+        )
+
+        def groupWithRadical(items: Set[Expression[A]]): String = {
+          val itemsInsideRadical = items.collect({ case x@Power(_, RationalNumber(1, 2)) => x})
+          val outsideItems = items -- itemsInsideRadical
+
+          val radicalStr = if (itemsInsideRadical.nonEmpty) {
+            val insideItemStrings = itemsInsideRadical.collect({ case Power(base, _) => wrap(base.toLatexWithBinding, 1)})
+
+              s"\\sqrt{${insideItemStrings.mkString(" \\cdot")}}"
+          } else ""
+
+          s"${outsideItems.map((x) => wrap(x.toLatexWithBinding, 1)).mkString(" \\cdot ")}$radicalStr"
+        }
+
+        if (denominatorItems.nonEmpty) {
+          if (numeratorItems.isEmpty) {
+            s"\\frac{1}{${groupWithRadical(flippedDenominatorItems)}}" -> 1
+          } else {
+            s"\\frac{${groupWithRadical(numeratorItems)}{${groupWithRadical(flippedDenominatorItems)}}" -> 1
+          }
+        } else {
+          groupWithRadical(numeratorItems) -> 1
+        }
+      }
+      case Power(lhs, rhs) => {
+        rhs match {
+          case RationalNumber(1, 2) => s"\\sqrt{${wrap(lhs.toLatexWithBinding, 0)}}" -> 3
+          case RationalNumber(1, n) => s"\\sqrt[$n]{${wrap(lhs.toLatexWithBinding, 0)}}" -> 3
+          case _ => (wrap(lhs.toLatexWithBinding, 2) + "^{" + wrap(rhs.toLatexWithBinding, 2) + "}") -> 2
+        }
+      }
+      case Variable(thing) => thing.toString -> 3
+      case RealNumber(r) => r.toString -> 3
+      case RationalNumber(n, 1) => n.toString -> 3
+      case RationalNumber(n, d) => s"\\frac{$n}{$d}" -> 3
     }
   }
 

@@ -29,7 +29,7 @@ object LatexString {
 
   def showExpression(exprVarId: VarId, expr: Expression[VarId], varSubscripts: Map[VarId, Int]): String = {
     val lhs = LatexString.showVar(exprVarId.varName, varSubscripts.get(exprVarId))
-    val rhs = expr.mapVariables((varId) => LatexString.showVar(varId.varName, varSubscripts.get(varId))).toString
+    val rhs = expr.mapVariables((varId) => LatexString.showVar(varId.varName, varSubscripts.get(varId))).toLatex
     s"$lhs = $rhs"
   }
 }
