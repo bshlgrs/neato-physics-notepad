@@ -52,6 +52,11 @@ class CasTests extends FunSpec {
 //      }
     }
 
+    describe("division") {
+      it("is the same as multiplying by the reciprocal") { assert(x / y == x * (y ** RationalNumber(-1))) }
+      it("simplifies") { assert((x / y) * y == x) }
+    }
+
     describe("exponentiation") {
       it("is distributive") { assert(x * x == x ** two) }
       it("is distributive with multiple variables") { assert(x * x * y * y == (x ** two) * (y ** two)) }
@@ -75,6 +80,28 @@ class CasTests extends FunSpec {
         assert(RationalNumber(1, 2) * RationalNumber(1, 2) == RationalNumber(1, 4))
         assert(RationalNumber(1, 6) * RationalNumber(3, 4) == RationalNumber(1, 8))
       }
+    }
+  }
+
+  describe("solving") {
+    val ke = Variable("ke")
+    val pe = Variable("pe")
+    val m = Variable("m")
+    val v = Variable("v")
+    val g = Variable("g")
+    val h = Variable("h")
+
+    val keDefinition = ke - RationalNumber(1, 2) * m * (v ** RationalNumber(2))
+
+    it("can solve products") {
+      assert(keDefinition.solve(ke) == List(RationalNumber(1, 2) * m * (v ** RationalNumber(2))))
+      assert(keDefinition.solve(m) == List(RationalNumber(2, 1) * ke * (v ** RationalNumber(-2))))
+      assert(keDefinition.solve(v) == List(RationalNumber(2, 1).sqrt * ke.sqrt * (m ** RationalNumber(-1, 2))))
+    }
+
+    it("can solve sums") {
+      assert((ke + pe).solve(ke) == List(pe * RationalNumber(-1)))
+      assert((ke - pe).solve(ke) == List(pe))
     }
   }
 }

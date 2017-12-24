@@ -1,10 +1,30 @@
 package cas
 
 trait Expression[A] {
-  import Expression._
+  override def toString: String = this.toStringWithBinding._1
+
+  def toStringWithBinding: (String, Int) = {
+    def wrap(tuple: (String, Int), binding: Int) = if (tuple._2 >= binding) tuple._1 else s"(${tuple._1})"
+
+    this match {
+      case Sum(set) => set.map((x) => wrap(x.toStringWithBinding, 0)).mkString(" + ") -> 0
+      case Product(set) => set.map((x) => wrap(x.toStringWithBinding, 1)).mkString(" * ") -> 1
+      case Power(lhs, rhs) => wrap(lhs.toStringWithBinding, 2) + "^" + wrap(rhs.toStringWithBinding, 2) -> 2
+      case Variable(thing) => thing.toString -> 3
+      case RealNumber(r) => r.toString -> 3
+      case RationalNumber(n, 1) => n.toString -> 3
+      case RationalNumber(n, d) => s"$n/$d" -> 1
+      case _ => ???
+    }
+  }
+
   def solve(x: A): List[Expression[A]] = {
     ???
   }
+
+  def sqrt: Expression[A] = this ** RationalNumber(1, 2)
+
+  def solve(x: Variable[A]): List[Expression[A]] = this.solve(x.thing)
 
   def subs(x: A): Expression[A] = ???
 
@@ -15,7 +35,7 @@ trait Expression[A] {
       val gcd = Expression.euclidsAlgorithm(numerator, denominator)
       RationalNumber(numerator / gcd, denominator / gcd)
     }
-    case (Add(lhs), Add(rhs)) => {
+    case (Sum(lhs), Sum(rhs)) => {
       val lhsTermTuples = lhs.map(_.asTerm).toMap
       val rhsTermTuples = rhs.map(_.asTerm).toMap
 
@@ -29,16 +49,16 @@ trait Expression[A] {
       terms.size match {
         case 0 => RationalNumber(0)
         case 1 => terms.head
-        case _ => Add(terms)
+        case _ => Sum(terms)
       }
     }
-    case (Add(lhs), rhs) => {
-      Add(lhs) + Add(Set(rhs))
+    case (Sum(lhs), rhs) => {
+      Sum(lhs) + Sum(Set(rhs))
     }
-    case (lhs, Add(rhs)) => {
-      Add(Set(lhs)) + Add(rhs)
+    case (lhs, Sum(rhs)) => {
+      Sum(Set(lhs)) + Sum(rhs)
     }
-    case _ => Add(Set(this)) + Add(Set(other))
+    case _ => Sum(Set(this)) + Sum(Set(other))
   }
 
   def *(other: Expression[A]): Expression[A] = (this, other) match {
@@ -49,7 +69,6 @@ trait Expression[A] {
       RationalNumber(numerator / gcd, denominator / gcd)
     }
     case (Product(lhs), Product(rhs)) => {
-      // TODO: I don't know why this needs so many type annotations
       val lhsFactorTuples = lhs.map(_.asFactor).toMap
       val rhsFactorTuples = rhs.map(_.asFactor).toMap
 
@@ -68,7 +87,7 @@ trait Expression[A] {
 
   def -(other: Expression[A]): Expression[A] = this + RationalNumber(-1) * other
 
-  def /(other: Expression[A]): Expression[A] = this * other ** RationalNumber(-1)
+  def /(other: Expression[A]): Expression[A] = this * (other ** RationalNumber(-1))
 
   def **(other: Expression[A]): Expression[A] = (this, other) match {
     case (RationalNumber(1, 1), _) => RationalNumber(1)
@@ -109,7 +128,7 @@ trait Expression[A] {
   }
 }
 
-case class Add[A](terms: Set[Expression[A]]) extends Expression[A]
+case class Sum[A](terms: Set[Expression[A]]) extends Expression[A]
 case class Product[A](factors: Set[Expression[A]]) extends Expression[A]
 case class Power[A](base: Expression[A], power: Expression[A]) extends Expression[A]
 case class Variable[A](thing: A) extends Expression[A]
@@ -122,10 +141,13 @@ case class RationalNumber[A](numerator: Int, denominator: Int = 1) extends Const
 object Expression {
   val Zero = RationalNumber(0)
 
-  def makeProduct[A](exprs: Set[Expression[A]]): Expression[A] = exprs.size match {
-    case 0 => RationalNumber(1)
-    case 1 => exprs.head
-    case _ => Product(exprs)
+  def makeProduct[A](factors: Set[Expression[A]]): Expression[A] = {
+    val nonOneFactors = factors.filterNot(_ == RationalNumber(1))
+    nonOneFactors.size match {
+      case 0 => RationalNumber(1)
+      case 1 => nonOneFactors.head
+      case _ => Product(nonOneFactors)
+    }
   }
 
   def euclidsAlgorithm(x: Int, y: Int): Int = if (y == 0) x else euclidsAlgorithm(y, x % y)
