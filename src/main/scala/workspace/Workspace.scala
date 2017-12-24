@@ -2,7 +2,7 @@ package workspace
 
 import workspace.Workspace.VarId
 
-import scala.util.Try
+import scala.util.{Failure, Try}
 
 
 case class Equation(name: String,
@@ -18,6 +18,8 @@ case class Equation(name: String,
   }
 
   def exprWithEquationId(id: Int): Expression[VarId] = expr.map((name) => (id, name))
+
+  def vars: Set[String] = expr.vars
 }
 
 case class PhysicalNumber(value: Double, dimension: Dimension)
@@ -32,18 +34,21 @@ case class Workspace(equations: Map[Int, Equation],
   def addNumber(physicalNumber: PhysicalNumber): Workspace =
     this.copy(numbers=this.numbers + (this.lastNumberId + 1 -> (physicalNumber, None)))
 
-  def allVarIds: Set[VarId] = equations.flatMap({ case (eqId, equation) => equation.expr.vars.map(eqId -> _) }).toSet
+  def allVarIds: Set[VarId] = for {
+    (equationId, equation) <- equations.toSet
+    varName <- equation.vars
+  } yield (equationId, varName)
 
-  def setEquality(x: VarId, y: VarId): Workspace = this.copy(equalities = this.equalities.setEqual(x, y))
+  def addEquality(x: VarId, y: VarId): Workspace = this.copy(equalities = this.equalities.setEqual(x, y))
 
-  def solve(varId: VarId): Workspace = varId match {
+  def addExpression(varId: VarId): Workspace = varId match {
     case (eqId: Int, varName: String) => {
       val newExpr = equations(eqId).solve(varName, eqId)
       this.copy(exprs = exprs + (varId -> newExpr))
     }
   }
 
-  def subExpr(exprVarId: VarId, varToRemoveId: VarId, equationIdToUse: Int): Workspace = {
+  def rewriteExpression(exprVarId: VarId, varToRemoveId: VarId, equationIdToUse: Int): Workspace = {
     // This method means "Solve equation number equationIdToUse for varToRemove and then substitute the result into the
     // expression for exprVar."
 
@@ -65,7 +70,7 @@ case class Workspace(equations: Map[Int, Equation],
     this.copy(exprs = exprs + (exprVarId -> newExpr))
   }
 
-  def undoEquality(varId: VarId): Workspace = {
+  def removeEquality(varId: VarId): Workspace = {
     this.copy(equalities = equalities.remove(varId))
   }
 
@@ -103,7 +108,7 @@ case class Workspace(equations: Map[Int, Equation],
     equations(eqIdx).dimensions(varName)
   }
 
-  def possibleActions: Set[WorkspaceAction] = {
+  def possibleActions: Set[FixedWorkspaceAction] = {
     {
       for {
         var1 <- allVarIds
@@ -139,6 +144,31 @@ case class Workspace(equations: Map[Int, Equation],
       } yield DetachNumberAction(numberId)
     } ++
     numbers.keys.map(DeleteNumberAction)
+  }
+
+  def deleteExpression(id: (Int, String)): Workspace = this.copy(exprs = exprs - id)
+
+  def handleAction(workspaceAction: WorkspaceAction): Try[Workspace] = workspaceAction match {
+    case action: FixedWorkspaceAction => {
+      if (possibleActions.contains(action)) {
+        action match {
+          case AddEqualityAction(varId1: VarId, varId2: VarId) => Try(addEquality(varId1, varId2))
+          case RemoveEqualityAction(varId: VarId) => Try(removeEquality(varId))
+          case AddExpressionAction(varId: VarId) => Try(addExpression(varId))
+          case DeleteExpressionAction(varId: VarId) => Try(deleteExpression(varId))
+          case RewriteExpressionAction(varId: VarId, varToRemoveId: VarId, equationToUseId: Int) => Try(
+            this.rewriteExpression(varId, varToRemoveId, equationToUseId)
+          )
+          case AttachNumberAction(numberId: Int, varId: VarId) => attachNumber(numberId, varId)
+          case DetachNumberAction(numberId: Int) => Try(detachNumber(numberId))
+          case DeleteNumberAction(numberId: Int) => Try(deleteNumber(numberId))
+        }
+      } else {
+        Failure(InvalidActionException("your action wasn't one of the allowed ones"))
+      }
+    }
+    case AddEquationAction(equation) => Try(this.addEquation(equation))
+    case AddNumberAction(number) => Try(this.addNumber(number))
   }
 }
 

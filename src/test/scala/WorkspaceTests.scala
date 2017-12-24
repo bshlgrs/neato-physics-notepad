@@ -8,71 +8,61 @@ class WorkspaceTests extends FunSpec {
       val ws = Workspace.empty
         .addEquation(EquationLibrary.getByEqId("ke_def"))
         .addEquation(EquationLibrary.getByEqId("pe_def"))
-        .setEquality((0, "m"), (1, "m"))
-        .setEquality((0, "KE"), (1, "PE"))
-        .solve((0, "v"))
+        .addEquality((0, "m"), (1, "m"))
+        .addEquality((0, "KE"), (1, "PE"))
+        .addExpression((0, "v"))
 
       assert(ws.exprs((0, "v")) == Expression(SQRT_2, Map((0, "KE") -> 0.5, (0, "m") -> -0.5)))
 
-      val ws2 = ws.subExpr((0, "v"), (0, "KE"), 1)
+      val ws2 = ws.rewriteExpression((0, "v"), (0, "KE"), 1)
       assert(ws2.exprs((0, "v")) == Expression(SQRT_2, Map((1, "g") -> 0.5, (1, "h") -> 0.5)))
     }
   }
 
   describe("listed actions are exactly correct") {
-    // setup here
+    val ws = Workspace.empty
+      .addEquation(EquationLibrary.getByEqId("ke_def"))
+      .addEquation(EquationLibrary.getByEqId("pe_def"))
+      .addEquality((0, "m"), (1, "m"))
 
-    describe("for equalities") {
-      it("creation") {
-        // disallow redundant ones
-      }
-
-      it("destruction") {
-
-      }
+    it("has them all right") {
+      assert(ws.possibleActions == Set(
+        AddEqualityAction((0, "KE"), (1, "PE")),
+        AddEqualityAction((1, "PE"), (0, "KE")),
+        AddExpressionAction((0, "KE")),
+        AddExpressionAction((0, "m")),
+        AddExpressionAction((0, "v")),
+        AddExpressionAction((1, "PE")),
+        AddExpressionAction((1, "m")),
+        AddExpressionAction((1, "g")),
+        AddExpressionAction((1, "h")),
+        RemoveEqualityAction((0, "m")),
+        RemoveEqualityAction((1, "m")),
+      ))
     }
 
-    describe("for expressions") {
-      it("creation") {
-
-      }
-
-      it("destruction") {
-
-      }
-
-      it("substitution") {
-
-      }
+    it("can handle all the allowed expression rewriting possibilities") {
+      val ws2 = ws.addExpression((0, "v"))
+      assert(ws2.possibleActions.filter(_.isInstanceOf[RewriteExpressionAction]) ==
+        Set(RewriteExpressionAction((0, "v"),(0, "KE"),0), RewriteExpressionAction((0, "v"),(0, "m"),0)))
     }
 
+    it("can handle attaching numbers") {
+      val ws2 = ws.addNumber(PhysicalNumber(9.8, Meter / Second ** 2))
+        .addNumber(PhysicalNumber(12, Dimension.Joule))
 
-    describe("for numbers") {
-      it("creation") {
+      assert(ws2.possibleActions.filter(_.isInstanceOf[AttachNumberAction]) ==
+        Set(
+          AttachNumberAction(0, (1, "g")),
+          AttachNumberAction(1, (1, "PE")),
+          AttachNumberAction(1, (0, "KE"))
+        ))
 
-      }
+      val ws3 = ws2.attachNumber(0, (1, "g")).get
 
-      it("destruction") {
-
-      }
-
-      it("attachment") {
-
-      }
-
-      it("detachment") {
-
-      }
-    }
-  }
-
-  describe("numbers") {
-    it("can add numbers and then attach them to things") {
-
+      assert(ws3.possibleActions.filter(_.isInstanceOf[DetachNumberAction]) ==
+        Set(DetachNumberAction(0)))
     }
 
-    it("objects when you try to make an invalid attachment") {
-
-    }
   }
 }
