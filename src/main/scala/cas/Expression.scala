@@ -10,8 +10,10 @@ trait Expression[A] {
 
   def +(other: Expression[A]): Expression[A] = (this, other) match {
     case (RationalNumber(n1, d1), RationalNumber(n2, d2)) => {
-      assert(d1 == d2) // todo: generalize
-      RationalNumber(n1 + n2, d1)
+      val numerator = n1 * d2 + n2 * d1
+      val denominator = d1 * d2
+      val gcd = Expression.euclidsAlgorithm(numerator, denominator)
+      RationalNumber(numerator / gcd, denominator / gcd)
     }
     case (Add(lhs), Add(rhs)) => {
       val lhsTermTuples = lhs.map(_.asTerm).toMap
@@ -41,8 +43,10 @@ trait Expression[A] {
 
   def *(other: Expression[A]): Expression[A] = (this, other) match {
     case (RationalNumber(n1, d1), RationalNumber(n2, d2)) => {
-      // todo: reduce this fraction
-      RationalNumber[A](n1 * n2, d1 * d2)
+      val numerator = n1 * n2
+      val denominator = d1 * d2
+      val gcd = Expression.euclidsAlgorithm(numerator, denominator)
+      RationalNumber(numerator / gcd, denominator / gcd)
     }
     case (Product(lhs), Product(rhs)) => {
       // TODO: I don't know why this needs so many type annotations
@@ -123,4 +127,6 @@ object Expression {
     case 1 => exprs.head
     case _ => Product(exprs)
   }
+
+  def euclidsAlgorithm(x: Int, y: Int): Int = if (y == 0) x else euclidsAlgorithm(y, x % y)
 }
