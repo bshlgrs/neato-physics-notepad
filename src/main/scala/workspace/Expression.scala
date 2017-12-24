@@ -38,4 +38,6 @@ case class Expression[A](const: Double, factors: Map[A, Double]) {
 
   def exponentiate(power: Double) = Expression(scala.math.pow(const, power), factors.mapValues(_ * power))
 
+  def vars: Set[A] = factors.keySet
 }
+
