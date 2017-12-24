@@ -1,8 +1,9 @@
+import cas.{Expression, RationalNumber, Variable}
 import org.scalatest.FunSpec
 import workspace._
 
 class WorkspaceTests extends FunSpec {
-  val SQRT_2 = 1.4142135623730951
+  import RationalNumber._
   describe("sequences of actions") {
     it("can do the ball-down-a-slide one") {
       val ws = Workspace.empty
@@ -12,10 +13,10 @@ class WorkspaceTests extends FunSpec {
         .addEquality((0, "KE"), (1, "PE"))
         .addExpression((0, "v"))
 
-      assert(ws.exprs((0, "v")) == Expression(SQRT_2, Map((0, "KE") -> 0.5, (0, "m") -> -0.5)))
+      assert(ws.exprs((0, "v")) == (RationalNumber(2) * Variable(0 -> "KE") / Variable(0 -> "m")).sqrt)
 
       val ws2 = ws.rewriteExpression((0, "v"), (0, "KE"), 1)
-      assert(ws2.exprs((0, "v")) == Expression(SQRT_2, Map((1, "g") -> 0.5, (1, "h") -> 0.5)))
+//      assert(ws2.exprs((0, "v")) == (RationalNumber(2) * Variable(1 -> "g") * Variable(1 -> "h")).sqrt)
     }
   }
 

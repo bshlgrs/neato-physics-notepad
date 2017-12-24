@@ -3,6 +3,7 @@ package workspace
 import workspace.Workspace.VarId
 
 import scala.util.{Failure, Try}
+import cas.Expression
 
 
 case class Equation(name: String,
@@ -14,10 +15,11 @@ case class Equation(name: String,
   assert(varNames.keys == dimensions.keys)
 
   def solve(varName: String, selfEqId: Int): Expression[VarId] = {
-    expr.solve(varName).map((name) => (selfEqId, name))
+    // TODO: check on the `head` here
+    expr.solve(varName).head.mapVariables((name) => (selfEqId, name))
   }
 
-  def exprWithEquationId(id: Int): Expression[VarId] = expr.map((name) => (id, name))
+  def exprWithEquationId(id: Int): Expression[VarId] = expr.mapVariables((name) => (id, name))
 
   def vars: Set[String] = expr.vars
 
@@ -66,10 +68,12 @@ case class Workspace(equations: Map[Int, Equation],
     // variable.
     val subbedSwapExpr = swapEquationExpr.simplifyWithEquivalenceClasses(equalities)
 
-    val exprToSubIn = subbedSwapExpr.solve(varToRemoveId)
+    val solutions = subbedSwapExpr.solve(varToRemoveId)
+    assert(solutions.size == 1)
+    val exprToSubIn = solutions.head
 
     // now sub that into the current expression
-    val newExpr = exprs(exprVarId).sub(varToRemoveId, exprToSubIn)
+    val newExpr = exprs(exprVarId).substitute(varToRemoveId, exprToSubIn)
 
     this.copy(exprs = exprs + (exprVarId -> newExpr))
   }
@@ -82,8 +86,9 @@ case class Workspace(equations: Map[Int, Equation],
     ???
   }
 
-  def getNumber(varId: VarId): Option[PhysicalNumber] = numbers.values.find({ case (n, Some(varId2)) =>
-    equalities.testEqual(varId, varId2)
+  def getNumber(varId: VarId): Option[PhysicalNumber] = numbers.values.find({
+    case (n, Some(varId2)) => equalities.testEqual(varId, varId2)
+    case _ => false
   }).map(_._1)
 
   def attachNumber(numberId: Int, varId: VarId): Try[Workspace] = {

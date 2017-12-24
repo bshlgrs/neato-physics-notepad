@@ -1,5 +1,7 @@
 package cas
 
+import workspace.SetOfSets
+
 trait Expression[A] {
   override def toString: String = this.toStringWithBinding._1
 
@@ -169,6 +171,29 @@ trait Expression[A] {
     case _ => Power(this, other)
   }
 
+  def mapVariablesToExpressions[B](f: A => Expression[B]): Expression[B] = this match {
+    case Sum(terms) => terms.map(_.mapVariablesToExpressions(f)).reduce(_ + _)
+    case Product(factors) => {
+      val mappedFactors = factors.map(_.mapVariablesToExpressions(f))
+      mappedFactors.reduce(_ * _)
+    }
+    case Variable(thing) => f(thing)
+    case Power(lhs, rhs) => lhs.mapVariablesToExpressions(f) ** rhs.mapVariablesToExpressions(f)
+    case RationalNumber(n, d) => RationalNumber(n, d)
+    case RealNumber(x) => RealNumber(x)
+  }
+
+  def mapVariables[B](f: A => B): Expression[B] = this.mapVariablesToExpressions((x) => Variable(f(x)))
+
+  def substitute(from: A, to: A): Expression[A] = this.mapVariables((x) => if (x == from) to else x)
+  def substitute(from: A, to: Expression[A]): Expression[A] =
+    this.mapVariablesToExpressions((x) => if (x == from) to else Variable(x))
+
+  def substituteMany(from: Set[A], to: A): Expression[A] = this.mapVariables((x) => if (from.contains(x)) to else x)
+
+  def simplifyWithEquivalenceClasses(equalities: SetOfSets[A]): Expression[A] =
+    equalities.sets.foldLeft(this)({ case (expr: Expression[A], set: Set[A]) => expr.substituteMany(set, set.head)})
+
   protected def asTerm: (Expression[A], Constant[A]) = {
     // 2*x -> (x, 2)
     // 2*x^2*y -> (x^2*y, 2)
@@ -212,6 +237,11 @@ case class RationalNumber[A](numerator: Int, denominator: Int = 1) extends Const
   assert(denominator > 0, "denominator must be > 0")
 }
 object RationalNumber {
+  def zero = RationalNumber(0)
+  def one = RationalNumber(1)
+  def two = RationalNumber(2)
+  def half = RationalNumber(1, 2)
+
   def build[A](numerator: Int, denominator: Int): RationalNumber[A] = {
     assert(denominator != 0, "denominator is zero")
     if (denominator < 0)
@@ -248,4 +278,12 @@ object Expression {
   }
 
   def euclidsAlgorithm(x: Int, y: Int): Int = if (y == 0) x else euclidsAlgorithm(y, x % y)
+
+  def buildGoofily(number: Constant[String], factors: Map[String, Int]): Expression[String] = {
+    // we get in a bunch of factors. Multiply them all together and say they're equal to 1
+    (number * factors.map({case (name, power) => Power(Variable(name), RationalNumber(power)) : Expression[String]}).reduce(_ * _)
+      - RationalNumber(1))
+  }
+
+  def buildGoofily(factors: Map[String, Int]): Expression[String] = buildGoofily(RationalNumber(1), factors)
 }

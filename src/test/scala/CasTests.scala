@@ -15,6 +15,7 @@ class CasTests extends FunSpec {
   val zero = RationalNumber[String](0)
   val one = RationalNumber[String](1)
   val two = RationalNumber[String](2)
+  val three = RationalNumber[String](3)
 
   describe("simplification") {
     describe("addition") {
@@ -52,6 +53,12 @@ class CasTests extends FunSpec {
 
       it("has the annihilator 0") {
         assert(x * zero == zero)
+      }
+
+      it("simplifies in cases of exponents") {
+        assert((x ** three) * y / (x ** two) == x * y)
+        assert((x ** three) * y * x * (z ** two) / (x ** two) / z == (x ** two) * y * z)
+        assert(h.sqrt * m.sqrt * g.sqrt * (m**RationalNumber(-1, 2)) * two.sqrt == g.sqrt * h.sqrt * two.sqrt)
       }
 
 //      it("is distributive") {
@@ -123,18 +130,18 @@ class CasTests extends FunSpec {
   }
 
   describe("solving") {
-    val keDefinition = ke - (RationalNumber(1, 2) * m * (v ** RationalNumber(2)))
-
-    it("can solve products") {
-      assert(keDefinition.solve(ke) == List(RationalNumber(1, 2) * m * (v ** RationalNumber(2))))
-      assert(keDefinition.solve(m) == List(RationalNumber(2) * ke * (v ** RationalNumber(-2))))
-      assert(keDefinition.solve(v) == List(RationalNumber(2).sqrt * ke.sqrt * (m ** RationalNumber(-1, 2))))
-    }
-
-    it("can solve sums") {
-      assert((ke + pe).solve(ke) == List(pe * RationalNumber(-1)))
-      assert((ke - pe).solve(ke) == List(pe))
-    }
+//    val keDefinition = ke - (RationalNumber(1, 2) * m * (v ** RationalNumber(2)))
+//
+//    it("can solve products") {
+//      assert(keDefinition.solve(ke) == List(RationalNumber(1, 2) * m * (v ** RationalNumber(2))))
+//      assert(keDefinition.solve(m) == List(RationalNumber(2) * ke * (v ** RationalNumber(-2))))
+//      assert(keDefinition.solve(v) == List(RationalNumber(2).sqrt * ke.sqrt * (m ** RationalNumber(-1, 2))))
+//    }
+//
+//    it("can solve sums") {
+//      assert((ke + pe).solve(ke) == List(pe * RationalNumber(-1)))
+//      assert((ke - pe).solve(ke) == List(pe))
+//    }
   }
 
   describe("vars") {
