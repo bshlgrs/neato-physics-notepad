@@ -25,7 +25,9 @@ Phase 1: build out more backend
   - name for every variable
   - dimensions of every variable
 - Logic to assign subscripts to every variable to remove ambiguity
-- Logic to represent equations and expressions as strings
+- Logic to represent:
+  - Equations as strings. This involves giving them a new field
+  - Expressions as strings
 - The constant in expressions should have a power, so that we can represent sqrt(2) directly
 
 Phase 2: build shitty frontend

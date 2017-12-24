@@ -1,32 +1,8 @@
 package workspace
 
-import workspace.Workspace.VarId
-
 import scala.util.{Failure, Try}
 import cas.Expression
 
-
-case class Equation(name: String,
-                    expr: Expression[String],
-                    dimensions: Map[String, Dimension],
-                    varNames: Map[String, String]
-                   ) {
-  assert(expr.vars == dimensions.keys)
-  assert(varNames.keys == dimensions.keys)
-
-  def solve(varName: String, selfEqId: Int): Expression[VarId] = {
-    // TODO: check on the `head` here
-    expr.solve(varName).head.mapVariables((name) => (selfEqId, name))
-  }
-
-  def exprWithEquationId(id: Int): Expression[VarId] = expr.mapVariables((name) => (id, name))
-
-  def vars: Set[String] = expr.vars
-
-  def show(varNumbers: Map[String, Int]): String = {
-    ???
-  }
-}
 
 case class PhysicalNumber(value: Double, dimension: Dimension)
 
@@ -43,12 +19,12 @@ case class Workspace(equations: Map[Int, Equation],
   def allVarIds: Set[VarId] = for {
     (equationId, equation) <- equations.toSet
     varName <- equation.vars
-  } yield (equationId, varName)
+  } yield VarId(equationId, varName)
 
   def addEquality(x: VarId, y: VarId): Workspace = this.copy(equalities = this.equalities.setEqual(x, y))
 
   def addExpression(varId: VarId): Workspace = varId match {
-    case (eqId: Int, varName: String) => {
+    case VarId(eqId: Int, varName: String) => {
       val newExpr = equations(eqId).solve(varName, eqId)
       this.copy(exprs = exprs + (varId -> newExpr))
     }
@@ -92,7 +68,7 @@ case class Workspace(equations: Map[Int, Equation],
   }).map(_._1)
 
   def attachNumber(numberId: Int, varId: VarId): Try[Workspace] = {
-    val (eqIdx, varName) = varId
+    val VarId(eqIdx, varName) = varId
     for {
       (number, currentAttachment) <- Try(numbers.get(numberId).get)
       eq: Equation <- Try(this.equations.get(eqIdx).get)
@@ -113,8 +89,7 @@ case class Workspace(equations: Map[Int, Equation],
   }
 
   def getDimension(varId: VarId): Dimension = {
-    val (eqIdx, varName) = varId
-    equations(eqIdx).dimensions(varName)
+    equations(varId.eqIdx).dimensions(varId.varName)
   }
 
   def possibleActions: Set[FixedWorkspaceAction] = {
@@ -138,7 +113,7 @@ case class Workspace(equations: Map[Int, Equation],
         otherVar <- expr.vars
         (otherEquationId, otherEquation) <- equations
         // if otherEquation contains a related variable
-        if otherEquation.expr.vars.exists((varName) => equalities.testEqual(otherEquationId -> varName, var1))
+        if otherEquation.expr.vars.exists((varName) => equalities.testEqual(VarId(otherEquationId, varName), var1))
       } yield RewriteExpressionAction(var1, otherVar, otherEquationId)
     } ++ {
       for {
@@ -155,7 +130,7 @@ case class Workspace(equations: Map[Int, Equation],
     numbers.keys.map(DeleteNumberAction)
   }
 
-  def deleteExpression(id: (Int, String)): Workspace = this.copy(exprs = exprs - id)
+  def deleteExpression(id: VarId): Workspace = this.copy(exprs = exprs - id)
 
   def handleAction(workspaceAction: WorkspaceAction): Try[Workspace] = workspaceAction match {
     case action: FixedWorkspaceAction => {
@@ -182,19 +157,42 @@ case class Workspace(equations: Map[Int, Equation],
 
   def showEquation(idx: Int): String = {
     val equation = equations(idx)
-    val varNumbers: Map[String, Int] = equation.vars.map((varName) => {
-      varName -> allVarIds.filter({ case (idx2, name2) => idx2 < idx && varName == name2 })
-               .groupBy(equalities.getSet)
-               .size
-    }).toMap
-    equations(idx).show(varNumbers)
+    val varSubscripts: Map[String, Int] = equation.vars.map((varName) => {
+      varName -> getVarSubscript(VarId(idx, varName))
+    }).toMap.collect({case (k, Some(v)) => k -> v})
+    LatexString.showEquation(equations(idx), varSubscripts)
+  }
+
+  def showExpression(exprVarId: VarId): String = {
+    val expression = exprs(exprVarId)
+
+    val varSubscripts: Map[VarId, Int] = (expression.vars + exprVarId).map((varId) => {
+      varId -> getVarSubscript(varId)
+    }).toMap.collect({case (k, Some(v)) => k -> v})
+
+    LatexString.showExpression(exprVarId, expression, varSubscripts)
+  }
+
+  def getVarSubscript(varId: VarId): Option[Int] = {
+    // If, of the variables that aren't equal to you, none of them share your name, you don't need a subscript.
+    if (allVarIds.filter(!equalities.testEqual(_, varId)).count(_.varName == varId.varName) == 0)
+      None
+    else {
+      val relevantVarIds = allVarIds.filter(varId2 =>
+        varId.eqIdx > varId2.eqIdx && // We are counting variables from earlier equations
+          varId.varName == varId2.varName && // that have the same name
+          !equalities.testEqual(varId, varId2)) // and that aren't equal
+      val groups = relevantVarIds.groupBy(equalities.getSet)
+
+      Some(groups.size + 1)
+    }
   }
 }
 
 case class InvalidActionException(comment: String) extends RuntimeException
 
+case class VarId(eqIdx: Int, varName: String)
+
 object Workspace {
   val empty = Workspace(Map(), SetOfSets[VarId](Set()), Map(), Map())
-
-  type VarId = (Int, String)
 }

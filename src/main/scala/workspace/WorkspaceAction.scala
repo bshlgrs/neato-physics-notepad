@@ -1,7 +1,5 @@
 package workspace
 
-import workspace.Workspace.VarId
-
 trait WorkspaceAction
 
 
