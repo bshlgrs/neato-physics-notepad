@@ -103,21 +103,21 @@ class CasTests extends FunSpec {
       }
 
       it("exponentiates correctly") {
-//        assert(RationalNumber(5, 6) ** RationalNumber(1) == RationalNumber(5, 6))
-//        assert(RationalNumber(5, 6) ** RationalNumber(-1) == RationalNumber(6, 5))
-//        assert(RationalNumber(1, 6) ** RationalNumber(-1) == RationalNumber(6))
-//        assert(RationalNumber(3) ** RationalNumber(-1) == RationalNumber(1, 3))
+        assert(RationalNumber(5, 6) ** RationalNumber(1) == RationalNumber(5, 6))
+        assert(RationalNumber(5, 6) ** RationalNumber(-1) == RationalNumber(6, 5))
+        assert(RationalNumber(1, 6) ** RationalNumber(-1) == RationalNumber(6))
+        assert(RationalNumber(3) ** RationalNumber(-1) == RationalNumber(1, 3))
         assert(RationalNumber(-3) ** RationalNumber(-1) == RationalNumber(-1, 3))
 
-//        assert(RationalNumber(5, 6) ** RationalNumber(3) == RationalNumber(125, 216))
-//        assert(RationalNumber(5, 6) ** RationalNumber(-3) == RationalNumber(216, 125))
+        assert(RationalNumber(5, 6) ** RationalNumber(3) == RationalNumber(125, 216))
+        assert(RationalNumber(5, 6) ** RationalNumber(-3) == RationalNumber(216, 125))
       }
     }
 
     describe("regressions") {
       it("handles kinetic energy") {
         val half = one / two
-        val keDefinition = ke - half //* m * (v ** two))
+        val keDefinition = ke - half
       }
     }
   }
