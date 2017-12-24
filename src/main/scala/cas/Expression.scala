@@ -32,7 +32,28 @@ trait Expression[A] {
             val nonXTerms = lhs - Expression.makeSum(termsWithoutX)
             termsWithX.head.solve(x, nonXTerms)
           }
-          case _ => List() // TODO: handle this case
+          case _ => {
+            // This is situations like solving ax + bx == c for x -- you should do it by factoring.
+            // TODO: implement that
+            List()
+          }
+        }
+      }
+      case Product(set) => {
+        val (factorsWithX, factorsWithoutX) = set.partition(_.vars.contains(x))
+
+        factorsWithX.size match {
+          case 0 => List()
+          case 1 => {
+            // This is like "solve a b^2 f(x) = y for x". The answer there is f^-1(y a^-1 b^-2)
+            // which we get by doing (f(x)).solve(x, y a^-1 b^2)
+            factorsWithX.head.solve(x, factorsWithoutX.map(_ ** RationalNumber(-1)).reduce(_ * _) * lhs)
+          }
+          case 2 => {
+            // This equation might be quadratic, in which case you have a chance of solving it.
+            List()
+          }
+          case _ => List() // this is hard
         }
       }
       case Variable(y) => if (x == y) List(lhs) else List()
@@ -127,7 +148,10 @@ trait Expression[A] {
     case (RationalNumber(0, 1), _) => RationalNumber(0)
     case (RationalNumber(a, b), RationalNumber(c, d)) => {
       if(c < 0) {
-        RationalNumber(b, a) ** RationalNumber(-c, d)
+        if (a > 0)
+          RationalNumber(b, a) ** RationalNumber(-c, d)
+        else
+          RationalNumber(-b, -a) ** RationalNumber(-c, d)
       } else {
         if (d == 1) {
           val (num, den) = (scala.math.pow(a, c).toInt, scala.math.pow(b, c).toInt)
@@ -140,6 +164,8 @@ trait Expression[A] {
     }
     case (_, RationalNumber(1, 1)) => this
     case (_, RationalNumber(0, 1)) => RationalNumber(1)
+    case (Product(factors), exponent) => factors.map(_ ** exponent).reduce(_ * _)
+    case (Power(base, exponent), newExponent) => base ** (exponent * newExponent)
     case _ => Power(this, other)
   }
 
