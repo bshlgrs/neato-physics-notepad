@@ -3,6 +3,8 @@ package workspace
 import scala.util.{Failure, Try}
 import cas.Expression
 
+import scala.scalajs.js.annotation.{JSExportAll, JSExportTopLevel}
+
 
 case class PhysicalNumber(value: Double, dimension: Dimension)
 
@@ -187,12 +189,18 @@ case class Workspace(equations: Map[Int, Equation],
       Some(groups.size + 1)
     }
   }
+
+
 }
 
 case class InvalidActionException(comment: String) extends RuntimeException
 
+@JSExportTopLevel("Gem.VarId")
+@JSExportAll
 case class VarId(eqIdx: Int, varName: String)
 
+@JSExportTopLevel("Gem.WorkspaceOps")
+@JSExportAll
 object Workspace {
-  val empty = Workspace(Map(), SetOfSets[VarId](Set()), Map(), Map())
+  def empty = Workspace(Map(), SetOfSets[VarId](Set()), Map(), Map())
 }

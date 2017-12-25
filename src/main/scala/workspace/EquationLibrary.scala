@@ -1,9 +1,11 @@
 package workspace
 import cas.{Expression, RationalNumber}
 
+import scala.scalajs.js.annotation.{JSExport, JSExportTopLevel}
+
+@JSExportTopLevel("Gem.EquationLibrary")
 object EquationLibrary {
   import Dimension.{Joule,Newton}
-  import cas.RationalNumber._
 
   val library: Map[String, Equation] = Map(
     "ke_def" -> Equation("Definition of kinetic energy",
@@ -17,6 +19,8 @@ object EquationLibrary {
       Map("E_P" -> "Potential energy", "m" -> "Mass", "g" -> "Strength of gravity", "h" -> "Height"),
     )
   )
+
   // unsafe
+  @JSExport
   def getByEqId(name: String): Equation = library(name)
 }

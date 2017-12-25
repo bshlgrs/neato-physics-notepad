@@ -42,7 +42,7 @@ trait Expression[A] {
           val radicalStr = if (itemsInsideRadical.nonEmpty) {
             val insideItemStrings = itemsInsideRadical.collect({ case Power(base, _) => wrap(base.toLatexWithBinding, 1)})
 
-              s"\\sqrt{${insideItemStrings.mkString(" \\cdot")}}"
+              s"\\sqrt{${insideItemStrings.mkString(" \\cdot ")}}"
           } else ""
 
           s"${outsideItems.map((x) => wrap(x.toLatexWithBinding, 1)).mkString(" \\cdot ")}$radicalStr"
@@ -52,7 +52,7 @@ trait Expression[A] {
           if (numeratorItems.isEmpty) {
             s"\\frac{1}{${groupWithRadical(flippedDenominatorItems)}}" -> 1
           } else {
-            s"\\frac{${groupWithRadical(numeratorItems)}{${groupWithRadical(flippedDenominatorItems)}}" -> 1
+            s"\\frac{${groupWithRadical(numeratorItems)}}{${groupWithRadical(flippedDenominatorItems)}}" -> 1
           }
         } else {
           groupWithRadical(numeratorItems) -> 1

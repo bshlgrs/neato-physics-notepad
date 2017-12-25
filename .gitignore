@@ -3,3 +3,8 @@
 target
 .idea
 project/target
+/web/gem-frontend/node_modules/
+
+# production
+/web/gem-frontend/build
+/web/gem-frontend/public/scala-gem-fastopt.js
