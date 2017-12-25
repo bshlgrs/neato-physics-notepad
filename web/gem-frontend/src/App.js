@@ -29,8 +29,8 @@ class App extends Component {
     return (
       <div className="App">
         <h3>Equations</h3>
-        {ws.equationList.map((equation, idx) =>
-          <p key={idx}>{latex(ws.equationLatex(idx), true)}</p>
+        {ws.equationIdList.map((equationId, idx) =>
+          <p key={idx}>{latex(ws.equationLatex(idx), true)} ({equationId})</p>
         )}
 
         <button onClick={() => { this.setWs(ws.addEquationFromLibrary("ke_def")) }}>
@@ -43,11 +43,11 @@ class App extends Component {
           <p key={idx}>{list.map((varId, varIdIdx) => {
             if (varIdIdx === list.length - 1) {
               return <span key={varIdIdx}>
-              {latex(ws.showVar(varId), true)}
+              {latex(ws.showVar(varId), false)}
               </span>
             } else {
               return <span key={varIdIdx}>
-                {latex(ws.showVar(varId), true)}
+                {latex(ws.showVar(varId), false)}
                 =
               </span>;
             }
@@ -65,7 +65,14 @@ class App extends Component {
         <h3>Expressions</h3>
 
         {ws.expressionList.map((x, idx) =>
-          <div key={idx}>{latex(ws.exprLatex(x), true)}</div>
+          <div key={idx} className="expression">{latex(ws.exprLatex(x), true)}
+            {ws.possibleRewritesForExpr(x).map((rewrite, idx) =>
+              <button key={idx}
+                onClick={() => this.setWs(ws.rewriteExpression(x, rewrite[0], rewrite[1]))}>
+                Sub in equation {rewrite[1]} to replace {latex(ws.showVar(rewrite[0]))}
+              </button>
+            )}
+          </div>
         )}
 
         {ws.addableExpressionList.map((x, idx) =>

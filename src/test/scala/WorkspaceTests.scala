@@ -48,6 +48,12 @@ class WorkspaceTests extends FunSpec {
         Set(RewriteExpressionAction(VarId(0, "v"), VarId(0, "E_K"),0), RewriteExpressionAction(VarId(0, "v"), VarId(0, "m"),0)))
     }
 
+    it("knows about allowed rewrites") {
+      val ws2 = ws.addExpression(VarId(0, "v"))
+
+      assert(ws2.possibleRewritesForExpr(VarId(0, "v")) == Set((VarId(0, "m"), 1)))
+    }
+
     it("can handle attaching numbers") {
       val ws2 = ws.addNumber(PhysicalNumber(9.8, Meter / Second ** 2))
         .addNumber(PhysicalNumber(12, Dimension.Joule))

@@ -46,7 +46,8 @@ case class Workspace(equations: Map[Int, Equation],
     // variable.
     val subbedSwapExpr = swapEquationExpr.simplifyWithEquivalenceClasses(equalities)
 
-    val solutions = subbedSwapExpr.solve(varToRemoveId)
+    val solutions = subbedSwapExpr.solve(equalities.getSet(varToRemoveId).head)
+    println(solutions)
     assert(solutions.size == 1)
     val exprToSubIn = solutions.head
 
@@ -92,6 +93,19 @@ case class Workspace(equations: Map[Int, Equation],
 
   def getDimension(varId: VarId): Dimension = {
     equations(varId.eqIdx).dimensions(varId.varName)
+  }
+
+  // I think this isn't quite right
+  def possibleRewritesForExpr(varId: VarId): Set[(VarId, Int)] = {
+    val expr = exprs(varId)
+    for {
+      varId2 <- expr.vars
+      (otherEquationId, otherEquation) <- equations
+      // if otherEquation is actually a different equation than the one this variable comes from
+      if otherEquationId != varId2.eqIdx
+      // if otherEquation contains a related variable
+      if otherEquation.expr.vars.exists((varName) => equalities.testEqual(VarId(otherEquationId, varName), varId2))
+    } yield (varId2, otherEquationId)
   }
 
   def possibleActions: Set[FixedWorkspaceAction] = {

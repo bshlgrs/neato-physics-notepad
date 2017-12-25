@@ -9,7 +9,7 @@ import scala.scalajs.js.annotation.{JSExportAll, JSExportTopLevel}
 @JSExportAll
 case class JsWorkspace(ws: Workspace = Workspace.empty) {
   def equations = js.Dictionary(ws.equations.toList.map({ case (x, y) => x.toString -> y }) : _*)
-  def equationList = js.Array(ws.equations.toList.map({ case (x, y) => x.toString -> y }) : _*)
+  def equationIdList = arr(ws.equations.keys)
 
   def addEquationFromLibrary(id: String): JsWorkspace = this.copy(ws = ws.addEquation(EquationLibrary.getByEqId(id)))
 
@@ -36,6 +36,13 @@ case class JsWorkspace(ws: Workspace = Workspace.empty) {
   def exprLatex(varId: VarId): String = ws.showExpression(varId)
 
   def addExpression(varId: VarId): JsWorkspace = this.copy(ws = ws.addExpression(varId))
+
+  def possibleRewritesForExpr(varId: VarId): js.Array[js.Any] = arr(ws.possibleRewritesForExpr(varId).map(
+    x => js.Array(x._1, x._2)))
+
+  def rewriteExpression(exprVarId: VarId, varToRemoveId: VarId, equationIdToUse: Int): JsWorkspace = {
+    this.copy(ws = ws.rewriteExpression(exprVarId, varToRemoveId, equationIdToUse))
+  }
 
   private def arr[A](x: Iterable[A]): js.Array[A] = js.Array(x.toSeq : _*)
 
