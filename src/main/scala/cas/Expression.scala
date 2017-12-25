@@ -32,7 +32,7 @@ trait Expression[A] {
         val numeratorItems = set -- denominatorItems
 
         val flippedDenominatorItems = denominatorItems.collect(
-          { case Power(base, RationalNumber(n, d)) => Power(base, RationalNumber(-n, d)): Expression[A] }
+          { case Power(base, RationalNumber(n, d)) => Expression.makePower(base, RationalNumber(-n, d)): Expression[A] }
         )
 
         def groupWithRadical(items: Set[Expression[A]]): String = {
@@ -279,7 +279,9 @@ trait Expression[A] {
 
 case class Sum[A](terms: Set[Expression[A]]) extends Expression[A]
 case class Product[A](factors: Set[Expression[A]]) extends Expression[A]
-case class Power[A](base: Expression[A], power: Expression[A]) extends Expression[A]
+case class Power[A](base: Expression[A], power: Expression[A]) extends Expression[A] {
+  assert(power != RationalNumber(1), "power must not be 1")
+}
 case class Variable[A](thing: A) extends Expression[A]
 
 trait Constant[A] extends Expression[A]
@@ -329,11 +331,16 @@ object Expression {
     }
   }
 
+  def makePower[A](base: Expression[A], exponent: Expression[A]): Expression[A] = exponent match {
+    case RationalNumber(1, 1) => base
+    case _ => Power(base, exponent)
+  }
+
   def euclidsAlgorithm(x: Int, y: Int): Int = if (y == 0) x else euclidsAlgorithm(y, x % y)
 
   def buildGoofily(number: Constant[String], factors: Map[String, Int]): Expression[String] = {
     // we get in a bunch of factors. Multiply them all together and say they're equal to 1
-    (number * factors.map({case (name, power) => Power(Variable(name), RationalNumber(power)) : Expression[String]}).reduce(_ * _)
+    (number * factors.map({case (name, power) => Expression.makePower(Variable(name), RationalNumber(power)) : Expression[String]}).reduce(_ * _)
       - RationalNumber(1))
   }
 

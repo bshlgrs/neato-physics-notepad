@@ -9,7 +9,7 @@ I'm going to do it in Scala, because type systems make it much easier for me to 
 
 Features to add:
 
-Phase 1: build out more backend
+## [x] Phase 1: build out more backend
 
 - Add numbers to the workspace
   - each has an optional variable it's connected to; these must be unique
@@ -28,17 +28,19 @@ Phase 1: build out more backend
 - Logic to represent:
   - Equations as strings. This involves giving them a new field
   - Expressions as strings
-- The constant in expressions should have a power, so that we can represent sqrt(2) directly
-
-Phase 2: build shitty frontend
+- Computer algebra system
+  
+## [x] Phase 2: build shitty frontend
 
 Just make logic for displaying everything and also a button for every allowed action 
 
-later phases:
+## [ ] Phase 3: make it less shitty
 
-- less shitty CAS
-    - I think it just needs quadratic equations
 - less shitty GUI
-    - similar to last time should work
+  - similar to last time should work
+    - I think I should just give up on using React
+  
+## later
+
 - magic triangle GUI element
 - make parsers for equations and dimensions and stuff

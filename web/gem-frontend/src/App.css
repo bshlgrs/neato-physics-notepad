@@ -31,3 +31,9 @@
   border-style: solid;
   padding: 10px;
 }
+
+.equation {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

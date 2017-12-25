@@ -9,7 +9,7 @@ import scala.scalajs.js.annotation.{JSExportAll, JSExportTopLevel}
 @JSExportAll
 case class JsWorkspace(ws: Workspace = Workspace.empty) {
   def equations = js.Dictionary(ws.equations.toList.map({ case (x, y) => x.toString -> y }) : _*)
-  def equationIdList = arr(ws.equations.keys)
+  def equationIdList: js.Array[Int] = arr(ws.equations.keys)
 
   def addEquationFromLibrary(id: String): JsWorkspace = this.copy(ws = ws.addEquation(EquationLibrary.getByEqId(id)))
 
@@ -25,7 +25,7 @@ case class JsWorkspace(ws: Workspace = Workspace.empty) {
     } yield js.Array(var1, var2))
   }
 
-  def declareEqual(varId1: VarId, varId2: VarId): JsWorkspace = this.copy(ws = ws.addEquality(varId1, varId2))
+  def addEquality(varId1: VarId, varId2: VarId): JsWorkspace = this.copy(ws = ws.addEquality(varId1, varId2))
 
   def equalityList: js.Array[js.Array[VarId]] = arr(ws.equalities.sets.map(arr))
 
@@ -33,9 +33,10 @@ case class JsWorkspace(ws: Workspace = Workspace.empty) {
 
   def expressionList: js.Array[VarId] = arr(ws.exprs.keys)
   def addableExpressionList: js.Array[VarId] = arr(ws.allVarIds -- ws.exprs.keys)
-  def exprLatex(varId: VarId): String = ws.showExpression(varId)
+  def showExpression(varId: VarId): String = ws.showExpression(varId)
 
   def addExpression(varId: VarId): JsWorkspace = this.copy(ws = ws.addExpression(varId))
+  def deleteExpression(varId: VarId): JsWorkspace = this.copy(ws = ws.deleteExpression(varId))
 
   def possibleRewritesForExpr(varId: VarId): js.Array[js.Any] = arr(ws.possibleRewritesForExpr(varId).map(
     x => js.Array(x._1, x._2)))

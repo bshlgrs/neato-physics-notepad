@@ -8,3 +8,4 @@ project/target
 # production
 /web/gem-frontend/build
 /web/gem-frontend/public/scala-gem-fastopt.js
+/web/gem-frontend/public/scala-gem-fastopt.js.map

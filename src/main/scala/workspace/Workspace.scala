@@ -53,7 +53,6 @@ case class Workspace(equations: Map[Int, Equation],
 
     // now sub that into the current expression
     val newExpr = exprs(exprVarId).substitute(varToRemoveId, exprToSubIn)
-
     this.copy(exprs = exprs + (exprVarId -> newExpr))
   }
 
