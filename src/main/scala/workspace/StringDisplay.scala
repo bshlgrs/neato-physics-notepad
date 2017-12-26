@@ -7,29 +7,30 @@ object StringDisplay {
     ???
   }
 
-  def showVar(name: String, mbNum: Option[Int]): String = mbNum match {
-    case Some(num) => {
+  def showVar(name: String, mbNum: Option[Int]): String = {
+    def showVarWithStr(numStr: String) = {
       if (name.contains("_")) {
         var List(mainText, subscript) = name.split('_').toList
-        s"${mainText}<sub>$subscript$num</sub>"
-      } else
-        s"${name}<sub>$num</sub>"
+        s"$mainText<sub>$subscript$numStr</sub>"
+      } else {
+        if (numStr.isEmpty)
+          name
+        else
+          s"$name<sub>$numStr</sub>"
+      }
     }
-    case None => {
-      if (name.contains("_")) {
-        var List(mainText, subscript) = name.split('_').toList
-        s"${mainText}<sub>$subscript</sub>"
-      } else
-        s"${name}<sub></sub>"
+    mbNum match {
+      case Some(num) => showVarWithStr(num.toString)
+      case None => showVarWithStr("")
     }
   }
 
-  def showEquation(eq: Equation, varSubscripts: Map[String, Int]): String = {
-    val regex = raw"\{([^}]+)\}".r("varName")
-    regex.replaceAllIn(eq.latexString, _ match {
-      case regex(varName) => StringDisplay.showVar(varName, varSubscripts.get(varName))
-    })
-  }
+//  def showEquation(eq: Equation, varSubscripts: Map[String, Int]): String = {
+//    val regex = raw"\{([^}]+)\}".r("varName")
+//    regex.replaceAllIn(eq.latexString, _ match {
+//      case regex(varName) => StringDisplay.showVar(varName, varSubscripts.get(varName))
+//    })
+//  }
 
   def showExpression(exprVarId: VarId, expr: Expression[VarId], varSubscripts: Map[VarId, Int]): String = {
     val lhs = StringDisplay.showVar(exprVarId.varName, varSubscripts.get(exprVarId))

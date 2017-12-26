@@ -126,11 +126,22 @@ case class Workspace(equations: Map[Int, Equation] = Map(),
   def deleteExpression(id: VarId): Workspace = this.copy(expressions = expressions - id)
 
   def showEquation(idx: Int): String = {
+    ???
     val equation = equations(idx)
     val varSubscripts: Map[String, Int] = equation.vars.map((varName) => {
       varName -> getVarSubscript(VarId(idx, varName))
     }).toMap.collect({case (k, Some(v)) => k -> v})
-    StringDisplay.showEquation(equations(idx), varSubscripts)
+//    StringDisplay.showEquation(equations(idx), varSubscripts)
+    // Currently broken-- I broke showEquation because I didn't need it
+    ???
+  }
+
+  def getEquationDisplay(idx: Int): DisplayMath = {
+    val equation = equations(idx)
+    val varSubscripts: Map[String, Int] = equation.vars.map((varName) => {
+      varName -> getVarSubscript(VarId(idx, varName))
+    }).toMap.collect({case (k, Some(v)) => k -> v})
+    DisplayMath.showEquation(equations(idx), idx, varSubscripts)
   }
 
   def showExpression(exprVarId: VarId): String = {
@@ -170,7 +181,9 @@ case class Workspace(equations: Map[Int, Equation] = Map(),
     } yield (var1, var2)
   }
 
-  def addableEqualitiesJs: js.Array[js.Array[VarId]] = arr(addableEqualities.map((x) => js.Array(x._1, x._2)))
+  def addableEqualitiesJs: js.Array[js.Array[VarId]] = {
+    arr(addableEqualities.toList.sortBy(_.toString).map((x) => js.Array(x._1, x._2)))
+  }
 
   private def arr[A](x: Iterable[A]): js.Array[A] = js.Array(x.toSeq : _*)
 

@@ -4,7 +4,7 @@ import cas.Expression
 
 case class Equation(name: String,
                     expr: Expression[String],
-                    latexString: String,
+                    display: (String => VariableSpan) => DisplayMath,
                     dimensions: Map[String, Dimension],
                     varNames: Map[String, String]
                    ) {

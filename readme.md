@@ -60,3 +60,8 @@ steps:
 - Deleting equations is a shitshow.
 - The maps that I use will assign the same ID to multiple numbers.
     - To get around this I should make a "IdAssigningMap" class
+
+
+## Build notes
+
+    time sbt clean fastOptJS; and cp target/scala-2.12/scala-gem-fastopt.j* web/gem-frontend/public/

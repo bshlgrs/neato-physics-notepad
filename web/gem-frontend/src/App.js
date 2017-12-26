@@ -3,6 +3,7 @@ import './App.css';
 import Gem from './Gem';
 import 'katex/dist/katex.css';
 import Immutable from 'immutable';
+import DisplayMath from './DisplayMath';
 
 // const latex = (latex, displayMode) => {
 //   try {
@@ -53,7 +54,6 @@ class App extends Component {
   }
   handleEquationMouseDown(e, equationId) {
     if (e.button !== 0) return;
-    console.log("hey")
     const computedStyle = this.equationRefs[equationId].getBoundingClientRect();
     const pos = { top: parseInt(computedStyle.top), left: parseInt(computedStyle.left) };
 
@@ -80,7 +80,6 @@ class App extends Component {
     e.preventDefault()
   }
   onMouseMove (e) {
-    console.log("hey2");
     if (!this.state.dragging) return;
     this.setState({
       equationPositions: this.state.equationPositions.set(this.state.draggedEquationId,
@@ -109,10 +108,12 @@ class App extends Component {
               className="equation"
               style={{top: pos.get("y"), left: pos.get("x")}}
               >
-              <div
-                onMouseDown={(e) => this.handleEquationMouseDown(e, equationId)}
-                ref={(div) => { this.equationRefs[equationId] = div; }} >
-                {danger(ws.showEquation(equationId), true)}
+              <div ref={(div) => { this.equationRefs[equationId] = div; }} >
+                <DisplayMath
+                  onSpanMouseDown={(e) => this.handleEquationMouseDown(e, equationId)}
+                  onVarMouseDown={(e, varId) => { console.log(varId); }}
+                  stuff={ws.getEquationDisplay(equationId).jsItems}
+                />
               </div>
               <div style={{marginLeft: "20px"}}>({equationId})</div>
             </div>
