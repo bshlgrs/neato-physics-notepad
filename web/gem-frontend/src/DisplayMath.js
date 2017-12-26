@@ -15,9 +15,37 @@ const DisplayMathElement = (props) => {
     // rather than wrapping it?
     return <span onMouseDown={(e) => props.onSpanMouseDown(e)}>{el.str}</span>;
   } else if (name === "variableSpan") {
+    const varId = el.varId;
+    // console.log(props.draggedFromVarId);
+    // console.log(varId);
+    let color;
+    if (props.currentAction === 'dragging-from-var') {
+      if (props.workspace.getDimension(props.draggedFromVarId) === props.workspace.getDimension(varId)) {
+        if (props.draggedFromVarId.toString() === varId.toString()) {
+          color = "green";
+        } else {
+          color = "red";
+        }
+      } else {
+        color = 'grey';
+      }
+    } else {
+
+    }
+
+    const validDragTarget = props.currentAction === "dragging-from-var" && props.draggedFromVarId && (
+      props.workspace.getDimension(props.draggedFromVarId) === props.workspace.getDimension(varId)
+    );
     return <span
       className="equation-var"
-      onMouseDown={(e) => props.onVarMouseDown(e, el.varId) }>
+      style={{color: color}}
+      id={"variable-" + varId.toString()}
+      onMouseDown={(e) => props.onVarMouseDown(e, varId)}
+      onMouseUp={(e) => { console.log(e, varId) }}
+      onDragEnd={(e) => { console.log('dragend', e, varId) }}
+      onMouseOver={(e) => { console.log('mouseover', e, varId) }}
+      // ref={(ref) => { props.varRef(ref, varId)}}
+      >
       {el.jsEls.map((x, idx) =>
       <DisplayMathElement {...other} key={idx} el={x} onSpanMouseDown={() => {}} />)}
     </span>;
