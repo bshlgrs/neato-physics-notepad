@@ -34,13 +34,29 @@ Features to add:
 
 Just make logic for displaying everything and also a button for every allowed action 
 
+
 ## [ ] Phase 3: make it less shitty
 
 - less shitty GUI
   - similar to last time should work
-    - I think I should just give up on using React
+    - I think I should just give up on using KaTeX
+- let you search for equations
+
+steps:
+
+- Make my own rendering for equations.
+  - Use the square root character for roots
+  - Display fractions properly
   
 ## later
 
 - magic triangle GUI element
 - make parsers for equations and dimensions and stuff
+
+
+## bugs
+
+- You can get a variable on the rhs of its expression
+- Deleting equations is a shitshow.
+- The maps that I use will assign the same ID to multiple numbers.
+    - To get around this I should make a "IdAssigningMap" class

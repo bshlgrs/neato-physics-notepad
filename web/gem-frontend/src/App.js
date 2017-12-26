@@ -13,7 +13,6 @@ const latex = (latex, displayMode) => {
   }
 };
 
-
 class App extends Component {
   constructor () {
     super();
@@ -27,26 +26,32 @@ class App extends Component {
   showVar(varId) {
     return latex(this.state.workspace.showVar(varId));
   }
+  addEquation(eqId) {
+    this.setWs(this.state.workspace.addEquation(Gem.EquationLibrary.getByEqId(eqId)));
+  }
   render() {
     const ws = this.state.workspace;
+    const toJs = Gem.ToJS.convert;
+
 
     return (
       <div className="App">
         <h3>Equations</h3>
-        {ws.equationIdList.map((equationId, idx) =>
+
+        {ws.equationIds.map((equationId, idx) =>
           <div key={idx} className="equation">
-            <div>{latex(ws.equationLatex(idx), true)} </div>
+            <div>{latex(ws.showEquation(equationId), true)} </div>
             <div style={{marginLeft: "20px"}}>({equationId})</div>
           </div>
         )}
 
-        <button onClick={() => { this.setWs(ws.addEquationFromLibrary("ke_def")) }}>
+        <button onClick={() => { this.addEquation("ke_def") }}>
           Add KE equation</button>
-        <button onClick={() => { this.setWs(ws.addEquationFromLibrary("pe_def")) }}>
+        <button onClick={() => { this.addEquation("pe_def") }}>
           Add PE equation</button>
 
         <h3>Equalities</h3>
-        {ws.equalityList.map((list, idx) =>
+        {ws.equalityListOfLists.map((list, idx) =>
           <p key={idx}>{list.map((varId, varIdIdx) => {
             if (varIdIdx === list.length - 1) {
               return <span key={varIdIdx}>
@@ -61,7 +66,7 @@ class App extends Component {
           })}</p>
         )}
 
-        {ws.addableEqualities.map((tuple, idx) =>
+        {ws.addableEqualitiesJs.map((tuple, idx) =>
           <button
             key={idx}
             onClick={() => this.setWs(ws.addEquality(tuple[0], tuple[1]))}>
@@ -71,23 +76,24 @@ class App extends Component {
 
         <h3>Expressions</h3>
 
-        {ws.expressionList.map((x, idx) =>
-          <div key={idx} className="expression">{latex(ws.showExpression(x), true)}
-            {ws.possibleRewritesForExpr(x).map((rewrite, idx) =>
+        {ws.expressionIds.map((varId, idx) =>
+          <div key={idx} className="expression">{latex(ws.showExpression(varId), true)}
+            {ws.possibleRewritesForExprJs(varId).map((rewrite, idx) =>
               <button key={idx}
-                onClick={() => this.setWs(ws.rewriteExpression(x, rewrite[0], rewrite[1]))}>
+                onClick={() => this.setWs(ws.rewriteExpression(varId, rewrite[0], rewrite[1]))}>
                 Sub in equation {rewrite[1]} to replace {this.showVar(rewrite[0])}
               </button>
             )}
-            <button onClick={() => this.setWs(ws.deleteExpression(x))}>Delete</button>
+            <button onClick={() => this.setWs(ws.deleteExpression(varId))}>Delete</button>
           </div>
         )}
 
-        {ws.addableExpressionList.map((x, idx) =>
+        {ws.addableExpressionIds.map((x, idx) =>
           <button key={idx} onClick={() => this.setWs(ws.addExpression(x))}>
             Add {this.showVar(x)}
           </button>
         )}
+
       </div>
     );
   }
