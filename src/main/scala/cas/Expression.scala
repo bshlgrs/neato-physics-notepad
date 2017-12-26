@@ -3,15 +3,16 @@ package cas
 import workspace.SetOfSets
 
 trait Expression[A] {
+  import ExpressionDisplay.wrap
+
   override def toString: String = this.toStringWithBinding._1
 
   def toStringWithBinding: (String, Int) = {
-    def wrap(tuple: (String, Int), binding: Int) = if (tuple._2 >= binding) tuple._1 else s"(${tuple._1})"
-
     this match {
       case Sum(set) => set.map((x) => wrap(x.toStringWithBinding, 0)).mkString(" + ") -> 0
-      case Product(set) => set.map((x) => wrap(x.toStringWithBinding, 1)).mkString(" * ") -> 1
-      case Power(lhs, rhs) => wrap(lhs.toStringWithBinding, 2) + "^" + wrap(rhs.toStringWithBinding, 2) -> 2
+      case Product(set) =>
+        ExpressionDisplay.fractionDisplay(set, " ", (x: Expression[A]) => x.toStringWithBinding, (x) => s"√($x)", (n, d) => s"($n)/($d)") -> 1
+      case Power(lhs, rhs) => wrap(lhs.toStringWithBinding, 2) + "<sup>" + wrap(rhs.toStringWithBinding, 0) + "</sup>" -> 0
       case Variable(thing) => thing.toString -> 3
       case RealNumber(r) => r.toString -> 3
       case RationalNumber(n, 1) => n.toString -> 3
@@ -22,42 +23,10 @@ trait Expression[A] {
   def toLatex: String = this.toLatexWithBinding._1
 
   def toLatexWithBinding: (String, Int) = {
-    def wrap(tuple: (String, Int), binding: Int) = if (tuple._2 >= binding) tuple._1 else s"(${tuple._1})"
-
     this match {
       case Sum(set) => set.map((x) => wrap(x.toLatexWithBinding, 0)).mkString(" + ") -> 0
-      case Product(set) => {
-        // TODO: Do something cleverer here: support grouped square roots and fractions
-        val denominatorItems = set.collect({ case x@Power(_, RationalNumber(n, _)) if n < 0 => x })
-        val numeratorItems = set -- denominatorItems
-
-        val flippedDenominatorItems = denominatorItems.collect(
-          { case Power(base, RationalNumber(n, d)) => Expression.makePower(base, RationalNumber(-n, d)): Expression[A] }
-        )
-
-        def groupWithRadical(items: Set[Expression[A]]): String = {
-          val itemsInsideRadical = items.collect({ case x@Power(_, RationalNumber(1, 2)) => x})
-          val outsideItems = items -- itemsInsideRadical
-
-          val radicalStr = if (itemsInsideRadical.nonEmpty) {
-            val insideItemStrings = itemsInsideRadical.collect({ case Power(base, _) => wrap(base.toLatexWithBinding, 1)})
-
-              s"\\sqrt{${insideItemStrings.mkString(" \\cdot ")}}"
-          } else ""
-
-          s"${outsideItems.map((x) => wrap(x.toLatexWithBinding, 1)).mkString(" \\cdot ")}$radicalStr"
-        }
-
-        if (denominatorItems.nonEmpty) {
-          if (numeratorItems.isEmpty) {
-            s"\\frac{1}{${groupWithRadical(flippedDenominatorItems)}}" -> 1
-          } else {
-            s"\\frac{${groupWithRadical(numeratorItems)}}{${groupWithRadical(flippedDenominatorItems)}}" -> 1
-          }
-        } else {
-          groupWithRadical(numeratorItems) -> 1
-        }
-      }
+      case Product(set) =>
+        ExpressionDisplay.fractionDisplay(set, " \\cdot ", (x: Expression[A]) => x.toStringWithBinding, (x) => s"\\sqrt{$x}", (n, d) => s"\\frac{$n}{$d}") -> 1
       case Power(lhs, rhs) => {
         rhs match {
           case RationalNumber(1, 2) => s"\\sqrt{${wrap(lhs.toLatexWithBinding, 0)}}" -> 3
@@ -345,4 +314,51 @@ object Expression {
   }
 
   def buildGoofily(factors: Map[String, Int]): Expression[String] = buildGoofily(RationalNumber(1), factors)
+}
+
+object ExpressionDisplay {
+  def fractionDisplay[A](set: Set[Expression[A]],
+                         multiplySymbol: String,
+                         toStringWithBinding: Expression[A] => (String, Int),
+                         wrapWithSurd: String => String,
+                         wrapWithFraction: (String, String) => String): String = {
+    // TODO: Do something cleverer here: support grouped square roots and fractions
+    val denominatorItems = set.collect({ case x@Power(_, RationalNumber(n, _)) if n < 0 => x })
+    val numeratorItems = set -- denominatorItems
+
+    val flippedDenominatorItems = denominatorItems.collect(
+      { case Power(base, RationalNumber(n, d)) => Expression.makePower(base, RationalNumber(-n, d)): Expression[A] }
+    )
+
+    def groupWithRadical(items: Set[Expression[A]]): String = {
+      val itemsInsideRadical = items.collect({ case x@Power(_, RationalNumber(1, 2)) => x: Expression[A]})
+      val outsideItems = items -- itemsInsideRadical
+
+      val radicalStr = if (itemsInsideRadical.nonEmpty) {
+        val insideItemStrings = orderWithConstantsFirst(itemsInsideRadical)
+          .collect({ case Power(base, _) => wrap(toStringWithBinding(base), 1)})
+
+        wrapWithSurd(insideItemStrings.mkString(multiplySymbol))
+      } else ""
+
+      s"${orderWithConstantsFirst(outsideItems).map((x) => wrap(toStringWithBinding(x), 1)).mkString(multiplySymbol)} $radicalStr"
+    }
+
+    if (denominatorItems.nonEmpty) {
+      if (numeratorItems.isEmpty) {
+        wrapWithFraction("1", groupWithRadical(flippedDenominatorItems))
+      } else {
+        wrapWithFraction(groupWithRadical(numeratorItems), groupWithRadical(flippedDenominatorItems))
+      }
+    } else {
+      groupWithRadical(numeratorItems)
+    }
+  }
+
+  def orderWithConstantsFirst[A](stuff: Set[Expression[A]]): List[Expression[A]] = {
+    val (first, second) = stuff.partition(_.isInstanceOf[Constant[_]])
+    first.toList ++ second.toList
+  }
+
+  def wrap(tuple: (String, Int), binding: Int): String = if (tuple._2 >= binding) tuple._1 else s"(${tuple._1})"
 }

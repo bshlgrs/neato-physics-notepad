@@ -158,4 +158,10 @@ class CasTests extends FunSpec {
       assert(RationalNumber(3, 1).vars == Set())
     }
   }
+
+  describe("display stuff") {
+    it("knows how to order stuff") {
+      assert(ExpressionDisplay.orderWithConstantsFirst(Set[Expression[String]](two, x)) == List(two, x))
+    }
+  }
 }

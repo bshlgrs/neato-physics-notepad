@@ -130,7 +130,7 @@ case class Workspace(equations: Map[Int, Equation] = Map(),
     val varSubscripts: Map[String, Int] = equation.vars.map((varName) => {
       varName -> getVarSubscript(VarId(idx, varName))
     }).toMap.collect({case (k, Some(v)) => k -> v})
-    LatexString.showEquation(equations(idx), varSubscripts)
+    StringDisplay.showEquation(equations(idx), varSubscripts)
   }
 
   def showExpression(exprVarId: VarId): String = {
@@ -140,10 +140,10 @@ case class Workspace(equations: Map[Int, Equation] = Map(),
       varId -> getVarSubscript(varId)
     }).toMap.collect({case (k, Some(v)) => k -> v})
 
-    LatexString.showExpression(exprVarId, expression, varSubscripts)
+    StringDisplay.showExpression(exprVarId, expression, varSubscripts)
   }
 
-  def showVar(varId: VarId): String = LatexString.showVar(varId.varName, getVarSubscript(varId))
+  def showVar(varId: VarId): String = StringDisplay.showVar(varId.varName, getVarSubscript(varId))
 
   def getVarSubscript(varId: VarId): Option[Int] = {
     // If, of the variables that aren't equal to you, none of them share your name, you don't need a subscript.

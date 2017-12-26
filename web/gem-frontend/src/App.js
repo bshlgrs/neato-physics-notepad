@@ -1,49 +1,123 @@
 import React, { Component } from 'react';
 import './App.css';
 import Gem from './Gem';
-import katex from 'katex';
 import 'katex/dist/katex.css';
+import Immutable from 'immutable';
 
-const latex = (latex, displayMode) => {
-  try {
-    return <span
-     dangerouslySetInnerHTML={{__html: katex.renderToString(latex, {displayMode: displayMode})}}/>;
-  } catch (e) {
-    return <span>oh dear: {latex}</span>
-  }
-};
+// const latex = (latex, displayMode) => {
+//   try {
+//     return <span
+//      dangerouslySetInnerHTML={{__html: katex.renderToString(latex, {displayMode: displayMode})}}/>;
+//   } catch (e) {
+//     return <span>oh dear: {latex}</span>
+//   }
+// };
+
+const danger = (str) => <span dangerouslySetInnerHTML={{__html: str}} />;
 
 class App extends Component {
   constructor () {
     super();
     this.state = {
-      workspace: Gem.Workspace()
+      workspace: Gem.Workspace(),
+      equationPositions: Immutable.Map()
     };
+    this.onMouseMove = this.onMouseMove.bind(this);
+    this.onMouseUp = this.onMouseUp.bind(this);
+  }
+  componentDidUpdate (props, state) {
+    if (this.state.dragging && !state.dragging) {
+      document.addEventListener('mousemove', this.onMouseMove)
+      document.addEventListener('mouseup', this.onMouseUp)
+    } else if (!this.state.dragging && state.dragging) {
+      document.removeEventListener('mousemove', this.onMouseMove)
+      document.removeEventListener('mouseup', this.onMouseUp)
+    }
   }
   setWs(newWs) {
     this.setState({ workspace: newWs });
   }
   showVar(varId) {
-    return latex(this.state.workspace.showVar(varId));
+    return danger(this.state.workspace.showVar(varId));
   }
   addEquation(eqId) {
-    this.setWs(this.state.workspace.addEquation(Gem.EquationLibrary.getByEqId(eqId)));
+    const ws = this.state.workspace;
+    const newWs = ws.addEquation(Gem.EquationLibrary.getByEqId(eqId));
+    const newEqId = newWs.lastEqId;
+
+    const newPosition = Immutable.Map({x: Math.random() * 300, y: Math.random() * 300});
+    this.setState({
+      workspace: newWs,
+      equationPositions: this.state.equationPositions.set(newEqId, newPosition)
+    });
+  }
+  handleEquationMouseDown(e, equationId) {
+    if (e.button !== 0) return;
+    console.log("hey")
+    const computedStyle = this.equationRefs[equationId].getBoundingClientRect();
+    const pos = { top: parseInt(computedStyle.top), left: parseInt(computedStyle.left) };
+
+    const parentStyle = this.equationSpaceDiv.getBoundingClientRect();
+    const parentPos = { top: parseInt(parentStyle.top), left: parseInt(parentStyle.left) };
+
+
+    this.setState({
+      dragging: true,
+      rel: {
+        x: e.pageX - pos.left + parentPos.left,
+        y: e.pageY - pos.top + parentPos.top
+      },
+      draggedEquationId: equationId
+      // TODO: say what we're dragging
+    });
+
+    e.stopPropagation();
+    e.preventDefault();
+  }
+  onMouseUp (e) {
+    this.setState({dragging: false})
+    e.stopPropagation()
+    e.preventDefault()
+  }
+  onMouseMove (e) {
+    console.log("hey2");
+    if (!this.state.dragging) return;
+    this.setState({
+      equationPositions: this.state.equationPositions.set(this.state.draggedEquationId,
+        Immutable.Map({
+        x: e.pageX - this.state.rel.x,
+        y: e.pageY - this.state.rel.y
+      }))
+    });
+    e.stopPropagation();
+    e.preventDefault();
   }
   render() {
     const ws = this.state.workspace;
-    const toJs = Gem.ToJS.convert;
-
+    this.equationRefs = {}
 
     return (
       <div className="App">
         <h3>Equations</h3>
 
-        {ws.equationIds.map((equationId, idx) =>
-          <div key={idx} className="equation">
-            <div>{latex(ws.showEquation(equationId), true)} </div>
-            <div style={{marginLeft: "20px"}}>({equationId})</div>
-          </div>
-        )}
+        <div className="equationSpace" ref={(div) => { this.equationSpaceDiv = div; }}>
+          {ws.equationIds.map((equationId, idx) => {
+            const pos = this.state.equationPositions.get(equationId);
+
+            return <div
+              key={idx}
+              className="equation"
+              style={{top: pos.get("y"), left: pos.get("x")}}
+              >
+              <div
+                onMouseDown={(e) => this.handleEquationMouseDown(e, equationId)}
+                ref={(div) => { this.equationRefs[equationId] = div; }} >
+                {danger(ws.showEquation(equationId), true)}
+              </div>
+              <div style={{marginLeft: "20px"}}>({equationId})</div>
+            </div>
+          })}
+        </div>
 
         <button onClick={() => { this.addEquation("ke_def") }}>
           Add KE equation</button>
@@ -77,7 +151,7 @@ class App extends Component {
         <h3>Expressions</h3>
 
         {ws.expressionIds.map((varId, idx) =>
-          <div key={idx} className="expression">{latex(ws.showExpression(varId), true)}
+          <div key={idx} className="expression">{danger(ws.showExpression(varId), true)}
             {ws.possibleRewritesForExprJs(varId).map((rewrite, idx) =>
               <button key={idx}
                 onClick={() => this.setWs(ws.rewriteExpression(varId, rewrite[0], rewrite[1]))}>

@@ -2,7 +2,7 @@ package workspace
 
 import cas.Expression
 
-object LatexString {
+object StringDisplay {
   def addSubscripts(eq: String, numbers: Map[String, Int]) ={
     ???
   }
@@ -11,25 +11,29 @@ object LatexString {
     case Some(num) => {
       if (name.contains("_")) {
         var List(mainText, subscript) = name.split('_').toList
-        s"${mainText}_{$subscript$num}"
+        s"${mainText}<sub>$subscript$num</sub>"
       } else
-        s"${name}_{$num}"
+        s"${name}<sub>$num</sub>"
     }
-    case None => name
+    case None => {
+      if (name.contains("_")) {
+        var List(mainText, subscript) = name.split('_').toList
+        s"${mainText}<sub>$subscript</sub>"
+      } else
+        s"${name}<sub></sub>"
+    }
   }
 
   def showEquation(eq: Equation, varSubscripts: Map[String, Int]): String = {
-    //eq.expr.mapVariables((varName) => LatexString.showVar(varName, varSubscripts.get(varName))).toString
-
     val regex = raw"\{([^}]+)\}".r("varName")
     regex.replaceAllIn(eq.latexString, _ match {
-      case regex(varName) => LatexString.showVar(varName, varSubscripts.get(varName))
+      case regex(varName) => StringDisplay.showVar(varName, varSubscripts.get(varName))
     })
   }
 
   def showExpression(exprVarId: VarId, expr: Expression[VarId], varSubscripts: Map[VarId, Int]): String = {
-    val lhs = LatexString.showVar(exprVarId.varName, varSubscripts.get(exprVarId))
-    val rhs = expr.mapVariables((varId) => LatexString.showVar(varId.varName, varSubscripts.get(varId))).toLatex
+    val lhs = StringDisplay.showVar(exprVarId.varName, varSubscripts.get(exprVarId))
+    val rhs = expr.mapVariables((varId) => StringDisplay.showVar(varId.varName, varSubscripts.get(varId))).toString
     s"$lhs = $rhs"
   }
 }
