@@ -36,7 +36,7 @@ const DisplayMathElement = (props) => {
     return <span
       className="equation-var"
       style={{color: color}}
-      id={"variable-" + varId.toString()}
+      id={props.idPrefix + varId.toString()}
       onMouseDown={(e) => props.onVarMouseDown(e, varId)}
       onDoubleClick={(e) => props.onDoubleClick(varId) }
       ref={props.varRef && ((ref) => { props.varRef(ref, varId)})}

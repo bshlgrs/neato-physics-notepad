@@ -17,6 +17,7 @@ import DisplayMath from './DisplayMath';
 const danger = (str) => <span dangerouslySetInnerHTML={{__html: str}} />;
 const DRAGGING = "dragging";
 const DRAGGING_FROM_VAR = "dragging-from-var";
+const DRAGGING_FROM_EXPR_VAR = "dragging-from-expr-var";
 
 const getPosition = (ref) => {
   const computedStyle = ref.getBoundingClientRect();
@@ -52,9 +53,10 @@ class App extends Component {
       currentAction: null
     };
     this.onMouseMoveWhileDraggingThing = this.onMouseMoveWhileDraggingThing.bind(this);
-    this.onMouseMoveWhileDraggingFromVar = this.onMouseMoveWhileDraggingFromVar.bind(this);
+    this.onMouseMoveWhileDragging = this.onMouseMoveWhileDragging.bind(this);
     this.onMouseUp = this.onMouseUp.bind(this);
     this.onMouseUpFromVarDrag = this.onMouseUpFromVarDrag.bind(this);
+    this.onMouseUpFromExprVarDrag = this.onMouseUpFromExprVarDrag.bind(this);
     this.varRefs = {};
     this.varPositions = {};
     this.expressionRefs = {};
@@ -84,10 +86,18 @@ class App extends Component {
 
     if (actionStarted(DRAGGING_FROM_VAR)) {
       document.addEventListener('mouseup', this.onMouseUpFromVarDrag);
-      document.addEventListener('mousemove', this.onMouseMoveWhileDraggingFromVar)
+      document.addEventListener('mousemove', this.onMouseMoveWhileDragging)
     } else if (actionFinished(DRAGGING_FROM_VAR)) {
       document.removeEventListener('mouseup', this.onMouseUpFromVarDrag);
-      document.removeEventListener('mousemove', this.onMouseMoveWhileDraggingFromVar);
+      document.removeEventListener('mousemove', this.onMouseMoveWhileDragging);
+    }
+
+    if (actionStarted(DRAGGING_FROM_EXPR_VAR)) {
+      document.addEventListener('mouseup', this.onMouseUpFromExprVarDrag);
+      document.addEventListener('mousemove', this.onMouseMoveWhileDragging);
+    } else if (actionFinished(DRAGGING_FROM_EXPR_VAR)) {
+      document.removeEventListener('mouseup', this.onMouseUpFromExprVarDrag);
+      document.removeEventListener('mousemove', this.onMouseMoveWhileDragging);
     }
 
     if (state.currentAction === DRAGGING) {
@@ -112,7 +122,7 @@ class App extends Component {
       positions: this.state.positions.set(newEqId, newPosition)
     });
     // bleh
-    setTimeout(() => { this.refreshVarPositions() }, 1);
+    setTimeout(() => { this.refreshVarPositions(); }, 1);
   }
   addExpression(varId) {
     const newPosition = Immutable.Map({x: Math.random() * 300, y: Math.random() * 300});
@@ -123,7 +133,6 @@ class App extends Component {
   }
   handleStartDrag(e, thingId, ref) {
     if (e.button !== 0) return;
-    console.log("foo");
 
     this.setState({
       currentAction: DRAGGING,
@@ -144,28 +153,38 @@ class App extends Component {
     e.stopPropagation();
     e.preventDefault();
     const { pageX, pageY } = e;
-    let draggedOntoVar;
-    const varRefs = this.varRefs;
     const draggedFromVarId = this.state.draggedFromVarId;
     const ws = this.state.workspace;
-    const dim = ws.getDimension(draggedFromVarId);
+    const draggedOntoVarId = this.getDraggedOntoVarId(pageX, pageY)
 
+    if (draggedOntoVarId) {
+      const dim = ws.getDimension(draggedFromVarId);
+      if (ws.getDimension(draggedOntoVarId).toString() === dim.toString()) {
+        this.setState({ workspace: ws.addEquality(draggedFromVarId, draggedOntoVarId)});
+        // setTimeout(() => { this.refreshVarPositions(); }, 1);
+      }
+    }
+  }
+  getDraggedOntoVarId(pageX, pageY) {
+    let draggedOntoVarId;
     Object.keys(this.varRefs).forEach((varIdStr) => {
-      const ref = varRefs[varIdStr];
+      const ref = this.varRefs[varIdStr];
       const rect = ref.getBoundingClientRect();
       if (rect.left < pageX && rect.left + rect.width > pageX) {
         if (rect.top < pageY && rect.top + rect.height > pageY) {
-          const varId = ws.varIdStringToVarId(varIdStr);
-          if (ws.getDimension(varId).toString() === dim.toString()) {
-            draggedOntoVar = varId;
-          }
+          draggedOntoVarId = this.state.workspace.varIdStringToVarId(varIdStr);
         }
       }
     });
-
-    if (draggedOntoVar) {
-      this.setState({ workspace: ws.addEquality(draggedFromVarId, draggedOntoVar)});
-    }
+    return draggedOntoVarId;
+  }
+  onMouseUpFromExprVarDrag(e) {
+    this.setState({ currentAction: null });
+    const varToRemoveId = this.state.draggedFromVarToReplaceId;
+    const exprVarId = this.state.draggedFromExprVarId;
+    const draggedToEquation = this.getDraggedOntoVarId(e.pageX, e.pageY).eqIdx;
+    // TODO: check dragged-to equation is legit;
+    this.setState({ workspace: this.state.workspace.rewriteExpression(exprVarId, varToRemoveId, draggedToEquation) })
   }
   onMouseMoveWhileDraggingThing (e) {
     if (this.state.currentAction !== DRAGGING) return;
@@ -179,33 +198,50 @@ class App extends Component {
     e.stopPropagation(); e.preventDefault();
   }
   handleVariableClick(e, varId) {
+    /// Start drag
     if (e.button !== 0) return;
     e.preventDefault();
     const parentPos = getPosition(this.equationSpaceDiv);
+    const dragPos = { x: e.pageX - parentPos.left, y: e.pageY - parentPos.top };
     this.setState({
       currentAction: DRAGGING_FROM_VAR,
+      mouseDragStartPosition: dragPos,
       draggedFromVarId: varId,
-      varDragPosition: { x: e.pageX - parentPos.left, y: e.pageY - parentPos.top }
+      mouseDragPosition: dragPos
     })
   }
-  onMouseMoveWhileDraggingFromVar (e) {
-    if (this.state.currentAction !== DRAGGING_FROM_VAR) return;
+  handleExpressionVariableClick(e, exprVarId, varToRemoveId) {
+    /// Start drag
+    if (e.button !== 0) return;
+    e.preventDefault();
     const parentPos = getPosition(this.equationSpaceDiv);
-    this.setState({varDragPosition: { x: e.pageX - parentPos.left, y: e.pageY - parentPos.top }})
+    const dragPos = { x: e.pageX - parentPos.left, y: e.pageY - parentPos.top };
+
+    this.setState({
+      currentAction: DRAGGING_FROM_EXPR_VAR,
+      mouseDragStartPosition: dragPos,
+      draggedFromVarToReplaceId: varToRemoveId,
+      draggedFromExprVarId: exprVarId,
+      mouseDragPosition: dragPos
+    })
+  }
+
+  onMouseMoveWhileDragging (e) {
+    const cA = this.state.currentAction;
+    if (cA !== DRAGGING_FROM_VAR && cA !== DRAGGING_FROM_EXPR_VAR) return;
+    const parentPos = getPosition(this.equationSpaceDiv);
+    this.setState({mouseDragPosition: { x: e.pageX - parentPos.left, y: e.pageY - parentPos.top }})
     e.stopPropagation();
     e.preventDefault();
   }
   renderVarDragLine () {
-    const varRef = document.getElementById(`variable-${this.state.draggedFromVarId.toString()}`)
-    const varPos = getCenterOfElement(varRef);
-    const parentPos = getPosition(this.equationSpaceDiv);
-
-    return <line x1={varPos.left - parentPos.left} y1={varPos.top - parentPos.top}
-            x2={this.state.varDragPosition.x} y2={this.state.varDragPosition.y}
-       strokeWidth={1} stroke="black" strokeDasharray="5, 5" />;
+    const mouseDragStartPosition = this.state.mouseDragStartPosition;
+    const mouseDragPosition = this.state.mouseDragPosition;
+    return <line x1={mouseDragStartPosition.x} y1={mouseDragStartPosition.y}
+            x2={mouseDragPosition.x} y2={mouseDragPosition.y}
+       strokeWidth={1} stroke="black" strokeDasharray="5, 8" />;
   }
   renderVarEqualityLines () {
-    // return <line x1={10} x2={30} y1={20} y2={50} strokeWidth={1} stroke="black" />;
     const ws = this.state.workspace;
 
     return ws.equalityListOfLists.map((list, idx) => <g key={idx}>
@@ -217,7 +253,8 @@ class App extends Component {
               const var2pos = this.varPositions[var2];
               return <line key={var2} x1={var1pos.left} y1={var1pos.top}
                            stroke="black" x2={var2pos.left} y2={var2pos.top}
-                           strokeDasharray="5, 5" />
+                           strokeWidth={2}
+                           strokeDasharray="5, 8" />
             } else {
               return null;
             }
@@ -231,15 +268,16 @@ class App extends Component {
     this.equationRefs = {};
     this.expressionRefs = {};
     this.varRefs = {};
+    const currentAction = this.state.currentAction;
 
     return (
       <div className="App">
         <h3>Equations</h3>
 
         <div className="equationSpace" ref={(div) => { this.equationSpaceDiv = div; }}
-          style={this.state.currentAction === DRAGGING_FROM_VAR ? {cursor: 'crosshair'} : {}}>
+          style={currentAction === DRAGGING_FROM_VAR ? {cursor: 'crosshair'} : {}}>
           <svg style={{position: 'absolute', left: 0, top: 0, height: "100%", width: "100%"}}>
-            {this.state.currentAction === DRAGGING_FROM_VAR &&
+            {(currentAction === DRAGGING_FROM_VAR || currentAction === DRAGGING_FROM_EXPR_VAR) &&
               this.renderVarDragLine()}
             {this.renderVarEqualityLines()}
           </svg>
@@ -259,29 +297,31 @@ class App extends Component {
                 varRef={(ref, varId) => { this.varRefs[varId] = ref; }}
                 workspace={ws}
                 draggedFromVarId={this.state.draggedFromVarId}
-                currentAction={this.state.currentAction}
+                idPrefix="variable-"
+                currentAction={currentAction}
                 stuff={ws.getEquationDisplay(equationId).jsItems}
               />
             </div>
           })}
 
-          {ws.expressionIds.map((varId, idx) => {
-            const pos = this.state.positions.get(varId);
+          {ws.expressionIds.map((exprVarId, idx) => {
+            const pos = this.state.positions.get(exprVarId);
 
             return <div key={idx}
                  className="expression"
-                 ref={(div) => { this.expressionRefs[varId] = div; }}
+                 ref={(div) => { this.expressionRefs[exprVarId] = div; }}
                  style={{top: pos.get("y"), left: pos.get("x")}}
                  >
               <DisplayMath
-                onSpanMouseDown={(e) => this.handleStartDrag(e, varId, this.expressionRefs[varId])}
-                onVarMouseDown={(e, varId) => {}}
+                onSpanMouseDown={(e) => this.handleStartDrag(e, exprVarId, this.expressionRefs[exprVarId])}
+                onVarMouseDown={(e, varToRemoveId) => this.handleExpressionVariableClick(e, exprVarId, varToRemoveId)}
                 onDoubleClick={null}
                 varRef={null}
                 workspace={ws}
-                draggedFromVarId={null}
-                currentAction={this.state.currentAction}
-                stuff={ws.getExpressionDisplay(varId).jsItems} />
+                idPrefix={`expression-${exprVarId}-`}
+                draggedFromVarId={this.state.draggedFromVarId}
+                currentAction={currentAction}
+                stuff={ws.getExpressionDisplay(exprVarId).jsItems} />
             </div>;
           })}
         </div>
@@ -304,7 +344,7 @@ class App extends Component {
             <button onClick={() => this.setWs(ws.deleteExpression(varId))}>Delete</button>
           </div>
         )}
-
+        <p>{currentAction}</p>
       </div>
     );
   }

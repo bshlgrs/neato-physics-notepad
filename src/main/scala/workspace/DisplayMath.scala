@@ -101,7 +101,8 @@ object DisplayMath {
     equation.display((varName: String) => showVar(VarId(equationIdx, varName), varSubscripts.get(varName)))
   }
 
-  def showExpression(expression: Expression[VarId], varSubscripts: Map[VarId, Int]): DisplayMath = {
-    render(expression.mapVariables(varId => showVar(varId, varSubscripts.get(varId))))
+  def showExpression(varId: VarId, expression: Expression[VarId], varSubscripts: Map[VarId, Int]): DisplayMath = {
+    DisplayMath(List(showVar(varId, varSubscripts.get(varId)), Span(" = "))) ++
+      render(expression.mapVariables(varId => showVar(varId, varSubscripts.get(varId))))
   }
 }
