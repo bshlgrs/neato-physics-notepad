@@ -1,5 +1,8 @@
 package workspace
 
+import scala.scalajs.js.annotation.{JSExport, JSExportTopLevel}
+import scala.util.Try
+
 trait Dimension {
   val units: Map[SiUnit, Int]
 
@@ -18,30 +21,46 @@ trait Dimension {
   )
 
   def **(other: Int): Dimension = Dimension(this.units.mapValues(_ * other))
+
+  lazy val toDisplayMath: DisplayMath = this match {
+    case Dimension.Joule => DisplayMath("J")
+    case Dimension.Newton => DisplayMath("N")
+    case _ => units.toList.sortBy(_._1.symbol).map({
+      case (unit, 1) => DisplayMath(unit.symbol)
+      case (unit, power) => DisplayMath(List(Span(" " + unit.symbol), Sup(List(Span(power.toString)))))
+    }).reduce(_ ++ _)
+  }
 }
 
 case class ConcreteDimension(units: Map[SiUnit, Int]) extends Dimension
 
+@JSExportTopLevel("Gem.Dimension")
 object Dimension {
   val Newton = Dimension(Map(Kilogram -> 1, Meter -> 1, Second -> -2))
   val Joule = Newton * Meter
 
   def apply(units: Map[SiUnit, Int]): Dimension = ConcreteDimension(units)
-  def parse(str: String): Dimension = {
-    // this accepts args like "kg m^2 s^-2"
-
-    var argList = str.split(' ').toList
-
-    argList.map((arg: String) => {
-      if (arg.contains("^")) {
-        val splitList = arg.split('^')
-        assert(splitList.length == 2, arg)
-        symbolMap(splitList(0)) ** splitList(1).toInt
-      } else {
-        symbolMap(arg)
+  def parse(str: String): Try[Dimension] = Try({
+    val unitRegex = raw"(/)?(\w+)(\^([-\d]+))?".r("divisionSign", "unitString", "unimportantGroup", "exponent")
+    unitRegex.findAllMatchIn(str).map({
+      case unitRegex(divisionSignOrNull, unitString, _, exponentOrNull) => {
+        val exponent = Option(exponentOrNull)
+        val divisionSign = Option(divisionSignOrNull)
+        symbolMap.getOrElse(unitString, {
+          throw new RuntimeException(s"unknown unit $unitString")
+        }) ** (exponent.map(_.toInt).getOrElse(1) * (if (divisionSign.isDefined) -1 else 1))
       }
     }).reduce(_ * _)
-  }
+  })
+
+  def parsePhysicalNumber(string: String): Try[PhysicalNumber] = for {
+    (numberPart, unitsPart) <- Try(string.splitAt(string.indexWhere(char => !(char == '.' || char.isDigit))))
+    number <- Try(numberPart.toDouble)
+    dimension <- Dimension.parse(unitsPart)
+  } yield PhysicalNumber(number, dimension)
+
+  @JSExport("parsePhysicalNumber")
+  def parsePhysicalNumberJs(string: String): PhysicalNumber = parsePhysicalNumber(string).getOrElse(null)
 
   val symbolMap: Map[String, Dimension] = Map(
     "m" -> Meter,

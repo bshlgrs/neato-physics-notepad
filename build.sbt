@@ -13,6 +13,6 @@ resolvers ++= List(
 
 libraryDependencies ++= Seq(
   "org.scalatest" % "scalatest_2.12" % "3.0.0",
-  "com.lihaoyi" %%% "fastparse" % "0.4.1"
+//  "com.lihaoyi" %%% "fastparse" % "0.4.1"
 )
 

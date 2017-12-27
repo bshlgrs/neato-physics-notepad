@@ -8,7 +8,7 @@ import scala.scalajs.js
 import scala.scalajs.js.annotation.{JSExportAll, JSExportTopLevel}
 
 
-case class PhysicalNumber(value: Double, dimension: Dimension)
+
 
 @JSExportAll
 @JSExportTopLevel("Gem.Workspace")
@@ -163,9 +163,7 @@ case class Workspace(equations: Map[Int, Equation] = Map(),
       varId -> getVarSubscript(varId)
     }).toMap.collect({case (k, Some(v)) => k -> v})
 
-    val out = DisplayMath.showExpression(exprVarId, expression, varSubscripts)
-    println(out);
-    out
+    DisplayMath.showExpression(exprVarId, expression, varSubscripts)
   }
 
   def showVar(varId: VarId): String = StringDisplay.showVar(varId.varName, getVarSubscript(varId))

@@ -13,7 +13,7 @@ const DisplayMathElement = (props) => {
   if (name === "span") {
     // TODO: Does it work for me to just set onClick to be `{props.onSpanClick}`
     // rather than wrapping it?
-    return <span onMouseDown={(e) => props.onSpanMouseDown(e)}>{el.str}</span>;
+    return <span onMouseDown={props.onSpanMouseDown && ((e) => props.onSpanMouseDown(e))}>{el.str}</span>;
   } else if (name === "variableSpan") {
     const varId = el.varId;
     // console.log(props.draggedFromVarId);
@@ -37,8 +37,8 @@ const DisplayMathElement = (props) => {
       className="equation-var"
       style={{color: color}}
       id={props.idPrefix + varId.toString()}
-      onMouseDown={(e) => props.onVarMouseDown(e, varId)}
-      onDoubleClick={(e) => props.onDoubleClick(varId) }
+      onMouseDown={props.onVarMouseDown && ((e) => props.onVarMouseDown(e, varId))}
+      onDoubleClick={props.onDoubleClick && ((e) => props.onDoubleClick(varId))}
       ref={props.varRef && ((ref) => { props.varRef(ref, varId)})}
       >
       {el.jsEls.map((x, idx) =>

@@ -1,20 +1,9 @@
 import React, { Component } from 'react';
 import './App.css';
 import Gem from './Gem';
-import 'katex/dist/katex.css';
 import Immutable from 'immutable';
 import DisplayMath from './DisplayMath';
 
-// const latex = (latex, displayMode) => {
-//   try {
-//     return <span
-//      dangerouslySetInnerHTML={{__html: katex.renderToString(latex, {displayMode: displayMode})}}/>;
-//   } catch (e) {
-//     return <span>oh dear: {latex}</span>
-//   }
-// };
-
-const danger = (str) => <span dangerouslySetInnerHTML={{__html: str}} />;
 const DRAGGING = "dragging";
 const DRAGGING_FROM_VAR = "dragging-from-var";
 const DRAGGING_FROM_EXPR_VAR = "dragging-from-expr-var";
@@ -22,8 +11,8 @@ const DRAGGING_FROM_EXPR_VAR = "dragging-from-expr-var";
 const getPosition = (ref) => {
   const computedStyle = ref.getBoundingClientRect();
   return {
-    top: parseInt(computedStyle.top),
-    left: parseInt(computedStyle.left)
+    top: parseInt(computedStyle.top, 10),
+    left: parseInt(computedStyle.left, 10)
   };
 }
 
@@ -63,7 +52,8 @@ class App extends Component {
     this.state = {
       workspace: Gem.Workspace(),
       positions: Immutable.Map(),
-      currentAction: null
+      currentAction: null,
+      searchBarText: ''
     };
     this.onMouseMoveWhileDraggingThing = this.onMouseMoveWhileDraggingThing.bind(this);
     this.onMouseMoveWhileDragging = this.onMouseMoveWhileDragging.bind(this);
@@ -117,12 +107,6 @@ class App extends Component {
       this.refreshVarPositions();
     }
   }
-  setWs(newWs) {
-    this.setState({ workspace: newWs });
-  }
-  showVar(varId) {
-    return danger(this.state.workspace.showVar(varId));
-  }
   addEquation(eqId) {
     const ws = this.state.workspace;
     const newWs = ws.addEquation(Gem.EquationLibrary.getByEqId(eqId));
@@ -131,7 +115,7 @@ class App extends Component {
     const newPosition = Immutable.Map({x: Math.random() * 300, y: Math.random() * 300});
     this.setState({
       workspace: newWs,
-      positions: this.state.positions.set(newEqId, newPosition)
+      positions: this.state.positions.set('equation-' + newEqId, newPosition)
     });
     // bleh
     setTimeout(() => { this.refreshVarPositions(); }, 1);
@@ -140,7 +124,7 @@ class App extends Component {
     const newPosition = Immutable.Map({x: Math.random() * 300, y: Math.random() * 300});
     this.setState({
       workspace: this.state.workspace.addExpression(varId),
-      positions: this.state.positions.set(varId, newPosition)
+      positions: this.state.positions.set('expression-' + varId, newPosition)
     });
   }
   handleStartDrag(e, thingId, ref) {
@@ -306,7 +290,7 @@ class App extends Component {
               {this.renderVarEqualityLines()}
             </svg>
             {ws.equationIds.map((equationId, idx) => {
-              const pos = this.state.positions.get(equationId);
+              const pos = this.state.positions.get('equation-' + equationId);
 
               return <div
                 key={idx}
@@ -315,7 +299,7 @@ class App extends Component {
                 ref={(div) => { this.equationRefs[equationId] = div; }}
                 >
                 <DisplayMath
-                  onSpanMouseDown={(e) => this.handleStartDrag(e, equationId, this.equationRefs[equationId])}
+                  onSpanMouseDown={(e) => this.handleStartDrag(e, 'equation-' + equationId, this.equationRefs[equationId])}
                   onVarMouseDown={(e, varId) => this.handleVariableClick(e, varId)}
                   onDoubleClick={(varId) => this.addExpression(varId)}
                   varRef={(ref, varId) => { this.varRefs[varId] = ref; }}
@@ -329,7 +313,7 @@ class App extends Component {
             })}
 
             {ws.expressionIds.map((exprVarId, idx) => {
-              const pos = this.state.positions.get(exprVarId);
+              const pos = this.state.positions.get('expression-' + exprVarId);
 
               return <div key={idx}
                    className="expression"
@@ -337,7 +321,7 @@ class App extends Component {
                    style={{top: pos.get("y"), left: pos.get("x")}}
                    >
                 <DisplayMath
-                  onSpanMouseDown={(e) => this.handleStartDrag(e, exprVarId, this.expressionRefs[exprVarId])}
+                  onSpanMouseDown={(e) => this.handleStartDrag(e, 'expression-' + exprVarId, this.expressionRefs[exprVarId])}
                   onVarMouseDown={(e, varToRemoveId) => this.handleExpressionVariableClick(e, exprVarId, varToRemoveId)}
                   onDoubleClick={null}
                   varRef={null}
@@ -350,6 +334,16 @@ class App extends Component {
             })}
           </div>
           <div className="sidebar">
+            <div>
+              <input className='search-bar'
+                value={this.state.searchBarText}
+                onChange={(e) => { this.setState({ searchBarText: e.target.value })}} />
+            </div>
+            {(() => {
+              const dim = Gem.Dimension.parsePhysicalNumber(this.state.searchBarText);
+              return dim ?
+                <div className='physical-number'><DisplayMath stuff={dim.toDisplayMath.jsItems} /></div> : null;
+            })()}
             <button onClick={() => { this.addEquation("ke_def") }}>
               Add KE equation</button>
             <button onClick={() => { this.addEquation("pe_def") }}>

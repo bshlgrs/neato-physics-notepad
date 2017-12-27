@@ -28,7 +28,7 @@
 
 .sidebar {
   flex: 1;
-  padding: 10px;
+  padding: 15px;
   border-left: solid;
 }
 
@@ -62,5 +62,11 @@
 }
 
 .sidebar button {
+  font-size: 20px;
+  width: 100%;
+}
+
+.search-bar {
+  width: 100%;
   font-size: 20px;
 }
