@@ -195,7 +195,11 @@ class App extends Component {
 
         if (number.dimension.equalUnits(dim)) {
           this.setState({ workspace: ws.attachNumberJs(draggedOntoNumberId, draggedFromVarId) });
+        } else {
+          console.log("dimensions don't match:", number.dimension.toString(), dim.toString());
         }
+      } else {
+        console.log("not dragged onto something");
       }
     }
   }
