@@ -30,6 +30,9 @@ trait Dimension {
       case (unit, power) => DisplayMath(List(Span(" " + unit.symbol), Sup(List(Span(power.toString)))))
     }).reduce(_ ++ _)
   }
+
+  @JSExport
+  def equalUnits(other: Dimension): Boolean = this.units == other.units
 }
 
 case class ConcreteDimension(units: Map[SiUnit, Int]) extends Dimension

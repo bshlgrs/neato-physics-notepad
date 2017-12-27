@@ -65,8 +65,8 @@ steps:
 ## improvements
 
 - toString methods currently suck
-- use minimum spanning tree to display equalities
-- display lines that don't start from before the variables
+- [x] use minimum spanning tree to display equalities
+- [x] display lines that don't start from before the variables
 - when rewriting equations, blank out equations that can't be used
 - allow dimensionless numbers
 

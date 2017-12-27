@@ -17,8 +17,12 @@ case class Workspace(equations: Map[Int, Equation] = Map(),
                      expressions: Map[VarId, Expression[VarId]] = Map(),
                      numbers: Map[Int, (PhysicalNumber, Option[VarId])] = Map()) {
 
-  def equationIds: js.Array[Int] = arr(equations.keys.toSet)
-  def expressionIds: js.Array[VarId] = arr(expressions.keys.toSet)
+  def equationIds: js.Array[Int] = arr(equations.keySet)
+  def expressionIds: js.Array[VarId] = arr(expressions.keySet)
+  def numberIds: js.Array[Int] = arr(numbers.keySet)
+  def getNumber(numberId: Int): PhysicalNumber = numbers.getOrElse(numberId, null)._1
+  def getVarIdOfNumber(numberId: Int): VarId = numbers.get(numberId).flatMap(_._2).getOrElse(null)
+
   def addableExpressionIds: js.Array[VarId] = {
     arr(allVarIds.filter((varId) => equalities.getSet(varId).forall((varId2) => !expressions.contains(varId2))))
   }
@@ -37,7 +41,7 @@ case class Workspace(equations: Map[Int, Equation] = Map(),
   } yield VarId(equationId, varName)
 
   def allVarIdsJs: js.Array[VarId] = arr(allVarIds)
-  def varIdStringToVarId(str: String): VarId = allVarIds.find(_.toString() == str).get
+  def varIdStringToVarId(str: String): VarId = allVarIds.find(_.toString == str).get
 
   def addEquality(x: VarId, y: VarId): Workspace = this.copy(equalities = this.equalities.setEqual(x, y))
 
@@ -48,7 +52,11 @@ case class Workspace(equations: Map[Int, Equation] = Map(),
     }
   }
 
-  def equalityListOfLists: js.Array[js.Array[VarId]] = arr(equalities.sets.map(arr))
+  def allVarsGroupedByEquality: js.Array[js.Array[VarId]] = {
+    arr(allVarIds.groupBy(varId => equalities.getSet(varId)).values.map(arr))
+  }
+
+
 
   def rewriteExpression(exprVarId: VarId, varToRemoveId: VarId, equationIdToUse: Int): Workspace = {
     // This method means "Solve equation number equationIdToUse for varToRemove and then substitute the result into the
@@ -87,6 +95,11 @@ case class Workspace(equations: Map[Int, Equation] = Map(),
     case _ => false
   }).map(_._1)
 
+  def getNumberIdOfVar(varId: VarId): Any = numbers.find({
+    case (_, (n, Some(varId2))) => equalities.testEqual(varId, varId2)
+    case _ => false
+  }).map(_._1).orNull
+
   def attachNumber(numberId: Int, varId: VarId): Try[Workspace] = {
     val VarId(eqIdx, varName) = varId
     for {
@@ -94,10 +107,12 @@ case class Workspace(equations: Map[Int, Equation] = Map(),
       eq: Equation <- Try(this.equations.get(eqIdx).get)
       variableDimension: Dimension <- Try(eq.dimensions.get(varName).get)
       _ <- Try({
-        assert(variableDimension == number.dimension, "var dimension does not match")
+        assert(variableDimension.equalUnits(number.dimension), "var dimension does not match")
       })
     } yield this.copy(numbers = numbers + (numberId -> (number -> Some(varId))))
   }
+
+  def attachNumberJs(numberId: Int, varId: VarId): Workspace = attachNumber(numberId, varId).toOption.orNull
 
   def detachNumber(numberId: Int): Workspace = {
     val physicalNumber = numbers(numberId)._1

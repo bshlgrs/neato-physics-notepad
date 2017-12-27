@@ -7,6 +7,7 @@ import DisplayMath from './DisplayMath';
 const DRAGGING = "dragging";
 const DRAGGING_FROM_VAR = "dragging-from-var";
 const DRAGGING_FROM_EXPR_VAR = "dragging-from-expr-var";
+const GemUtils = window.GemUtils;
 
 const getPosition = (ref) => {
   const computedStyle = ref.getBoundingClientRect();
@@ -46,6 +47,16 @@ const makePaddedLine = (x1, y1, x2, y2, padding) => {
   return [x1 + xPadding, y1 + yPadding, x2 - xPadding, y2 - yPadding];
 }
 
+const checkCollisionWithRef = (ref, pageX, pageY) => {
+  const rect = ref.getBoundingClientRect();
+  if (rect.left < pageX && rect.left + rect.width > pageX) {
+    if (rect.top < pageY && rect.top + rect.height > pageY) {
+      return true;
+    }
+  }
+  return false;
+}
+
 class App extends Component {
   constructor () {
     super();
@@ -64,14 +75,24 @@ class App extends Component {
     this.varPositions = {};
     this.expressionRefs = {};
     this.equationRefs = {};
+    this.numberRefs = {};
+    this.numberPositions = {};
   }
-  refreshVarPositions () {
+  refreshStoredPositions () {
     const parentPos = getPosition(this.equationSpaceDiv);
     Object.keys(this.varRefs).forEach((varRefString) => {
       const varCenter = getCenterOfElement(this.varRefs[varRefString]);
       this.varPositions[varRefString] = {
         left: varCenter.left - parentPos.left,
         top: varCenter.top - parentPos.top
+      };
+    });
+
+    Object.keys(this.numberRefs).forEach((numberRefString) => {
+      const numCenter = getCenterOfElement(this.numberRefs[numberRefString]);
+      this.numberPositions[numberRefString] = {
+        left: numCenter.left - parentPos.left,
+        top: numCenter.top - parentPos.top
       };
     });
   }
@@ -104,7 +125,7 @@ class App extends Component {
     }
 
     if (state.currentAction === DRAGGING) {
-      this.refreshVarPositions();
+      this.refreshStoredPositions();
     }
   }
   addEquation(eqId) {
@@ -118,13 +139,22 @@ class App extends Component {
       positions: this.state.positions.set('equation-' + newEqId, newPosition)
     });
     // bleh
-    setTimeout(() => { this.refreshVarPositions(); }, 1);
+    setTimeout(() => { this.refreshStoredPositions(); }, 1);
   }
   addExpression(varId) {
     const newPosition = Immutable.Map({x: Math.random() * 300, y: Math.random() * 300});
     this.setState({
       workspace: this.state.workspace.addExpression(varId),
       positions: this.state.positions.set('expression-' + varId, newPosition)
+    });
+  }
+  addNumber(number) {
+    const newPosition = Immutable.Map({x: Math.random() * 300, y: Math.random() * 300});
+    const newWs = this.state.workspace.addNumber(number);
+    const newNumberId = newWs.lastNumberId;
+    this.setState({
+      workspace: newWs,
+      positions: this.state.positions.set('number-' + newNumberId, newPosition)
     });
   }
   handleStartDrag(e, thingId, ref) {
@@ -151,28 +181,41 @@ class App extends Component {
     const { pageX, pageY } = e;
     const draggedFromVarId = this.state.draggedFromVarId;
     const ws = this.state.workspace;
-    const draggedOntoVarId = this.getDraggedOntoVarId(pageX, pageY)
+    const draggedOntoVarId = this.getDraggedOntoVarId(pageX, pageY);
+    const dim = ws.getDimension(draggedFromVarId);
 
     if (draggedOntoVarId) {
-      const dim = ws.getDimension(draggedFromVarId);
       if (ws.getDimension(draggedOntoVarId).toString() === dim.toString()) {
         this.setState({ workspace: ws.addEquality(draggedFromVarId, draggedOntoVarId)});
-        // setTimeout(() => { this.refreshVarPositions(); }, 1);
+      }
+    } else {
+      const draggedOntoNumberId = this.getDraggedOntoNumberId(pageX, pageY);
+      if (draggedOntoNumberId !== null) {
+        const number = ws.getNumber(draggedOntoNumberId);
+
+        if (number.dimension.equalUnits(dim)) {
+          this.setState({ workspace: ws.attachNumberJs(draggedOntoNumberId, draggedFromVarId) });
+        }
       }
     }
   }
   getDraggedOntoVarId(pageX, pageY) {
     let draggedOntoVarId = null;
     Object.keys(this.varRefs).forEach((varIdStr) => {
-      const ref = this.varRefs[varIdStr];
-      const rect = ref.getBoundingClientRect();
-      if (rect.left < pageX && rect.left + rect.width > pageX) {
-        if (rect.top < pageY && rect.top + rect.height > pageY) {
-          draggedOntoVarId = this.state.workspace.varIdStringToVarId(varIdStr);
-        }
+      if (checkCollisionWithRef(this.varRefs[varIdStr], pageX, pageY)) {
+        draggedOntoVarId = this.state.workspace.varIdStringToVarId(varIdStr);
       }
     });
     return draggedOntoVarId;
+  }
+  getDraggedOntoNumberId(pageX, pageY) {
+    let draggedOntoNumberId = null;
+    Object.keys(this.numberRefs).forEach((numberId) => {
+      if (checkCollisionWithRef(this.numberRefs[numberId], pageX, pageY)) {
+        draggedOntoNumberId = parseInt(numberId, 10);
+      }
+    });
+    return draggedOntoNumberId;
   }
   onMouseUpFromExprVarDrag(e) {
     this.setState({ currentAction: null });
@@ -245,36 +288,55 @@ class App extends Component {
   renderVarEqualityLines () {
     const ws = this.state.workspace;
 
-    return ws.equalityListOfLists.map((list, idx) => <g key={idx}>
-      {list.map((var1) =>  {
-        const var1pos = this.varPositions[var1];
-        return <g key={var1}>
-          {list.map((var2) => {
-            if (var1.toString() > var2.toString()) {
-              const var2pos = this.varPositions[var2];
-              const paddedLine = makePaddedLine(var1pos.left, var1pos.top, var2pos.left, var2pos.top, 20);
-              if (paddedLine) {
-                const [x1, y1, x2, y2] = paddedLine;
-                return <line key={var2} x1={x1} y1={y1}
-                           stroke="black" x2={x2} y2={y2}
-                           strokeWidth={2}
-                           strokeDasharray="5, 8" />
-              } else {
-                return null;
-              }
-            } else {
-              return null;
-            }
-          })}
-        </g>;
-      })}
-    </g>);
+    if (!this.varPositions) {
+      return null;
+    }
+
+    return ws.allVarsGroupedByEquality.map((list, idx) => {
+      const positionList = list.map((varId) => {
+        const pos = this.varPositions[varId];
+        return pos ? [pos.left, pos.top] : null;
+      }).filter((x) => x);
+
+      const numberId = ws.getNumberIdOfVar(list[0]);
+
+      if(numberId !== null) {
+        const numberPos = this.numberPositions[numberId];
+        positionList.push([numberPos.left, numberPos.top]);
+      }
+      const minimumSpanningTree = GemUtils.minimumSpanningTree(positionList);
+
+      if (!minimumSpanningTree) {
+        debugger;
+      }
+
+      return <g key={idx}>
+        {minimumSpanningTree.map((tuple, idx) => {
+          const [rawX1, rawY1, rawX2, rawY2] = tuple;
+          const paddedLine = makePaddedLine(rawX1, rawY1, rawX2, rawY2, 10);
+          if (paddedLine) {
+            const [x1, y1, x2, y2] = paddedLine
+            return <line key={idx} x1={x1} y1={y1} x2={x2} y2={y2} stroke="black" strokeDasharray="5, 8" />
+          } else {
+            return null;
+          }
+        })}
+      </g>
+    });
+  }
+  handleSearchBarSubmit () {
+    const num = Gem.Dimension.parsePhysicalNumber(this.state.searchBarText.trim());
+    if (num) {
+      this.addNumber(num);
+      this.setState({ searchBarText: '' });
+    }
   }
   render() {
     const ws = this.state.workspace;
     this.equationRefs = {};
     this.expressionRefs = {};
     this.varRefs = {};
+    this.numberRefs = {};
     const currentAction = this.state.currentAction;
 
     return (
@@ -332,22 +394,45 @@ class App extends Component {
                   stuff={ws.getExpressionDisplay(exprVarId).jsItems} />
               </div>;
             })}
+
+            {ws.numberIds.map((numberId) => {
+              const pos = this.state.positions.get('number-' + numberId);
+              const number = ws.getNumber(numberId);
+              return <div className='physical-number'
+                          style={{position: 'absolute', top: pos.get("y"), left: pos.get("x")}}
+                          ref={(div) => { this.numberRefs[numberId] = div; }}
+                          key={numberId}>
+                <DisplayMath
+                  stuff={number.toDisplayMath.jsItems}
+                  onSpanMouseDown={(e) => this.handleStartDrag(e, 'number-' + numberId, this.numberRefs[numberId])}
+                  />
+              </div>;
+            })}
           </div>
           <div className="sidebar">
             <div>
               <input className='search-bar'
                 value={this.state.searchBarText}
-                onChange={(e) => { this.setState({ searchBarText: e.target.value })}} />
+                onChange={(e) => { this.setState({ searchBarText: e.target.value })}}
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter') {
+                    this.handleSearchBarSubmit();
+                  }
+                }}/>
             </div>
             {(() => {
               const dim = Gem.Dimension.parsePhysicalNumber(this.state.searchBarText);
               return dim ?
-                <div className='physical-number'><DisplayMath stuff={dim.toDisplayMath.jsItems} /></div> : null;
+                <div className='physical-number'
+                  onClick={() => this.handleSearchBarSubmit()}>
+                  <DisplayMath stuff={dim.toDisplayMath.jsItems} /></div> :
+                null;
             })()}
             <button onClick={() => { this.addEquation("ke_def") }}>
               Add KE equation</button>
             <button onClick={() => { this.addEquation("pe_def") }}>
               Add PE equation</button>
+
           </div>
         </div>
 

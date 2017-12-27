@@ -23,4 +23,9 @@ object EquationLibrary {
   // unsafe
   @JSExport
   def getByEqId(name: String): Equation = library(name)
+
+  @JSExport
+  def relevantEquations(searchTerm: String): List[Equation] = {
+    ???
+  }
 }

@@ -51,6 +51,12 @@
   cursor: grab;
 }
 
+.physical-number {
+  font-size: 24px;
+  cursor: grab;
+  color: darkred;
+}
+
 .equation .equation-var {
   color: green;
   cursor: crosshair;
