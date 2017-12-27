@@ -33,9 +33,6 @@ const DisplayMathElement = (props) => {
 
     }
 
-    const validDragTarget = props.currentAction === "dragging-from-var" && props.draggedFromVarId && (
-      props.workspace.getDimension(props.draggedFromVarId) === props.workspace.getDimension(varId)
-    );
     return <span
       className="equation-var"
       style={{color: color}}

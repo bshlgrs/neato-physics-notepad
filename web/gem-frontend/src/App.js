@@ -56,6 +56,17 @@ class App extends Component {
     this.onMouseUp = this.onMouseUp.bind(this);
     this.onMouseUpFromVarDrag = this.onMouseUpFromVarDrag.bind(this);
     this.varRefs = {};
+    this.varPositions = {}
+  }
+  refreshVarPositions () {
+    const parentPos = getPosition(this.equationSpaceDiv);
+    Object.keys(this.varRefs).forEach((varRefString) => {
+      const varCenter = getCenterOfElement(this.varRefs[varRefString]);
+      this.varPositions[varRefString] = {
+        left: varCenter.left - parentPos.left,
+        top: varCenter.top - parentPos.top
+      };
+    });
   }
   componentDidUpdate (props, state) {
     const actionStarted = (action) => this.state.currentAction === action && state.currentAction !== action;
@@ -76,6 +87,11 @@ class App extends Component {
       document.removeEventListener('mouseup', this.onMouseUpFromVarDrag);
       document.removeEventListener('mousemove', this.onMouseMoveWhileDraggingFromVar);
     }
+
+    if (state.currentAction === DRAGGING_EQUATION) {
+      this.refreshVarPositions();
+    }
+
   }
   setWs(newWs) {
     this.setState({ workspace: newWs });
@@ -93,6 +109,8 @@ class App extends Component {
       workspace: newWs,
       equationPositions: this.state.equationPositions.set(newEqId, newPosition)
     });
+    // bleh
+    setTimeout(() => { this.refreshVarPositions() }, 1);
   }
   handleEquationMouseDown(e, equationId) {
     if (e.button !== 0) return;
@@ -110,10 +128,6 @@ class App extends Component {
     this.setState({currentAction: null})
     e.stopPropagation()
     e.preventDefault()
-  }
-  getVarId(varIdStr) {
-    let res;
-    this.state.workspace.varIdList
   }
   onMouseUpFromVarDrag (e) {
     this.setState({currentAction: null});
@@ -134,11 +148,7 @@ class App extends Component {
           const varId = ws.varIdStringToVarId(varIdStr);
           if (ws.getDimension(varId).toString() === dim.toString()) {
             draggedOntoVar = varId;
-          } else {
-            console.log('invalid drag');
           }
-          console.log('looks like they dragged onto', varIdStr);
-
         }
       }
     });
@@ -181,11 +191,31 @@ class App extends Component {
     const varPos = getCenterOfElement(varRef);
     const parentPos = getPosition(this.equationSpaceDiv);
 
-    return <svg style={{position: 'absolute', left: 0, top: 0, height: "100%", width: "100%"}}>
-      <line x1={varPos.left - parentPos.left} y1={varPos.top - parentPos.top}
+    return <line x1={varPos.left - parentPos.left} y1={varPos.top - parentPos.top}
             x2={this.state.varDragPosition.x} y2={this.state.varDragPosition.y}
-       strokeWidth="1" stroke="black" strokeDasharray="5, 5" />
-    </svg>;
+       strokeWidth={1} stroke="black" strokeDasharray="5, 5" />;
+  }
+  renderVarEqualityLines () {
+    // return <line x1={10} x2={30} y1={20} y2={50} strokeWidth={1} stroke="black" />;
+    const ws = this.state.workspace;
+
+    return ws.equalityListOfLists.map((list, idx) => <g key={idx}>
+      {list.map((var1) =>  {
+        const var1pos = this.varPositions[var1];
+        return <g key={var1}>
+          {list.map((var2) => {
+            if (var1.toString() > var2.toString()) {
+              const var2pos = this.varPositions[var2];
+              return <line key={var2} x1={var1pos.left} y1={var1pos.top}
+                           stroke="black" x2={var2pos.left} y2={var2pos.top}
+                           strokeDasharray="5, 5" />
+            } else {
+              return null;
+            }
+          })}
+        </g>;
+      })}
+    </g>);
   }
   render() {
     const ws = this.state.workspace;
@@ -198,6 +228,11 @@ class App extends Component {
 
         <div className="equationSpace" ref={(div) => { this.equationSpaceDiv = div; }}
           style={this.state.currentAction === DRAGGING_FROM_VAR ? {cursor: 'crosshair'} : {}}>
+          <svg style={{position: 'absolute', left: 0, top: 0, height: "100%", width: "100%"}}>
+            {this.state.currentAction === DRAGGING_FROM_VAR &&
+              this.renderVarDragLine()}
+            {this.renderVarEqualityLines()}
+          </svg>
           {ws.equationIds.map((equationId, idx) => {
             const pos = this.state.equationPositions.get(equationId);
 
@@ -221,8 +256,6 @@ class App extends Component {
             </div>
           })}
 
-          {this.state.currentAction === DRAGGING_FROM_VAR &&
-            this.renderVarDragLine()}
         </div>
 
         <button onClick={() => { this.addEquation("ke_def") }}>
