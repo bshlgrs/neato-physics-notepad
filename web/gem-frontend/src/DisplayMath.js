@@ -38,6 +38,7 @@ const DisplayMathElement = (props) => {
       style={{color: color}}
       id={"variable-" + varId.toString()}
       onMouseDown={(e) => props.onVarMouseDown(e, varId)}
+      onDoubleClick={(e) => props.onDoubleClick(varId) }
       ref={(ref) => { props.varRef(ref, varId)}}
       >
       {el.jsEls.map((x, idx) =>

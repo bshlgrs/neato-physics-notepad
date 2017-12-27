@@ -245,6 +245,7 @@ class App extends Component {
                 <DisplayMath
                   onSpanMouseDown={(e) => this.handleEquationMouseDown(e, equationId)}
                   onVarMouseDown={(e, varId) => this.handleVariableClick(e, varId)}
+                  onDoubleClick={(varId) => this.setWs(ws.addExpression(varId))}
                   varRef={(ref, varId) => { this.varRefs[varId] = ref; }}
                   workspace={ws}
                   draggedFromVarId={this.state.draggedFromVarId}
@@ -263,30 +264,6 @@ class App extends Component {
         <button onClick={() => { this.addEquation("pe_def") }}>
           Add PE equation</button>
 
-        <h3>Equalities</h3>
-        {ws.equalityListOfLists.map((list, idx) =>
-          <p key={idx}>{list.map((varId, varIdIdx) => {
-            if (varIdIdx === list.length - 1) {
-              return <span key={varIdIdx}>
-              {this.showVar(varId)}
-              </span>
-            } else {
-              return <span key={varIdIdx}>
-                {this.showVar(varId)}
-                =
-              </span>;
-            }
-          })}</p>
-        )}
-
-        {ws.addableEqualitiesJs.map((tuple, idx) =>
-          <button
-            key={idx}
-            onClick={() => this.setWs(ws.addEquality(tuple[0], tuple[1]))}>
-            Set {this.showVar(tuple[0])} = {this.showVar(tuple[1])}
-          </button>
-        )}
-
         <h3>Expressions</h3>
 
         {ws.expressionIds.map((varId, idx) =>
@@ -301,11 +278,6 @@ class App extends Component {
           </div>
         )}
 
-        {ws.addableExpressionIds.map((x, idx) =>
-          <button key={idx} onClick={() => this.setWs(ws.addExpression(x))}>
-            Add {this.showVar(x)}
-          </button>
-        )}
       </div>
     );
   }
