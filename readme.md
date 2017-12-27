@@ -53,7 +53,6 @@ steps:
 - magic triangle GUI element
 - make parsers for equations and dimensions and stuff
 
-
 ## bugs
 
 - You can get a variable on the rhs of its expression
@@ -73,3 +72,4 @@ steps:
 ## Build notes
 
     time sbt clean fastOptJS; and cp target/scala-2.12/scala-gem-fastopt.j* web/gem-frontend/public/
+
