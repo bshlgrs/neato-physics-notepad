@@ -163,7 +163,9 @@ case class Workspace(equations: Map[Int, Equation] = Map(),
       varId -> getVarSubscript(varId)
     }).toMap.collect({case (k, Some(v)) => k -> v})
 
-    DisplayMath.showExpression(exprVarId, expression, varSubscripts)
+    val out = DisplayMath.showExpression(exprVarId, expression, varSubscripts)
+    println(out);
+    out
   }
 
   def showVar(varId: VarId): String = StringDisplay.showVar(varId.varName, getVarSubscript(varId))

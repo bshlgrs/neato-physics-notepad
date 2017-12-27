@@ -61,12 +61,14 @@ steps:
 - Numbers aren't on the LHS of products
 - The maps that I use will assign the same ID to multiple numbers.
     - To get around this I should make a "IdAssigningMap" class
+- I sometimes get absurd stuff when I try to solve?
 
 ## improvements
 
-- toString methods
+- toString methods currently suck
 - use minimum spanning tree to display equalities
 - display lines that don't start from before the variables
+- when rewriting equations, blank out equations that can't be used
 
 ## Build notes
 

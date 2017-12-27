@@ -44,6 +44,19 @@ const getRelativePositionOfEvent = (e, ref, parentRef) => {
   }
 }
 
+const makePaddedLine = (x1, y1, x2, y2, padding) => {
+  if (((x1 - x2)**2) + ((y1 - y2)**2) < (padding * 2)**2) {
+    return null;
+  }
+  const dx = x2 - x1;
+  const dy = y2 - y1;
+  const angle = Math.atan2(dx, dy);
+  const xPadding = Math.sin(angle) * padding;
+  const yPadding = Math.cos(angle) * padding;
+
+  return [x1 + xPadding, y1 + yPadding, x2 - xPadding, y2 - yPadding];
+}
+
 class App extends Component {
   constructor () {
     super();
@@ -165,7 +178,7 @@ class App extends Component {
     }
   }
   getDraggedOntoVarId(pageX, pageY) {
-    let draggedOntoVarId;
+    let draggedOntoVarId = null;
     Object.keys(this.varRefs).forEach((varIdStr) => {
       const ref = this.varRefs[varIdStr];
       const rect = ref.getBoundingClientRect();
@@ -181,9 +194,14 @@ class App extends Component {
     this.setState({ currentAction: null });
     const varToRemoveId = this.state.draggedFromVarToReplaceId;
     const exprVarId = this.state.draggedFromExprVarId;
-    const draggedToEquation = this.getDraggedOntoVarId(e.pageX, e.pageY).eqIdx;
-    // TODO: check dragged-to equation is legit;
-    this.setState({ workspace: this.state.workspace.rewriteExpression(exprVarId, varToRemoveId, draggedToEquation) })
+    const draggedOntoVarId = this.getDraggedOntoVarId(e.pageX, e.pageY)
+    if (draggedOntoVarId) {
+      const draggedToEquation = draggedOntoVarId.eqIdx;
+      if (draggedToEquation) {
+        // TODO: check dragged-to equation is legit;
+        this.setState({ workspace: this.state.workspace.rewriteExpression(exprVarId, varToRemoveId, draggedToEquation) })
+      }
+    }
   }
   onMouseMoveWhileDraggingThing (e) {
     if (this.state.currentAction !== DRAGGING) return;
@@ -250,10 +268,16 @@ class App extends Component {
           {list.map((var2) => {
             if (var1.toString() > var2.toString()) {
               const var2pos = this.varPositions[var2];
-              return <line key={var2} x1={var1pos.left} y1={var1pos.top}
-                           stroke="black" x2={var2pos.left} y2={var2pos.top}
+              const paddedLine = makePaddedLine(var1pos.left, var1pos.top, var2pos.left, var2pos.top, 20);
+              if (paddedLine) {
+                const [x1, y1, x2, y2] = paddedLine;
+                return <line key={var2} x1={x1} y1={y1}
+                           stroke="black" x2={x2} y2={y2}
                            strokeWidth={2}
                            strokeDasharray="5, 8" />
+              } else {
+                return null;
+              }
             } else {
               return null;
             }

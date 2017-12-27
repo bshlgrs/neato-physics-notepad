@@ -60,3 +60,7 @@
   color: purple;
   cursor: crosshair;
 }
+
+.sidebar button {
+  font-size: 20px;
+}
