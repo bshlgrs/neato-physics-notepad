@@ -17,6 +17,7 @@ import DisplayMath from './DisplayMath';
 const danger = (str) => <span dangerouslySetInnerHTML={{__html: str}} />;
 const DRAGGING_EQUATION = "dragging-equation";
 const DRAGGING_FROM_VAR = "dragging-from-var";
+const DRAGGING_EXPRESSION = "dragging-expression";
 
 const getPosition = (ref) => {
   const computedStyle = ref.getBoundingClientRect();
@@ -49,14 +50,18 @@ class App extends Component {
     this.state = {
       workspace: Gem.Workspace(),
       equationPositions: Immutable.Map(),
+      expressionPositions: Immutable.Map(),
       currentAction: null
     };
     this.onMouseMoveWhileDraggingEquation = this.onMouseMoveWhileDraggingEquation.bind(this);
+    this.onMouseMoveWhileDraggingExpression = this.onMouseMoveWhileDraggingExpression.bind(this);
     this.onMouseMoveWhileDraggingFromVar = this.onMouseMoveWhileDraggingFromVar.bind(this);
     this.onMouseUp = this.onMouseUp.bind(this);
     this.onMouseUpFromVarDrag = this.onMouseUpFromVarDrag.bind(this);
     this.varRefs = {};
-    this.varPositions = {}
+    this.varPositions = {};
+    this.expressionRefs = {};
+    this.equationRefs = {};
   }
   refreshVarPositions () {
     const parentPos = getPosition(this.equationSpaceDiv);
@@ -124,6 +129,18 @@ class App extends Component {
     e.stopPropagation();
     e.preventDefault();
   }
+  handleExpressionMouseDown(e, expressionVarId) {
+    if (e.button !== 0) return;
+
+    this.setState({
+      currentAction: DRAGGING_EXPRESSION,
+      rel: getRelativePositionOfEvent(e, this.expressionRefs[expressionVarId], this.equationSpaceDiv),
+      draggedExpressionId: expressionVarId
+    });
+
+    e.stopPropagation();
+    e.preventDefault();
+  }
   onMouseUp (e) {
     this.setState({currentAction: null})
     e.stopPropagation()
@@ -157,6 +174,17 @@ class App extends Component {
       this.setState({ workspace: ws.addEquality(draggedFromVarId, draggedOntoVar)});
     }
   }
+  onMouseMoveWhileDraggingExpression(e) {
+    if (this.state.currentAction !== DRAGGING_EXPRESSION) return;
+    this.setState({
+      expressionPositions: this.state.expressionPositions.set(this.state.draggedEquationId,
+        Immutable.Map({
+        x: e.pageX - this.state.rel.x,
+        y: e.pageY - this.state.rel.y
+      }))
+    });
+    e.stopPropagation(); e.preventDefault();
+  }
   onMouseMoveWhileDraggingEquation (e) {
     if (this.state.currentAction !== DRAGGING_EQUATION) return;
     this.setState({
@@ -166,8 +194,7 @@ class App extends Component {
         y: e.pageY - this.state.rel.y
       }))
     });
-    e.stopPropagation();
-    e.preventDefault();
+    e.stopPropagation(); e.preventDefault();
   }
   handleVariableClick(e, varId) {
     if (e.button !== 0) return;
@@ -220,6 +247,7 @@ class App extends Component {
   render() {
     const ws = this.state.workspace;
     this.equationRefs = {};
+    this.expressionRefs = {};
     this.varRefs = {};
 
     return (
@@ -240,23 +268,33 @@ class App extends Component {
               key={idx}
               className="equation"
               style={{top: pos.get("y"), left: pos.get("x")}}
+              ref={(div) => { this.equationRefs[equationId] = div; }}
               >
-              <div ref={(div) => { this.equationRefs[equationId] = div; }} >
-                <DisplayMath
-                  onSpanMouseDown={(e) => this.handleEquationMouseDown(e, equationId)}
-                  onVarMouseDown={(e, varId) => this.handleVariableClick(e, varId)}
-                  onDoubleClick={(varId) => this.setWs(ws.addExpression(varId))}
-                  varRef={(ref, varId) => { this.varRefs[varId] = ref; }}
-                  workspace={ws}
-                  draggedFromVarId={this.state.draggedFromVarId}
-                  currentAction={this.state.currentAction}
-                  stuff={ws.getEquationDisplay(equationId).jsItems}
-                />
-              </div>
-              <div style={{marginLeft: "20px"}}>({equationId})</div>
+              <DisplayMath
+                onSpanMouseDown={(e) => this.handleEquationMouseDown(e, equationId)}
+                onVarMouseDown={(e, varId) => this.handleVariableClick(e, varId)}
+                onDoubleClick={(varId) => this.setWs(ws.addExpression(varId))}
+                varRef={(ref, varId) => { this.varRefs[varId] = ref; }}
+                workspace={ws}
+                draggedFromVarId={this.state.draggedFromVarId}
+                currentAction={this.state.currentAction}
+                stuff={ws.getEquationDisplay(equationId).jsItems}
+              />
             </div>
           })}
 
+          {ws.expressionIds.map((varId, idx) =>
+            <div key={idx} className="expression" ref={(div) => { this.expressionRefs[varId] = div; }}>
+              <DisplayMath
+                onSpanMouseDown={(e) => this.handleExpressionMouseDown(e, varId)}
+                onVarMouseDown={(e, varId) => {}}
+                onDoubleClick={null}
+                varRef={null}
+                workspace={ws}
+                draggedFromVarId={null}
+                currentAction={this.state.currentAction}
+                stuff={ws.getExpressionDisplay(varId).jsItems} />
+            </div>)}
         </div>
 
         <button onClick={() => { this.addEquation("ke_def") }}>

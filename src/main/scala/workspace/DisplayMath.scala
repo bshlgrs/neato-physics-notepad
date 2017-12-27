@@ -46,7 +46,6 @@ case class Sub(inner: List[DisplayMathElement]) extends DisplayMathElement {
 
 object DisplayMath {
   def apply(str: String): DisplayMath = DisplayMath(List(Span(str)))
-//  implicit def elToDisplayMath(el: DisplayMathElement): DisplayMath = DisplayMath(List(el))
 
   def render(expr: Expression[VariableSpan]): DisplayMath = {
     this.renderWithBinding(expr)._1
@@ -102,4 +101,7 @@ object DisplayMath {
     equation.display((varName: String) => showVar(VarId(equationIdx, varName), varSubscripts.get(varName)))
   }
 
+  def showExpression(expression: Expression[VarId], varSubscripts: Map[VarId, Int]): DisplayMath = {
+    render(expression.mapVariables(varId => showVar(varId, varSubscripts.get(varId))))
+  }
 }

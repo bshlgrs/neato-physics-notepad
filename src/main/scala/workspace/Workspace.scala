@@ -144,7 +144,7 @@ case class Workspace(equations: Map[Int, Equation] = Map(),
     val varSubscripts: Map[String, Int] = equation.vars.map((varName) => {
       varName -> getVarSubscript(VarId(idx, varName))
     }).toMap.collect({case (k, Some(v)) => k -> v})
-    DisplayMath.showEquation(equations(idx), idx, varSubscripts)
+    DisplayMath.showEquation(equation, idx, varSubscripts)
   }
 
   def showExpression(exprVarId: VarId): String = {
@@ -155,6 +155,15 @@ case class Workspace(equations: Map[Int, Equation] = Map(),
     }).toMap.collect({case (k, Some(v)) => k -> v})
 
     StringDisplay.showExpression(exprVarId, expression, varSubscripts)
+  }
+
+  def getExpressionDisplay(exprVarId: VarId): DisplayMath = {
+    val expression = expressions(exprVarId)
+    val varSubscripts: Map[VarId, Int] = (expression.vars + exprVarId).map((varId) => {
+      varId -> getVarSubscript(varId)
+    }).toMap.collect({case (k, Some(v)) => k -> v})
+
+    DisplayMath.showExpression(expression, varSubscripts)
   }
 
   def showVar(varId: VarId): String = StringDisplay.showVar(varId.varName, getVarSubscript(varId))

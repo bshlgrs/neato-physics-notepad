@@ -1,7 +1,7 @@
 # graphical equation manipulator, Scala edition
 
-I had the idea for this software in 2013, but I wasn't a good enough programmer to make it. You can see my first attempt 
-on YouTube [here](https://www.youtube.com/watch?v=16eiGLrX248) 
+I had the idea for this software in 2013, but I wasn't a good enough programmer to make it. You can see my first attempt
+on YouTube [here](https://www.youtube.com/watch?v=16eiGLrX248)
 (featuring an Australian accent much stronger than the one I have after living in the US for a few years). Matt Alger then
 [rewrote some of it in Coffeescript](https://github.com/MatthewJA/Graphical-Equation-Manipulator).
 
@@ -29,10 +29,10 @@ Features to add:
   - Equations as strings. This involves giving them a new field
   - Expressions as strings
 - Computer algebra system
-  
+
 ## [x] Phase 2: build shitty frontend
 
-Just make logic for displaying everything and also a button for every allowed action 
+Just make logic for displaying everything and also a button for every allowed action
 
 
 ## [ ] Phase 3: make it less shitty
@@ -47,7 +47,7 @@ steps:
 - Make my own rendering for equations.
   - Use the square root character for roots
   - Display fractions properly
-  
+
 ## later
 
 - magic triangle GUI element
@@ -58,9 +58,15 @@ steps:
 
 - You can get a variable on the rhs of its expression
 - Deleting equations is a shitshow.
+- Numbers aren't on the LHS of products
 - The maps that I use will assign the same ID to multiple numbers.
     - To get around this I should make a "IdAssigningMap" class
 
+## improvements
+
+- toString methods
+- use minimum spanning tree to display equalities
+- display lines that don't start from before the variables
 
 ## Build notes
 

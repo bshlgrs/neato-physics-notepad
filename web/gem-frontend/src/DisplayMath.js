@@ -39,7 +39,7 @@ const DisplayMathElement = (props) => {
       id={"variable-" + varId.toString()}
       onMouseDown={(e) => props.onVarMouseDown(e, varId)}
       onDoubleClick={(e) => props.onDoubleClick(varId) }
-      ref={(ref) => { props.varRef(ref, varId)}}
+      ref={props.varRef && ((ref) => { props.varRef(ref, varId)})}
       >
       {el.jsEls.map((x, idx) =>
       <DisplayMathElement {...other} key={idx} el={x} onSpanMouseDown={() => {}} />)}

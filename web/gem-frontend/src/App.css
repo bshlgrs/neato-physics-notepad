@@ -28,8 +28,7 @@
 }
 
 .expression {
-  border-style: solid;
-  padding: 10px;
+  font-size: 20px;
 }
 
 .equation {
@@ -47,7 +46,11 @@
   position: relative;
 }
 
-.equation-var {
+.equation .equation-var {
   color: green;
   cursor: crosshair;
+}
+
+.expression .equation-var {
+  color: orange;
 }
