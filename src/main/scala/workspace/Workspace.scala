@@ -36,6 +36,9 @@ case class Workspace(equations: Map[Int, Equation] = Map(),
     varName <- equation.vars
   } yield VarId(equationId, varName)
 
+  def allVarIdsJs: js.Array[VarId] = arr(allVarIds)
+  def varIdStringToVarId(str: String): VarId = allVarIds.find(_.toString() == str).get
+
   def addEquality(x: VarId, y: VarId): Workspace = this.copy(equalities = this.equalities.setEqual(x, y))
 
   def addExpression(varId: VarId): Workspace = varId match {

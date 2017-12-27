@@ -41,10 +41,7 @@ const DisplayMathElement = (props) => {
       style={{color: color}}
       id={"variable-" + varId.toString()}
       onMouseDown={(e) => props.onVarMouseDown(e, varId)}
-      onMouseUp={(e) => { console.log(e, varId) }}
-      onDragEnd={(e) => { console.log('dragend', e, varId) }}
-      onMouseOver={(e) => { console.log('mouseover', e, varId) }}
-      // ref={(ref) => { props.varRef(ref, varId)}}
+      ref={(ref) => { props.varRef(ref, varId)}}
       >
       {el.jsEls.map((x, idx) =>
       <DisplayMathElement {...other} key={idx} el={x} onSpanMouseDown={() => {}} />)}
