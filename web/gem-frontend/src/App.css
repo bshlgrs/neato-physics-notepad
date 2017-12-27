@@ -29,6 +29,11 @@
 
 .expression {
   font-size: 20px;
+  cursor: grab;
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .equation {
