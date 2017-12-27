@@ -1,31 +1,37 @@
-.App {
+.header {
   text-align: center;
+  border-bottom: solid;
 }
 
-.App-logo {
-  animation: App-logo-spin infinite 20s linear;
-  height: 80px;
+.container {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
 }
 
-.App-header {
-  background-color: #222;
-  height: 150px;
-  padding: 20px;
-  color: white;
+.main-app-div {
+  flex-grow: 1;
+  display: flex;
+  align-items: stretch;
+  flex-direction: row;
 }
 
-.App-title {
-  font-size: 1.5em;
+.equation-space {
+  flex: 2;
+  background-color: lightgrey;
+  position: relative;
 }
 
-.App-intro {
-  font-size: large;
+.sidebar {
+  flex: 1;
+  padding: 10px;
+  border-left: solid;
 }
 
-@keyframes App-logo-spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
 
 .expression {
   font-size: 20px;
@@ -43,12 +49,6 @@
   justify-content: center;
   font-size: 24px;
   cursor: grab;
-}
-
-.equationSpace {
-  height: 400px;
-  background-color: lightgrey;
-  position: relative;
 }
 
 .equation .equation-var {

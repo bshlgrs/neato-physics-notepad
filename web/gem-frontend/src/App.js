@@ -103,7 +103,6 @@ class App extends Component {
     if (state.currentAction === DRAGGING) {
       this.refreshVarPositions();
     }
-
   }
   setWs(newWs) {
     this.setState({ workspace: newWs });
@@ -271,80 +270,70 @@ class App extends Component {
     const currentAction = this.state.currentAction;
 
     return (
-      <div className="App">
-        <h3>Equations</h3>
+      <div className="container">
+        <div className="header"><h3>Buck's neato physics notebook</h3></div>
 
-        <div className="equationSpace" ref={(div) => { this.equationSpaceDiv = div; }}
-          style={currentAction === DRAGGING_FROM_VAR ? {cursor: 'crosshair'} : {}}>
-          <svg style={{position: 'absolute', left: 0, top: 0, height: "100%", width: "100%"}}>
-            {(currentAction === DRAGGING_FROM_VAR || currentAction === DRAGGING_FROM_EXPR_VAR) &&
-              this.renderVarDragLine()}
-            {this.renderVarEqualityLines()}
-          </svg>
-          {ws.equationIds.map((equationId, idx) => {
-            const pos = this.state.positions.get(equationId);
+        <div className="main-app-div">
+          <div className="equation-space" ref={(div) => { this.equationSpaceDiv = div; }}
+            style={currentAction === DRAGGING_FROM_VAR ? {cursor: 'crosshair'} : {}}>
+            <svg style={{position: 'absolute', left: 0, top: 0, height: "100%", width: "100%"}}>
+              {(currentAction === DRAGGING_FROM_VAR || currentAction === DRAGGING_FROM_EXPR_VAR) &&
+                this.renderVarDragLine()}
+              {this.renderVarEqualityLines()}
+            </svg>
+            {ws.equationIds.map((equationId, idx) => {
+              const pos = this.state.positions.get(equationId);
 
-            return <div
-              key={idx}
-              className="equation"
-              style={{top: pos.get("y"), left: pos.get("x")}}
-              ref={(div) => { this.equationRefs[equationId] = div; }}
-              >
-              <DisplayMath
-                onSpanMouseDown={(e) => this.handleStartDrag(e, equationId, this.equationRefs[equationId])}
-                onVarMouseDown={(e, varId) => this.handleVariableClick(e, varId)}
-                onDoubleClick={(varId) => this.addExpression(varId)}
-                varRef={(ref, varId) => { this.varRefs[varId] = ref; }}
-                workspace={ws}
-                draggedFromVarId={this.state.draggedFromVarId}
-                idPrefix="variable-"
-                currentAction={currentAction}
-                stuff={ws.getEquationDisplay(equationId).jsItems}
-              />
-            </div>
-          })}
+              return <div
+                key={idx}
+                className="equation"
+                style={{top: pos.get("y"), left: pos.get("x")}}
+                ref={(div) => { this.equationRefs[equationId] = div; }}
+                >
+                <DisplayMath
+                  onSpanMouseDown={(e) => this.handleStartDrag(e, equationId, this.equationRefs[equationId])}
+                  onVarMouseDown={(e, varId) => this.handleVariableClick(e, varId)}
+                  onDoubleClick={(varId) => this.addExpression(varId)}
+                  varRef={(ref, varId) => { this.varRefs[varId] = ref; }}
+                  workspace={ws}
+                  draggedFromVarId={this.state.draggedFromVarId}
+                  idPrefix="variable-"
+                  currentAction={currentAction}
+                  stuff={ws.getEquationDisplay(equationId).jsItems}
+                />
+              </div>
+            })}
 
-          {ws.expressionIds.map((exprVarId, idx) => {
-            const pos = this.state.positions.get(exprVarId);
+            {ws.expressionIds.map((exprVarId, idx) => {
+              const pos = this.state.positions.get(exprVarId);
 
-            return <div key={idx}
-                 className="expression"
-                 ref={(div) => { this.expressionRefs[exprVarId] = div; }}
-                 style={{top: pos.get("y"), left: pos.get("x")}}
-                 >
-              <DisplayMath
-                onSpanMouseDown={(e) => this.handleStartDrag(e, exprVarId, this.expressionRefs[exprVarId])}
-                onVarMouseDown={(e, varToRemoveId) => this.handleExpressionVariableClick(e, exprVarId, varToRemoveId)}
-                onDoubleClick={null}
-                varRef={null}
-                workspace={ws}
-                idPrefix={`expression-${exprVarId}-`}
-                draggedFromVarId={this.state.draggedFromVarId}
-                currentAction={currentAction}
-                stuff={ws.getExpressionDisplay(exprVarId).jsItems} />
-            </div>;
-          })}
+              return <div key={idx}
+                   className="expression"
+                   ref={(div) => { this.expressionRefs[exprVarId] = div; }}
+                   style={{top: pos.get("y"), left: pos.get("x")}}
+                   >
+                <DisplayMath
+                  onSpanMouseDown={(e) => this.handleStartDrag(e, exprVarId, this.expressionRefs[exprVarId])}
+                  onVarMouseDown={(e, varToRemoveId) => this.handleExpressionVariableClick(e, exprVarId, varToRemoveId)}
+                  onDoubleClick={null}
+                  varRef={null}
+                  workspace={ws}
+                  idPrefix={`expression-${exprVarId}-`}
+                  draggedFromVarId={this.state.draggedFromVarId}
+                  currentAction={currentAction}
+                  stuff={ws.getExpressionDisplay(exprVarId).jsItems} />
+              </div>;
+            })}
+          </div>
+          <div className="sidebar">
+            <button onClick={() => { this.addEquation("ke_def") }}>
+              Add KE equation</button>
+            <button onClick={() => { this.addEquation("pe_def") }}>
+              Add PE equation</button>
+          </div>
         </div>
 
-        <button onClick={() => { this.addEquation("ke_def") }}>
-          Add KE equation</button>
-        <button onClick={() => { this.addEquation("pe_def") }}>
-          Add PE equation</button>
 
-        <h3>Expressions</h3>
-
-        {ws.expressionIds.map((varId, idx) =>
-          <div key={idx} className="expression">{danger(ws.showExpression(varId), true)}
-            {ws.possibleRewritesForExprJs(varId).map((rewrite, idx) =>
-              <button key={idx}
-                onClick={() => this.setWs(ws.rewriteExpression(varId, rewrite[0], rewrite[1]))}>
-                Sub in equation {rewrite[1]} to replace {this.showVar(rewrite[0])}
-              </button>
-            )}
-            <button onClick={() => this.setWs(ws.deleteExpression(varId))}>Delete</button>
-          </div>
-        )}
-        <p>{currentAction}</p>
       </div>
     );
   }
