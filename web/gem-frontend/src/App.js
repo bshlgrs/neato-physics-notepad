@@ -475,8 +475,11 @@ class App extends Component {
             {ws.numberIds.map((numberId) => {
               const pos = this.state.positions.get('number-' + numberId);
               const number = ws.getNumber(numberId);
+              const muted = currentAction === DRAGGING_FROM_VAR && (
+                !ws.getDimension(this.state.draggedFromVarId).equalUnits(number.dimension));
+
               return <div className='physical-number'
-                          style={{position: 'absolute', top: pos.get("y"), left: pos.get("x")}}
+                          style={{position: 'absolute', top: pos.get("y"), left: pos.get("x"), color: (muted && 'grey')}}
                           ref={(div) => { this.numberRefs[numberId] = div; }}
                           key={numberId}>
                 <DisplayMath
