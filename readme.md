@@ -35,18 +35,44 @@ Features to add:
 Just make logic for displaying everything and also a button for every allowed action
 
 
-## [ ] Phase 3: make it less shitty
+## [x] Phase 3: make it less shitty
 
 - less shitty GUI
   - similar to last time should work
     - I think I should just give up on using KaTeX
 - let you search for equations
 
-steps:
+## Current stuff
+
+- render more prettily
+  - this could involve fractions and surds
+  - I am pretty sure I could build surds out of SVG
+- parse equations more nicely?
+
+Then try to do a bunch of the problems I claim I'm able to do, which involves adding a bunch of equations, and reassess.
+
+Then, in this order:
+
+- Nonstandard units
+  - I think this is just a small change to dimension parsing: let dimensions be `PhysicalNumber`s instead of `Dimension`s.
+  - Numbers are displayed according to how they were input. Perhaps there's a toggle in the number menu to convert to different units.
+- Creating equations
+  - requires a parser. FastParse?
+  - requires specifying units, maybe
+    - I could just have equations be dynamically typed: they object if you try something unreasonable but are otherwise chill.
+      - I think this is probably the way to go.
+- Triangle diagrams
+- Differentiation
+  - just differentiate F=ma to dF/dM = dM a or whatever.
+  - This is an operation you can do on expressions
+    - I think that these should not be rewritten
+
+Also:
 
 - Make my own rendering for equations.
   - Use the square root character for roots
   - Display fractions properly
+- make a web backend
 
 ## later
 
@@ -56,7 +82,7 @@ steps:
 ## bugs
 
 - You can get a variable on the rhs of its expression
-- Deleting equations is a shitshow.
+- Deleting equations reveals lots of bugs
 - Numbers aren't on the LHS of products
 - The maps that I use will assign the same ID to multiple numbers.
     - To get around this I should make a "IdAssigningMap" class
@@ -68,6 +94,7 @@ steps:
 - [x] use minimum spanning tree to display equalities
 - [x] display lines that don't start from before the variables
 - when rewriting equations, blank out equations that can't be used
+  - Also rewriting sometimes doesn't work
 - allow dimensionless numbers
 - dragging from expr var to number should attach it
 

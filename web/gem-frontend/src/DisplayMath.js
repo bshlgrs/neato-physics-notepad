@@ -3,7 +3,9 @@ import React from 'react';
 const DisplayMath = (props) => {
   const {stuff, ...other} = props;
 
-  return <span>{stuff.map((x, idx) => <DisplayMathElement {...other} el={x} key={idx} />)}</span>;
+  return <div className='math-row'>
+    {stuff.map((x, idx) => <DisplayMathElement {...other} el={x} key={idx} />)}
+  </div>;
 }
 
 const DisplayMathElement = (props) => {
@@ -49,9 +51,23 @@ const DisplayMathElement = (props) => {
     return <sup>{el.jsInner.map((x, idx) => <DisplayMathElement {...other} key={idx} el={x} />)}</sup>;
   } else if (name === "sub") {
     return <sub>{el.jsInner.map((x, idx) => <DisplayMathElement {...other} key={idx} el={x} />)}</sub>;
+  } else if (name === "fraction") {
+    return <div className='fraction'>
+      <div className='numerator'><DisplayMath {...other} stuff={el.numerator.jsItems} /></div>
+      <div className='denominator'><DisplayMath {...other} stuff={el.denominator.jsItems} /></div>
+    </div>;
+  } else if (name === "box") {
+    return <Box {...other} stuff={el.stuff.jsItems} />;
   } else {
     debugger;
   }
+}
+
+const Box = (props) => {
+  const {stuff, ...other} = props;
+  return <div className='aligned-row'>
+    {stuff.map((x, idx) => <DisplayMathElement {...other} el={x} key={idx} />)}
+  </div>;
 }
 
 export default DisplayMath;

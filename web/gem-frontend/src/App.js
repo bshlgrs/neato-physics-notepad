@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import './App.css';
+import './math.css';
 import Gem from './Gem';
 import Immutable from 'immutable';
 import DisplayMath from './DisplayMath';
@@ -322,7 +323,7 @@ class App extends Component {
       return <g key={idx}>
         {minimumSpanningTree.map((tuple, idx) => {
           const [rawX1, rawY1, rawX2, rawY2] = tuple;
-          const paddedLine = makePaddedLine(rawX1, rawY1, rawX2, rawY2, 15);
+          const paddedLine = makePaddedLine(rawX1, rawY1, rawX2, rawY2, 20);
           if (paddedLine) {
             const [x1, y1, x2, y2] = paddedLine
             return <line key={idx} x1={x1} y1={y1} x2={x2} y2={y2} stroke="black" strokeDasharray="5, 8" />

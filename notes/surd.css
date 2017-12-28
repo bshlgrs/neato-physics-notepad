@@ -1,0 +1,59 @@
+.wrapper {
+  position: relative;
+}
+
+.equation {
+  position: absolute;
+  top: 30px;
+  left: 50px;
+}
+
+.fraction {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: lightgreen;
+  padding: 2px;
+}
+
+.numerator {
+  border-bottom: solid;
+  border-width: thin;
+  padding-left: 3px;
+  padding-right: 3px;
+}
+
+.denominator {
+  border-top: solid;
+  border-width: thin;
+  margin-top: -1px;
+  padding-left: 3px;
+  padding-right: 3px;
+}
+
+.surd {
+  padding-left: 5px;
+  background-color: lightblue;
+}
+
+.surd > div {
+  border-left: solid;
+  border-top: solid;
+  border-width: thin;
+}
+
+
+<div class="wrapper">
+  <div class="equation">
+    <div class="surd">
+      <div class="fraction">
+        <div class="numerator">
+          2 m<sub>2</sub>
+        </div>
+        <div class="denominator">
+          m v<sup>2</sup>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -20,6 +20,8 @@ trait DisplayMathElement {
     case _: VariableSpan => "variableSpan"
     case _: Sup => "sup"
     case _: Sub => "sub"
+    case _: Fraction => "fraction"
+    case _: Box => "box"
   }
 }
 
@@ -30,6 +32,12 @@ case class Span(str: String) extends DisplayMathElement
 case class VariableSpan(varId: VarId, el: List[DisplayMathElement]) extends DisplayMathElement {
   def jsEls: js.Array[DisplayMathElement] = js.Array(el :_*)
 }
+@JSExportAll
+case class Fraction(numerator: DisplayMath, denominator: DisplayMath) extends DisplayMathElement
+
+@JSExportAll
+case class Box(stuff: DisplayMath) extends DisplayMathElement
+
 case class Sup(inner: List[DisplayMathElement]) extends DisplayMathElement {
   @JSExport
   def jsInner: js.Array[DisplayMathElement] = js.Array(inner :_*)
@@ -47,6 +55,7 @@ case class Sub(inner: List[DisplayMathElement]) extends DisplayMathElement {
 @JSExportTopLevel("Gem.DisplayMath")
 object DisplayMath {
   def apply(str: String): DisplayMath = DisplayMath(List(Span(str)))
+  def apply(el: DisplayMathElement): DisplayMath = DisplayMath(List(el))
 
   def render(expr: Expression[VariableSpan]): DisplayMath = {
     this.renderWithBinding(expr)._1
@@ -65,12 +74,18 @@ object DisplayMath {
   def renderWithBinding(expr: Expression[VariableSpan]): (DisplayMath, Int) = {
     expr match {
       case Sum(set) => join(set.toList.map((x) => wrap(this.renderWithBinding(x), 0)), " + ") -> 0
-      case Product(set) =>
+      case Product(set) => {
+        ???
+      }
 //        ExpressionDisplay.fractionDisplay(set, " ", (x: Expression[String]) => x.toStringWithBinding, (x) => s"√($x)", (n, d) => s"($n)/($d)") -> 1
-        join(set.toList.map((x) => wrap(this.renderWithBinding(x), 0)), " * ") -> 0
+//        DisplayMath(Fraction(join(set.toList.map((x) => DisplayMath(Box(wrap(this.renderWithBinding(x), 0)))), " * "), DisplayMath("lol"))) -> 0
       case Power(lhs, rhs) => wrap(this.renderWithBinding(lhs), 2) ++ Sup(render(rhs)) -> 0
       case Variable(varSpan) => DisplayMath(List(varSpan)) -> 3
       case RealNumber(r) => DisplayMath(r.toString) -> 3
+      case RationalNumber(1, 2) => DisplayMath("½") -> 3
+      case RationalNumber(1, 3) => DisplayMath("⅓") -> 3
+      case RationalNumber(2, 3) => DisplayMath("⅔") -> 3
+      case RationalNumber(1, 4) => DisplayMath("¼") -> 3
       case RationalNumber(n, 1) => DisplayMath(n.toString) -> 3
       case RationalNumber(n, d) => DisplayMath(s"$n/$d") -> 1
     }

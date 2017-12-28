@@ -1,0 +1,31 @@
+
+.fraction {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.numerator {
+  border-bottom: solid;
+  border-width: thin;
+  padding-left: 3px;
+  padding-right: 3px;
+}
+
+.denominator {
+  border-top: solid;
+  border-width: thin;
+  margin-top: -1px;
+  padding-left: 3px;
+  padding-right: 3px;
+}
+
+.math-row {
+  display: flex;
+  align-items: center;
+}
+
+.equation span {
+  padding-left: 1px;
+  padding-right: 1px;
+}
