@@ -73,7 +73,8 @@ object Dimension {
     "K" -> Kelvin,
     "A" -> Ampere,
     "J" -> Joule,
-    "N" -> Newton
+    "N" -> Newton,
+    "Hz" -> (Second ** -1)
   )
 }
 

@@ -89,7 +89,17 @@
   font-size: 18px;
 }
 
-.info-box .equation-var {
+.sidebar .equation-var {
   color: green;
   font-weight: bold;
+}
+
+.expression-info-box .equation-var {
+  color: purple;
+  font-weight: bold;
+}
+
+.search-result {
+  font-size: 24px;
+  padding: 6px;
 }

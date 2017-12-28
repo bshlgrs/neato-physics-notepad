@@ -35,6 +35,21 @@ class WorkspaceTests extends FunSpec {
 
   }
 
+  describe("substitution") {
+    it("works") {
+      val ws = Workspace.empty
+        .addEquation(EquationLibrary.getByEqId("ke_def"))
+        .addEquation(EquationLibrary.getByEqId("pe_def"))
+        .addEquality(VarId(0, "m"), VarId(1, "m"))
+        .addEquality(VarId(0, "E_K"), VarId(1, "E_P"))
+        .addExpression(VarId(0, "v"))
+        .rewriteExpression(VarId(0, "v"), VarId(0, "E_K"), 1)
+
+      println(ws.expressions(VarId(0, "v")))
+    }
+
+  }
+
 //  describe("subscript generation") {
 //    val ws = Workspace.empty
 //      .addEquation(EquationLibrary.getByEqId("ke_def"))

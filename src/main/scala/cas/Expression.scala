@@ -213,7 +213,7 @@ trait Expression[A] {
   def substituteMany(from: Set[A], to: A): Expression[A] = this.mapVariables((x) => if (from.contains(x)) to else x)
 
   def simplifyWithEquivalenceClasses(equalities: SetOfSets[A]): Expression[A] =
-    equalities.sets.foldLeft(this)({ case (expr: Expression[A], set: Set[A]) => expr.substituteMany(set, set.head)})
+    equalities.sets.foldLeft(this)({ case (expr: Expression[A], set: Set[A]) => expr.substituteMany(set, set.minBy(_.toString))})
 
   protected def asTerm: (Expression[A], Constant[A]) = {
     // 2*x -> (x, 2)
@@ -243,6 +243,28 @@ trait Expression[A] {
       case Power(base, exponent) => (base, exponent)
       case _ => (this, RationalNumber[A](1))
     }
+  }
+
+  def evaluate: Option[Double] = this match {
+    case Sum(terms) => {
+      val termValues = terms.map(_.evaluate)
+      if (termValues.forall(_.isDefined)) {
+        Some(termValues.map(_.get).sum)
+      } else None
+    }
+    case Product(factors) => {
+      val factorsValues = factors.map(_.evaluate)
+      if (factorsValues.forall(_.isDefined)) {
+        Some(factorsValues.map(_.get).product)
+      } else None
+    }
+    case Power(lhs, rhs) => (lhs.evaluate, rhs.evaluate) match {
+      case (Some(lhsVal), Some(rhsVal)) => Some(math.pow(lhsVal, rhsVal))
+      case _ => None
+    }
+    case _: Variable[_] => None
+    case RealNumber(x) => Some(x)
+    case RationalNumber(n, d) => Some(n.toDouble / d)
   }
 }
 

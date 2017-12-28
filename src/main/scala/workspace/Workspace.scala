@@ -68,14 +68,15 @@ case class Workspace(equations: Map[Int, Equation] = Map(),
 
     // let's look up the equation we're going to solve to use:
     val swapEquationExpr: Expression[VarId] = equations(equationIdToUse).exprWithEquationId(equationIdToUse)
+//    assert(swapEquationExpr.vars.contains(varToRemoveId))
 
     // now we replace every variable in that expression which is equivalent to our swapped variable with the swapped
     // variable.
     val subbedSwapExpr = swapEquationExpr.simplifyWithEquivalenceClasses(equalities)
 
-    val solutions = subbedSwapExpr.solve(equalities.getSet(varToRemoveId).head)
+    val solutions = subbedSwapExpr.solve(equalities.getSet(varToRemoveId).minBy(_.toString))
 
-    assert(solutions.size == 1)
+    assert(solutions.size == 1, solutions)
     val exprToSubIn = solutions.head
 
     // now sub that into the current expression
@@ -102,6 +103,7 @@ case class Workspace(equations: Map[Int, Equation] = Map(),
   }).map(_._1).orNull
 
   def attachNumber(numberId: Int, varId: VarId): Try[Workspace] = {
+    // I am kind of suspicious of this function
     val VarId(eqIdx, varName) = varId
     for {
       (number, currentAttachment) <- Try(numbers.get(numberId).get)
@@ -163,22 +165,27 @@ case class Workspace(equations: Map[Int, Equation] = Map(),
     DisplayMath.showEquation(equation, idx, varSubscripts)
   }
 
-  def showExpression(exprVarId: VarId): String = {
-    val expression = expressions(exprVarId)
+//  def showExpression(exprVarId: VarId): String = {
+//    val expression = expressions(exprVarId)
+//
+//    val varSubscripts: Map[VarId, Int] = (expression.vars + exprVarId).map((varId) => {
+//      varId -> getVarSubscript(varId)
+//    }).toMap.collect({case (k, Some(v)) => k -> v})
+//
+//    StringDisplay.showExpression(exprVarId, expression, varSubscripts)
+//  }
 
-    val varSubscripts: Map[VarId, Int] = (expression.vars + exprVarId).map((varId) => {
-      varId -> getVarSubscript(varId)
-    }).toMap.collect({case (k, Some(v)) => k -> v})
-
-    StringDisplay.showExpression(exprVarId, expression, varSubscripts)
-  }
-
-  def getMaximallyNumericExpression(exprVarId: VarId): Expression[VarId] = {
+  def getNumberForExpression(exprVarId: VarId): Option[Double] = {
     val expr = expressions(exprVarId)
-    expr.vars.foldLeft(expr)((reducedExpr, varId) => this.getNumber(varId) match {
+    val maximallyNumericExpression = expr.vars.foldLeft(expr)((reducedExpr, varId) => this.getNumber(varId) match {
       case None => reducedExpr
       case Some(num) => reducedExpr.substitute(varId, RealNumber[VarId](num.value))
     })
+    maximallyNumericExpression.evaluate
+  }
+
+  def getNumberForExpressionJs(exprVarId: VarId): Any = {
+    getNumberForExpression(exprVarId).orNull
   }
 
   def getExpressionDisplay(exprVarId: VarId): DisplayMath = {
@@ -187,7 +194,8 @@ case class Workspace(equations: Map[Int, Equation] = Map(),
       varId -> getVarSubscript(varId)
     }).toMap.collect({case (k, Some(v)) => k -> v})
 
-    DisplayMath.showExpression(exprVarId, expression, varSubscripts)
+    DisplayMath.showExpression(exprVarId, expression, varSubscripts,
+      this.getNumberForExpression(exprVarId).map((number) => PhysicalNumber(number, getDimension(exprVarId))))
   }
 
   def getVarDisplay(varId: VarId): DisplayMath = {

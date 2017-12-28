@@ -3,7 +3,7 @@ package workspace
 import cas._
 
 import scala.scalajs.js
-import scala.scalajs.js.annotation.{JSExport, JSExportAll}
+import scala.scalajs.js.annotation.{JSExport, JSExportAll, JSExportTopLevel}
 
 @JSExportAll
 case class DisplayMath(stuff: List[DisplayMathElement]) {
@@ -44,6 +44,7 @@ case class Sub(inner: List[DisplayMathElement]) extends DisplayMathElement {
 }
 
 
+@JSExportTopLevel("Gem.DisplayMath")
 object DisplayMath {
   def apply(str: String): DisplayMath = DisplayMath(List(Span(str)))
 
@@ -101,9 +102,24 @@ object DisplayMath {
     equation.display((varName: String) => makeVariableSpan(VarId(equationIdx, varName), varSubscripts.get(varName)))
   }
 
-  def showExpression(varId: VarId, expression: Expression[VarId], varSubscripts: Map[VarId, Int]): DisplayMath = {
+  @JSExport
+  def showNakedEquation(equation: Equation): DisplayMath = {
+    equation.display((varName: String) => makeVariableSpan(VarId(0, varName), None))
+  }
+
+  def showExpression(varId: VarId,
+                     expression: Expression[VarId],
+                     varSubscripts: Map[VarId, Int],
+                     mbNumericValue: Option[PhysicalNumber]): DisplayMath = {
+    val numericValueDisplay = mbNumericValue match {
+      case None => DisplayMath(List())
+      case Some(PhysicalNumber(numericValue, dimension)) =>
+        DisplayMath(List(Span(s" = ${numericValue.toString.take(5)}")) ++ dimension.toDisplayMath.stuff)
+    }
+
     DisplayMath(List(makeVariableSpan(varId, varSubscripts.get(varId)), Span(" = "))) ++
-      render(expression.mapVariables(varId => makeVariableSpan(varId, varSubscripts.get(varId))))
+      render(expression.mapVariables(varId => makeVariableSpan(varId, varSubscripts.get(varId)))) ++
+      numericValueDisplay
   }
 
   def showVariable(varId: VarId, varSubscripts: Map[VarId, Int]): DisplayMath = {

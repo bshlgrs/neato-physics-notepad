@@ -1,6 +1,7 @@
 package workspace
 import cas.{Expression, RationalNumber}
 
+import scala.scalajs.js
 import scala.scalajs.js.annotation.{JSExport, JSExportTopLevel}
 
 @JSExportTopLevel("Gem.EquationLibrary")
@@ -16,7 +17,7 @@ object EquationLibrary {
     "pe_def" -> Equation("Definition of gravitational potential energy", Expression.buildGoofily(Map("E_P" -> -1, "m" -> 1, "g" -> 1, "h" -> 1)),
       (f: String => DisplayMathElement) => DisplayMath(List(f("E_P"), Span(" = "), f("m"), f("g"), f("h"))),
       Map("E_P" -> Joule, "m" -> Kilogram, "g" -> Meter / (Second ** 2), "h" -> Meter),
-      Map("E_P" -> "Potential energy", "m" -> "Mass", "g" -> "Strength of gravity", "h" -> "Height"),
+      Map("E_P" -> "Potential energy", "m" -> "Mass", "g" -> "Strength of gravity", "h" -> "Height")
     )
   )
 
@@ -25,7 +26,16 @@ object EquationLibrary {
   def getByEqId(name: String): Equation = library(name)
 
   @JSExport
-  def relevantEquations(searchTerm: String): List[Equation] = {
-    ???
+  def relevantEquationIds(searchTerm: String): js.Array[String] = {
+    if (searchTerm.filterNot(_.isWhitespace).isEmpty) {
+      js.Array()
+    } else {
+      val stuff = library.filter(pair => this.similarity(pair._2.name.split(' ').toList, searchTerm.split(' ').toList)).take(5).keys
+      js.Array(stuff.toList :_*)
+    }
+  }
+
+  def similarity(tags: List[String], searchTerms: List[String]): Boolean = {
+    searchTerms.forall(term => tags.exists(_.contains(term)))
   }
 }

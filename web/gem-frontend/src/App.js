@@ -158,7 +158,7 @@ class App extends Component {
       workspace: newWs,
       positions: this.state.positions.set('number-' + newNumberId, newPosition)
     });
-
+    setTimeout(() => { this.refreshStoredPositions(); }, 10);
   }
   handleStartDrag(e, thingId, ref, selectionObject) {
     if (e.button !== 0) return;
@@ -338,9 +338,27 @@ class App extends Component {
       this.addNumber(num);
       this.setState({ searchBarText: '' });
     }
+
+    const relevantEquations = Gem.EquationLibrary.relevantEquationIds(this.state.searchBarText);
+    if (relevantEquations[0]) {
+      this.addEquation(relevantEquations[0]);
+      this.setState({ searchBarText: '' });
+    }
   }
   deleteEquation(id) {
     this.setState({ workspace: this.state.workspace.deleteEquation(id),
+                    currentlySelected: {type: null, id: null} });
+  }
+  deleteExpression(id) {
+    this.setState({ workspace: this.state.workspace.deleteExpression(id),
+                    currentlySelected: {type: null, id: null} });
+  }
+  deleteNumber(id) {
+    this.setState({ workspace: this.state.workspace.deleteNumber(id),
+                    currentlySelected: {type: null, id: null} });
+  }
+  detachNumber(id) {
+    this.setState({ workspace: this.state.workspace.detachNumber(id),
                     currentlySelected: {type: null, id: null} });
   }
   renderCurrentlySelectedInfo () {
@@ -365,7 +383,24 @@ class App extends Component {
             />
           </div>
         )}
-        <button onClick={() => this.deleteEquation(selectedId)}>Delete</button>
+        <button onClick={() => this.deleteEquation(selectedId)}>Delete equation</button>
+      </div>
+    } else if (selectedType === "expression") {
+      return <div className='info-box expression-info-box'>
+        <DisplayMath
+          stuff={ws.getExpressionDisplay(selectedId).jsItems}
+        />
+        <button onClick={() => this.deleteExpression(selectedId)}>Delete expression</button>
+      </div>
+    } else if (selectedType === "number") {
+      const number = ws.getNumber(selectedId);
+      return <div className='info-box expression-info-box'>
+        <DisplayMath
+          stuff={number.toDisplayMath.jsItems}
+        />
+        <button onClick={() => this.deleteNumber(selectedId)}>Delete number</button>
+        {ws.getVarIdOfNumber(selectedId) &&
+          <button onClick={() => this.detachNumber(selectedId)}>Detach number</button>}
       </div>
     }
     return null;
@@ -417,7 +452,6 @@ class App extends Component {
 
             {ws.expressionIds.map((exprVarId, idx) => {
               const pos = this.state.positions.get('expression-' + exprVarId);
-
               return <div key={idx}
                    className="expression"
                    ref={(div) => { this.expressionRefs[exprVarId] = div; }}
@@ -462,20 +496,25 @@ class App extends Component {
                   if (e.key === 'Enter') {
                     this.handleSearchBarSubmit();
                   }
-                }}/>
-              <button onClick={() => { this.addEquation("ke_def") }}>
-              Add KE equation</button>
-              <button onClick={() => { this.addEquation("pe_def") }}>
-                Add PE equation</button>
+                }}
+                placeholder="Search for equations or type numbers here"/>
+              {Gem.EquationLibrary.relevantEquationIds(this.state.searchBarText).map((eqId) =>
+                <div key={eqId} className='search-result' onClick={() => this.addEquation(eqId)}>
+                  <DisplayMath
+                    stuff={Gem.DisplayMath.showNakedEquation(Gem.EquationLibrary.getByEqId(eqId)).jsItems}
+                  />
+                </div>
+              )}
+              {(() => {
+                const dim = Gem.Dimension.parsePhysicalNumber(this.state.searchBarText);
+                return dim ?
+                  <div className='physical-number'
+                    onClick={() => this.handleSearchBarSubmit()}>
+                    <DisplayMath stuff={dim.toDisplayMath.jsItems} /></div> :
+                  null;
+              })()}
             </div>
-            {(() => {
-              const dim = Gem.Dimension.parsePhysicalNumber(this.state.searchBarText);
-              return dim ?
-                <div className='physical-number'
-                  onClick={() => this.handleSearchBarSubmit()}>
-                  <DisplayMath stuff={dim.toDisplayMath.jsItems} /></div> :
-                null;
-            })()}
+
 
             {this.state.currentlySelected.type &&
               this.renderCurrentlySelectedInfo()

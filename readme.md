@@ -69,6 +69,7 @@ steps:
 - [x] display lines that don't start from before the variables
 - when rewriting equations, blank out equations that can't be used
 - allow dimensionless numbers
+- dragging from expr var to number should attach it
 
 ## Build notes
 
