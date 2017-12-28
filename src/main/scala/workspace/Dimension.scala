@@ -22,6 +22,7 @@ trait Dimension {
 
   def **(other: Int): Dimension = Dimension(this.units.mapValues(_ * other))
 
+  @JSExport
   lazy val toDisplayMath: DisplayMath = this match {
     case Dimension.Joule => DisplayMath("J")
     case Dimension.Newton => DisplayMath("N")

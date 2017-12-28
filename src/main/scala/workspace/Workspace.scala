@@ -1,7 +1,7 @@
 package workspace
 
 import scala.util.{Failure, Try}
-import cas.Expression
+import cas.{Expression, RealNumber}
 import wrapper.ToJS
 
 import scala.scalajs.js
@@ -18,6 +18,7 @@ case class Workspace(equations: Map[Int, Equation] = Map(),
                      numbers: Map[Int, (PhysicalNumber, Option[VarId])] = Map()) {
 
   def equationIds: js.Array[Int] = arr(equations.keySet)
+  def getEquation(id: Int): Equation = equations.get(id).orNull
   def expressionIds: js.Array[VarId] = arr(expressions.keySet)
   def numberIds: js.Array[Int] = arr(numbers.keySet)
   def getNumber(numberId: Int): PhysicalNumber = numbers.getOrElse(numberId, null)._1
@@ -172,6 +173,14 @@ case class Workspace(equations: Map[Int, Equation] = Map(),
     StringDisplay.showExpression(exprVarId, expression, varSubscripts)
   }
 
+  def getMaximallyNumericExpression(exprVarId: VarId): Expression[VarId] = {
+    val expr = expressions(exprVarId)
+    expr.vars.foldLeft(expr)((reducedExpr, varId) => this.getNumber(varId) match {
+      case None => reducedExpr
+      case Some(num) => reducedExpr.substitute(varId, RealNumber[VarId](num.value))
+    })
+  }
+
   def getExpressionDisplay(exprVarId: VarId): DisplayMath = {
     val expression = expressions(exprVarId)
     val varSubscripts: Map[VarId, Int] = (expression.vars + exprVarId).map((varId) => {
@@ -179,6 +188,11 @@ case class Workspace(equations: Map[Int, Equation] = Map(),
     }).toMap.collect({case (k, Some(v)) => k -> v})
 
     DisplayMath.showExpression(exprVarId, expression, varSubscripts)
+  }
+
+  def getVarDisplay(varId: VarId): DisplayMath = {
+    val subscripts =  Map(varId -> getVarSubscript(varId)).filter(_._2.isDefined).mapValues(_.get)
+    DisplayMath.showVariable(varId, subscripts)
   }
 
   def showVar(varId: VarId): String = StringDisplay.showVar(varId.varName, getVarSubscript(varId))

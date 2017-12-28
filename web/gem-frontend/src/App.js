@@ -64,7 +64,8 @@ class App extends Component {
       workspace: Gem.Workspace(),
       positions: Immutable.Map(),
       currentAction: null,
-      searchBarText: ''
+      searchBarText: '',
+      currentlySelected: { type: null, id: null }
     };
     this.onMouseMoveWhileDraggingThing = this.onMouseMoveWhileDraggingThing.bind(this);
     this.onMouseMoveWhileDragging = this.onMouseMoveWhileDragging.bind(this);
@@ -136,7 +137,8 @@ class App extends Component {
     const newPosition = Immutable.Map({x: Math.random() * 300, y: Math.random() * 300});
     this.setState({
       workspace: newWs,
-      positions: this.state.positions.set('equation-' + newEqId, newPosition)
+      positions: this.state.positions.set('equation-' + newEqId, newPosition),
+      currentlySelected: { type: 'equation', id: newEqId }
     });
     // bleh
     setTimeout(() => { this.refreshStoredPositions(); }, 1);
@@ -156,14 +158,16 @@ class App extends Component {
       workspace: newWs,
       positions: this.state.positions.set('number-' + newNumberId, newPosition)
     });
+
   }
-  handleStartDrag(e, thingId, ref) {
+  handleStartDrag(e, thingId, ref, selectionObject) {
     if (e.button !== 0) return;
 
     this.setState({
       currentAction: DRAGGING,
       rel: getRelativePositionOfEvent(e, ref, this.equationSpaceDiv),
-      draggedThingId: thingId
+      draggedThingId: thingId,
+      currentlySelected: selectionObject
     });
 
     e.stopPropagation();
@@ -317,7 +321,7 @@ class App extends Component {
       return <g key={idx}>
         {minimumSpanningTree.map((tuple, idx) => {
           const [rawX1, rawY1, rawX2, rawY2] = tuple;
-          const paddedLine = makePaddedLine(rawX1, rawY1, rawX2, rawY2, 10);
+          const paddedLine = makePaddedLine(rawX1, rawY1, rawX2, rawY2, 15);
           if (paddedLine) {
             const [x1, y1, x2, y2] = paddedLine
             return <line key={idx} x1={x1} y1={y1} x2={x2} y2={y2} stroke="black" strokeDasharray="5, 8" />
@@ -334,6 +338,37 @@ class App extends Component {
       this.addNumber(num);
       this.setState({ searchBarText: '' });
     }
+  }
+  deleteEquation(id) {
+    this.setState({ workspace: this.state.workspace.deleteEquation(id),
+                    currentlySelected: {type: null, id: null} });
+  }
+  renderCurrentlySelectedInfo () {
+    const selectedType = this.state.currentlySelected.type;
+    const selectedId = this.state.currentlySelected.id;
+    const ws = this.state.workspace;
+    if (selectedType === "equation") {
+      const equation = ws.getEquation(selectedId);
+
+      return <div className='info-box'>
+        <DisplayMath
+          stuff={ws.getEquationDisplay(selectedId).jsItems}
+        />
+        <p>{equation.name}</p>
+        {Object.keys(equation.varNamesJs).map((varSymbol) =>
+          <div key={varSymbol}>{equation.varNamesJs[varSymbol]} &nbsp;
+            <DisplayMath
+              stuff={ws.getVarDisplay(Gem.VarId(selectedId, varSymbol)).jsItems}
+            /> ::&nbsp;
+            <DisplayMath
+              stuff={equation.dimensionsJs[varSymbol].toDisplayMath.jsItems}
+            />
+          </div>
+        )}
+        <button onClick={() => this.deleteEquation(selectedId)}>Delete</button>
+      </div>
+    }
+    return null;
   }
   render() {
     const ws = this.state.workspace;
@@ -365,7 +400,9 @@ class App extends Component {
                 ref={(div) => { this.equationRefs[equationId] = div; }}
                 >
                 <DisplayMath
-                  onSpanMouseDown={(e) => this.handleStartDrag(e, 'equation-' + equationId, this.equationRefs[equationId])}
+                  onSpanMouseDown={(e) =>
+                    this.handleStartDrag(e, 'equation-' + equationId, this.equationRefs[equationId],
+                                        { type: 'equation', id: equationId })}
                   onVarMouseDown={(e, varId) => this.handleVariableClick(e, varId)}
                   onDoubleClick={(varId) => this.addExpression(varId)}
                   varRef={(ref, varId) => { this.varRefs[varId] = ref; }}
@@ -387,7 +424,9 @@ class App extends Component {
                    style={{top: pos.get("y"), left: pos.get("x")}}
                    >
                 <DisplayMath
-                  onSpanMouseDown={(e) => this.handleStartDrag(e, 'expression-' + exprVarId, this.expressionRefs[exprVarId])}
+                  onSpanMouseDown={(e) =>
+                    this.handleStartDrag(e, 'expression-' + exprVarId, this.expressionRefs[exprVarId],
+                                        { type: 'expression', id: exprVarId })}
                   onVarMouseDown={(e, varToRemoveId) => this.handleExpressionVariableClick(e, exprVarId, varToRemoveId)}
                   onDoubleClick={null}
                   varRef={null}
@@ -408,13 +447,14 @@ class App extends Component {
                           key={numberId}>
                 <DisplayMath
                   stuff={number.toDisplayMath.jsItems}
-                  onSpanMouseDown={(e) => this.handleStartDrag(e, 'number-' + numberId, this.numberRefs[numberId])}
+                  onSpanMouseDown={(e) =>
+                    this.handleStartDrag(e, 'number-' + numberId, this.numberRefs[numberId], { type: 'number', id: numberId })}
                   />
               </div>;
             })}
           </div>
           <div className="sidebar">
-            <div>
+            <div className='search-div'>
               <input className='search-bar'
                 value={this.state.searchBarText}
                 onChange={(e) => { this.setState({ searchBarText: e.target.value })}}
@@ -423,6 +463,10 @@ class App extends Component {
                     this.handleSearchBarSubmit();
                   }
                 }}/>
+              <button onClick={() => { this.addEquation("ke_def") }}>
+              Add KE equation</button>
+              <button onClick={() => { this.addEquation("pe_def") }}>
+                Add PE equation</button>
             </div>
             {(() => {
               const dim = Gem.Dimension.parsePhysicalNumber(this.state.searchBarText);
@@ -432,15 +476,12 @@ class App extends Component {
                   <DisplayMath stuff={dim.toDisplayMath.jsItems} /></div> :
                 null;
             })()}
-            <button onClick={() => { this.addEquation("ke_def") }}>
-              Add KE equation</button>
-            <button onClick={() => { this.addEquation("pe_def") }}>
-              Add PE equation</button>
 
+            {this.state.currentlySelected.type &&
+              this.renderCurrentlySelectedInfo()
+            }
           </div>
         </div>
-
-
       </div>
     );
   }

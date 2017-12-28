@@ -28,8 +28,10 @@
 
 .sidebar {
   flex: 1;
-  padding: 15px;
   border-left: solid;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 
@@ -72,7 +74,22 @@
   width: 100%;
 }
 
+.search-div {
+  padding: 20px;
+}
+
 .search-bar {
   width: 100%;
   font-size: 20px;
+}
+
+.info-box {
+  border-top: solid;
+  padding: 20px;
+  font-size: 18px;
+}
+
+.info-box .equation-var {
+  color: green;
+  font-weight: bold;
 }

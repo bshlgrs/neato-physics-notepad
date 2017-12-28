@@ -75,7 +75,7 @@ object DisplayMath {
     }
   }
 
-  def showVar(varId: VarId, mbNum: Option[Int]): VariableSpan = {
+  def makeVariableSpan(varId: VarId, mbNum: Option[Int]): VariableSpan = {
     val name = varId.varName
 
     def showVarWithStr(numStr: String): List[DisplayMathElement] = {
@@ -98,11 +98,15 @@ object DisplayMath {
   }
 
   def showEquation(equation: Equation, equationIdx: Int, varSubscripts: Map[String, Int]): DisplayMath = {
-    equation.display((varName: String) => showVar(VarId(equationIdx, varName), varSubscripts.get(varName)))
+    equation.display((varName: String) => makeVariableSpan(VarId(equationIdx, varName), varSubscripts.get(varName)))
   }
 
   def showExpression(varId: VarId, expression: Expression[VarId], varSubscripts: Map[VarId, Int]): DisplayMath = {
-    DisplayMath(List(showVar(varId, varSubscripts.get(varId)), Span(" = "))) ++
-      render(expression.mapVariables(varId => showVar(varId, varSubscripts.get(varId))))
+    DisplayMath(List(makeVariableSpan(varId, varSubscripts.get(varId)), Span(" = "))) ++
+      render(expression.mapVariables(varId => makeVariableSpan(varId, varSubscripts.get(varId))))
+  }
+
+  def showVariable(varId: VarId, varSubscripts: Map[VarId, Int]): DisplayMath = {
+    DisplayMath(List(makeVariableSpan(varId, varSubscripts.get(varId))))
   }
 }

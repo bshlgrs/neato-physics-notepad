@@ -2,6 +2,10 @@ package workspace
 
 import cas.Expression
 
+import scala.scalajs.js
+import scala.scalajs.js.annotation.{JSExport, JSExportAll}
+
+@JSExportAll
 case class Equation(name: String,
                     expr: Expression[String],
                     display: (String => VariableSpan) => DisplayMath,
@@ -19,4 +23,7 @@ case class Equation(name: String,
   def exprWithEquationId(id: Int): Expression[VarId] = expr.mapVariables((name) => VarId(id, name))
 
   def vars: Set[String] = expr.vars
+
+  def varNamesJs: js.Dictionary[String] = js.Dictionary(varNames.toSeq :_*)
+  def dimensionsJs: js.Dictionary[Dimension] = js.Dictionary(dimensions.toSeq :_*)
 }
