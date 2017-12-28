@@ -264,6 +264,7 @@ trait Expression[A] {
     }
     case _: Variable[_] => None
     case RealNumber(x) => Some(x)
+    case NamedNumber(x, _) => Some(x)
     case RationalNumber(n, d) => Some(n.toDouble / d)
   }
 }
@@ -281,6 +282,8 @@ case class RealNumber[A](value: Double) extends Constant[A]
 case class RationalNumber[A](numerator: Int, denominator: Int = 1) extends Constant[A] {
   assert(denominator > 0, "denominator must be > 0")
 }
+case class NamedNumber[A](value: Double, name: String) extends Constant[A]
+
 object RationalNumber {
   def zero = RationalNumber(0)
   def one = RationalNumber(1)

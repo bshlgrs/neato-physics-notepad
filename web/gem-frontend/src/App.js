@@ -233,6 +233,7 @@ class App extends Component {
     if (draggedOntoVarId) {
       const draggedToEquation = draggedOntoVarId.eqIdx;
       if (draggedToEquation) {
+        console.log("here");
         // TODO: check dragged-to equation is legit;
         this.setState({ workspace: this.state.workspace.rewriteExpression(exprVarId, varToRemoveId, draggedToEquation) })
       }
@@ -427,10 +428,14 @@ class App extends Component {
             </svg>
             {ws.equationIds.map((equationId, idx) => {
               const pos = this.state.positions.get('equation-' + equationId);
-
+              const muted = currentAction === DRAGGING_FROM_EXPR_VAR && (
+                ws.possibleRewritesForExprJs(this.state.draggedFromExprVarId)
+                  .filter((x) => x[1] === equationId)
+                  .size === 0
+              );
               return <div
                 key={idx}
-                className="equation"
+                className={"equation " + (muted ? "muted" : "")}
                 style={{top: pos.get("y"), left: pos.get("x")}}
                 ref={(div) => { this.equationRefs[equationId] = div; }}
                 >
@@ -442,6 +447,7 @@ class App extends Component {
                   onDoubleClick={(varId) => this.addExpression(varId)}
                   varRef={(ref, varId) => { this.varRefs[varId] = ref; }}
                   workspace={ws}
+                  muted={muted}
                   draggedFromVarId={this.state.draggedFromVarId}
                   idPrefix="variable-"
                   currentAction={currentAction}
@@ -490,7 +496,7 @@ class App extends Component {
               </div>;
             })}
           </div>
-          <div className="sidebar">
+          <div className="sidebar" onClick={() => this.searchBarEl.focus()}>
             <div className='search-div'>
               <input className='search-bar'
                 value={this.state.searchBarText}
@@ -500,6 +506,7 @@ class App extends Component {
                     this.handleSearchBarSubmit();
                   }
                 }}
+                ref={(el) => { this.searchBarEl = el; }}
                 placeholder="Search for equations or type numbers here"/>
               {Gem.EquationLibrary.relevantEquationIds(this.state.searchBarText).map((eqId) =>
                 <div key={eqId} className='search-result' onClick={() => this.addEquation(eqId)}>

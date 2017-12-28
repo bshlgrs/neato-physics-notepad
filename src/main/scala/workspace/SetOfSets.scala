@@ -1,9 +1,12 @@
 package workspace
 
+import scala.scalajs.js.annotation.JSExport
+
 case class SetOfSets[A](sets: Set[Set[A]]) {
   def getSet(item: A): Set[A] = {
     sets.find(_.contains(item)).getOrElse(Set(item))
   }
+  @JSExport
   def testEqual(x: A, y: A): Boolean = {
     this.getSet(x) == this.getSet(y)
   }

@@ -18,8 +18,10 @@ const DisplayMathElement = (props) => {
     const varId = el.varId;
     let color;
     if (props.currentAction === 'dragging-from-var') {
-      if (props.workspace.getDimension(props.draggedFromVarId).equalUnits(props.workspace.getDimension(varId))) {
-        if (props.draggedFromVarId.toString() === varId.toString()) {
+      const draggedFromVarId = props.draggedFromVarId
+      if (props.workspace.getDimension(draggedFromVarId).equalUnits(props.workspace.getDimension(varId))) {
+        if (draggedFromVarId.toString() === varId.toString() ||
+            props.workspace.equalities.testEqual(varId, draggedFromVarId)) {
           color = "green";
         } else {
           color = "red";
@@ -27,6 +29,9 @@ const DisplayMathElement = (props) => {
       } else {
         color = 'grey';
       }
+    }
+    if (props.muted) {
+      color = 'grey';
     }
 
     return <span

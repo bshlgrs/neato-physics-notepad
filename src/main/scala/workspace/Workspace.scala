@@ -57,8 +57,6 @@ case class Workspace(equations: Map[Int, Equation] = Map(),
     arr(allVarIds.groupBy(varId => equalities.getSet(varId)).values.map(arr))
   }
 
-
-
   def rewriteExpression(exprVarId: VarId, varToRemoveId: VarId, equationIdToUse: Int): Workspace = {
     // This method means "Solve equation number equationIdToUse for varToRemove and then substitute the result into the
     // expression for exprVar."
@@ -235,7 +233,6 @@ case class Workspace(equations: Map[Int, Equation] = Map(),
   }
 
   private def arr[A](x: Iterable[A]): js.Array[A] = js.Array(x.toSeq : _*)
-
 }
 
 case class InvalidActionException(comment: String) extends RuntimeException
