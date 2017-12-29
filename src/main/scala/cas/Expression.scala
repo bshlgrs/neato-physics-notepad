@@ -393,10 +393,6 @@ object ExpressionDisplay {
 
   def wrap(tuple: (String, Int), binding: Int): String = if (tuple._2 >= binding) tuple._1 else s"(${tuple._1})"
 
-  def main(args: Array[String]): Unit = {
-    println(orderWithConstantsFirst(Set[Expression[String]](Variable("x"), Variable("y"), RationalNumber[String](2))))
-  }
-
   // todo: use these
   def unicodeForNumberSuperscript(int: Int): Char = "⁰¹²³⁴⁵⁶⁷⁸⁹".charAt(int)
   def unicodeForNumberSubscript(int: Int): Char = "₀₁₂₃₄₅₆₇₈₉".charAt(int)

@@ -5,14 +5,16 @@ import cas.{Expression, RationalNumber, Variable}
 import scala.scalajs.js
 import scala.scalajs.js.annotation.{JSExport, JSExportAll}
 
+@JSExportAll
 trait Equation {
   def expr: Expression[String]
   def display(f: String => BuckTex): BuckTex
   def staticDimensions: Map[String, Dimension]
   def varName(varSymbol: String): Option[String]
+  def varNameJs(varSymbol: String): String = varName(varSymbol).orNull
   def showNaked: BuckTex = display((varName: String) => CompileToBuckTex.makeVariableSpan(VarId(-1, varName), None))
   def vars: Set[String] = expr.vars
-
+  def varsJs: js.Array[String] = js.Array(vars.toList :_*)
   def solve(varName: String, selfEqId: Int): Expression[VarId] = {
     // TODO: check on the `head` here
     expr.solve(varName).head.mapVariables((name) => VarId(selfEqId, name))

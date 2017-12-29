@@ -129,6 +129,8 @@ case class Workspace(equations: Map[Int, Equation] = Map(),
     // TODO: Also you can check it by looking for the dimensions of variables it's equated to, or its number.
   }
 
+  def getDimensionJs(varId: VarId): Dimension = getDimension(varId).orNull
+
   def possibleRewritesForExpr(varId: VarId): Set[(VarId, Int)] = {
     val expr = expressions(varId)
     for {
@@ -211,6 +213,16 @@ case class Workspace(equations: Map[Int, Equation] = Map(),
   }
 
   private def arr[A](x: Iterable[A]): js.Array[A] = js.Array(x.toSeq : _*)
+
+  def consistentUnits(varId1: VarId, varId2: VarId): Boolean = (getDimension(varId1), getDimension(varId2)) match {
+    case (Some(x), Some(y)) => x.equalUnits(y)
+    case _ => true
+  }
+
+  def consistentUnitsWithDimension(varId1: VarId, dimension: Dimension): Boolean = getDimension(varId1) match {
+    case Some(var1Dimension) => var1Dimension.equalUnits(dimension)
+    case _ => true
+  }
 }
 
 case class InvalidActionException(comment: String) extends RuntimeException

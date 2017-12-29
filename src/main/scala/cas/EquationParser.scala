@@ -9,7 +9,7 @@ import scala.scalajs.js.annotation.{JSExport, JSExportTopLevel}
 @JSExportTopLevel("Gem.EquationParser")
 object EquationParser {
   @JSExport
-  def parseEquationJS(equationString: String): CustomEquation = parseEquation(equationString).orNull
+  def parseEquationJs(equationString: String): CustomEquation = parseEquation(equationString).orNull
 
   def parseEquation(equationString: String): Option[CustomEquation] = for {
     list: List[String] <- Option(equationString.split('=').toList)
@@ -40,7 +40,11 @@ object EquationParser {
   }
 
   val number: P[Expression[String]] = P( CharIn('0'to'9').rep(1).!.map(str => RationalNumber[String](str.toInt)))
-  val variable: P[Expression[String]] = P( CharIn('a' to 'z', 'A' to 'Z', Seq('_')).rep(1).!.map(str => Variable(str)))
+  val variable: P[Expression[String]] = P(
+    (CharIn('a' to 'z', 'A' to 'Z').rep(1).! ~ ("_" ~ CharIn('a' to 'z', 'A' to 'Z').rep(1).!).?).map({
+      case (x, None) => Variable(x)
+      case (x, Some(subscript)) => Variable(x + "_" + subscript)
+    }))
   lazy val parens: P[Expression[String]] = P( "(" ~/ addSub ~ ")" )
   val atom: P[Expression[String]] = P( number | variable | parens )
 
@@ -51,10 +55,4 @@ object EquationParser {
   val divMul: P[Expression[String]] = P( power ~ (CharIn("*/").! ~/ power).rep ).map(eval)
   val addSub: P[Expression[String]] = P( divMul ~ (CharIn("+-").! ~/ divMul).rep ).map(eval)
   val expr: P[Expression[String]]   = P( " ".rep ~ addSub ~ " ".rep ~ End )
-
-  def main(args: Array[String]): Unit = {
-    println(expr.parse("1/2 * m * v ** 2"))
-    println(EquationParser.parseEquation("E_K = 1/2 * m * v**2"))
-    println(EquationParser.parseEquation("E_K = 1/2 * m * g * h"))
-  }
 }

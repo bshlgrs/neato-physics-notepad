@@ -130,9 +130,9 @@ class App extends Component {
       this.refreshStoredPositions();
     }
   }
-  addEquation(eqId) {
+  addEquation(equation) {
     const ws = this.state.workspace;
-    const newWs = ws.addEquation(Gem.EquationLibrary.getByEqId(eqId));
+    const newWs = ws.addEquation(equation);
     const newEqId = newWs.lastEqId;
 
     const newPosition = Immutable.Map({x: Math.random() * 300, y: Math.random() * 300});
@@ -234,9 +234,9 @@ class App extends Component {
     if (draggedOntoVarId) {
       const draggedToEquation = draggedOntoVarId.eqIdx;
       if (draggedToEquation) {
-        console.log("here");
         // TODO: check dragged-to equation is legit;
-        this.setState({ workspace: this.state.workspace.rewriteExpression(exprVarId, varToRemoveId, draggedToEquation) })
+        this.setState({ workspace:
+          this.state.workspace.rewriteExpression(exprVarId, varToRemoveId, draggedToEquation) })
       }
     }
   }
@@ -344,7 +344,7 @@ class App extends Component {
 
     const relevantEquations = Gem.EquationLibrary.relevantEquationIds(this.state.searchBarText);
     if (relevantEquations[0]) {
-      this.addEquation(relevantEquations[0]);
+      this.addEquation(Gem.EquationLibrary.getByEqId(relevantEquations[0]));
       this.setState({ searchBarText: '' });
     }
   }
@@ -376,12 +376,16 @@ class App extends Component {
           el={ws.getEquationBuckTex(selectedId)}
         />
         <p>{equation.name}</p>
-        {Object.keys(equation.varNamesJs).map((varSymbol) =>
-          <div key={varSymbol}>{equation.varNamesJs[varSymbol]} &nbsp;
-            <BuckTex inline el={ws.getVariableBuckTex(Gem.VarId(selectedId, varSymbol))} /> ::&nbsp;
-            <BuckTex inline el={equation.dimensionsJs[varSymbol].toBuckTex} />
+        {equation.varsJs.map((varSymbol) => {
+          const varId = Gem.VarId(selectedId, varSymbol);
+          const varName = equation.varNameJs(varSymbol);
+          const dimension = ws.getDimensionJs(varId);
+
+          return <div key={varSymbol}>{varName || "unnamed"} &nbsp;
+            <BuckTex inline el={ws.getVariableBuckTex(varId)} />
+            {dimension && [" :: ", <BuckTex key={2} inline el={dimension.toBuckTex} />]}
           </div>
-        )}
+        })}
         <button onClick={() => this.deleteEquation(selectedId)}>Delete equation</button>
       </div>
     } else if (selectedType === "expression") {
@@ -413,7 +417,7 @@ class App extends Component {
 
     return (
       <div className="container">
-        <div className="header"><h3>Buck's neato physics notebook</h3></div>
+        <div className="header"><h3>Buck's neato physics notepad</h3></div>
 
         <div className="main-app-div">
           <div className="equation-space" ref={(div) => { this.equationSpaceDiv = div; }}
@@ -479,7 +483,7 @@ class App extends Component {
               const pos = this.state.positions.get('number-' + numberId);
               const number = ws.getNumber(numberId);
               const muted = currentAction === DRAGGING_FROM_VAR && (
-                !ws.getDimension(this.state.draggedFromVarId).equalUnits(number.dimension));
+                !ws.consistentUnitsWithDimension(this.state.draggedFromVarId, number.dimension));
 
               return <div className='physical-number'
                           style={{position: 'absolute', top: pos.get("y"), left: pos.get("x"), color: (muted && 'grey')}}
@@ -505,11 +509,14 @@ class App extends Component {
                 }}
                 ref={(el) => { this.searchBarEl = el; }}
                 placeholder="Search for equations or type numbers here"/>
-              {Gem.EquationLibrary.relevantEquationIds(this.state.searchBarText).map((eqId) =>
-                <div key={eqId} className='search-result' onClick={() => this.addEquation(eqId)}>
-                  <BuckTex el={Gem.EquationLibrary.getByEqId(eqId).showNaked} />
-                </div>
-              )}
+              {Gem.EquationLibrary.relevantEquationIds(this.state.searchBarText).map((eqId) => {
+                const equation = Gem.EquationLibrary.getByEqId(eqId);
+                return <div key={eqId} className='search-result'
+                  onClick={() => this.addEquation(equation)}>
+                  <BuckTex el={equation.showNaked} />
+                  <p>{equation.name}</p>
+                </div>;
+              })}
               {(() => {
                 const dim = Gem.Dimension.parsePhysicalNumber(this.state.searchBarText);
                 return dim ?
@@ -518,12 +525,16 @@ class App extends Component {
                     <BuckTex el={dim.toBuckTex} /></div> :
                   null;
               })()}
+              {(() => {
+                const eq = Gem.EquationParser.parseEquationJs(this.state.searchBarText);
+                return eq && <div className='search-result' onClick={() => this.addEquation(eq)}>
+                  <BuckTex el={eq.showNaked} />
+                  <p>Custom equation</p>
+                </div>;
+              })()}
             </div>
 
-
-            {this.state.currentlySelected.type &&
-              this.renderCurrentlySelectedInfo()
-            }
+            {this.state.currentlySelected.type && this.renderCurrentlySelectedInfo()}
           </div>
         </div>
       </div>

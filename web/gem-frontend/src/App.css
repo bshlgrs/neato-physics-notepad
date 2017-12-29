@@ -102,4 +102,11 @@
 .search-result {
   font-size: 24px;
   padding: 6px;
+  margin: 10px;
+  background-color: lightgrey;
+
+}
+
+.search-result p {
+  font-size: 16px;
 }

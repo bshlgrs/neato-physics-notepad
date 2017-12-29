@@ -44,10 +44,10 @@ const BuckTexVariable = (props) => {
   const varId = el.data.varId;
   let color;
   if (props.currentAction === 'dragging-from-var') {
-    const draggedFromVarId = props.draggedFromVarId
-    if (props.workspace.getDimension(draggedFromVarId).equalUnits(props.workspace.getDimension(varId))) {
-      if (draggedFromVarId.toString() === varId.toString() ||
-          props.workspace.equalities.testEqual(varId, draggedFromVarId)) {
+    const draggedFromVarId = props.draggedFromVarId;
+    const ws = props.workspace;
+    if (ws.consistentUnits(draggedFromVarId, varId)) {
+      if (props.workspace.equalities.testEqual(varId, draggedFromVarId)) {
         color = "green";
       } else {
         color = "red";

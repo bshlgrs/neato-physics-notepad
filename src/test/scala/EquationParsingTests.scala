@@ -7,5 +7,9 @@ class EquationParsingTests extends FunSpec {
     it("works") {
       assert(EquationParser.parseEquation("E_K = 1/2 * m * v**2").contains(CustomEquation(Variable("E_K"), Variable("m") * (Variable("v") ** 2) / 2)))
     }
+
+    it("test") {
+      println(EquationParser.parseEquation("E = E_"))
+    }
   }
 }
