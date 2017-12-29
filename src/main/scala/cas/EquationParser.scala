@@ -4,7 +4,13 @@ import fastparse.WhitespaceApi
 import fastparse.core.Parsed
 import workspace.CustomEquation
 
+import scala.scalajs.js.annotation.{JSExport, JSExportTopLevel}
+
+@JSExportTopLevel("Gem.EquationParser")
 object EquationParser {
+  @JSExport
+  def parseEquationJS(equationString: String): CustomEquation = parseEquation(equationString).orNull
+
   def parseEquation(equationString: String): Option[CustomEquation] = for {
     list: List[String] <- Option(equationString.split('=').toList)
     if list.size == 2

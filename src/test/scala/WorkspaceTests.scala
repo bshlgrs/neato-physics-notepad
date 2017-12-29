@@ -31,8 +31,6 @@ class WorkspaceTests extends FunSpec {
 
       assert(ws2.possibleRewritesForExpr(VarId(0, "v")) == Set((VarId(0, "m"), 1)))
     }
-
-
   }
 
   describe("substitution") {
@@ -60,7 +58,7 @@ class WorkspaceTests extends FunSpec {
         .addExpression(VarId(0, "v"))
         .rewriteExpression(VarId(0, "v"), VarId(0, "KE"), 1)
 
-      println(ws.expressions(VarId(0, "v")))
+      assert(ws.expressions(VarId(0, "v")) == (Variable(VarId(1, "g")) * Variable(VarId(1, "h")) * 2).sqrt)
     }
   }
 }
