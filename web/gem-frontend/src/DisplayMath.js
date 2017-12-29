@@ -56,8 +56,8 @@ const DisplayMathElement = (props) => {
       <div className='numerator'><DisplayMath {...other} stuff={el.numerator.jsItems} /></div>
       <div className='denominator'><DisplayMath {...other} stuff={el.denominator.jsItems} /></div>
     </div>;
-  } else if (name === "box") {
-    return <Box {...other} stuff={el.stuff.jsItems} />;
+  } else if (name === "bottomJustifiedRow") {
+    return <Box {...other} stuff={el.contents.jsItems} />;
   } else {
     debugger;
   }

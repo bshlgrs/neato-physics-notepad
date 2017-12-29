@@ -4,6 +4,7 @@ import scala.scalajs.js.annotation.{JSExport, JSExportTopLevel}
 import scala.util.Try
 
 trait Dimension {
+
   val units: Map[SiUnit, Int]
 
   def *(other: Dimension): Dimension = Dimension(
@@ -23,13 +24,13 @@ trait Dimension {
   def **(other: Int): Dimension = Dimension(this.units.mapValues(_ * other))
 
   @JSExport
-  lazy val toDisplayMath: DisplayMath = this match {
-    case Dimension.Joule => DisplayMath("J")
-    case Dimension.Newton => DisplayMath("N")
-    case _ => units.toList.sortBy(_._1.symbol).map({
-      case (unit, 1) => DisplayMath(unit.symbol)
-      case (unit, power) => DisplayMath(List(Span(" " + unit.symbol), Sup(List(Span(power.toString)))))
-    }).reduce(_ ++ _)
+  lazy val toBuckTex: BuckTex = this match {
+    case Dimension.Joule => Text("J")
+    case Dimension.Newton => Text("N")
+    case _ => CompileToBuckTex.horizontalBox(units.toList.sortBy(_._1.symbol).map({
+      case (unit, 1) => Text(unit.symbol)
+      case (unit, power) => CompileToBuckTex.horizontalBox(List(Text(" " + unit.symbol), Sup(List(Text(power.toString)))))
+    }))
   }
 
   @JSExport

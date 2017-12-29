@@ -155,12 +155,12 @@ case class Workspace(equations: Map[Int, Equation] = Map(),
     ???
   }
 
-  def getEquationDisplay(idx: Int): DisplayMath = {
+  def getEquationBuckTex(idx: Int): BuckTex = {
     val equation = equations(idx)
     val varSubscripts: Map[String, Int] = equation.vars.map((varName) => {
       varName -> getVarSubscript(VarId(idx, varName))
     }).toMap.collect({case (k, Some(v)) => k -> v})
-    DisplayMath.showEquation(equation, idx, varSubscripts)
+    CompileToBuckTex.showEquation(equation, idx, varSubscripts)
   }
 
 //  def showExpression(exprVarId: VarId): String = {
