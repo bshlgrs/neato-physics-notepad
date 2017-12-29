@@ -387,12 +387,15 @@ class App extends Component {
     } else if (selectedType === "expression") {
       return <div className='info-box expression-info-box'>
         <BuckTex el={ws.getExpressionBuckTex(selectedId)} />
+        <div>TODO: display the dimensions of the quantity</div>
         <button onClick={() => this.deleteExpression(selectedId)}>Delete expression</button>
       </div>
     } else if (selectedType === "number") {
       const number = ws.getNumber(selectedId);
       return <div className='info-box expression-info-box'>
         <BuckTex el={number.toBuckTex} />
+        <div>TODO: allow you to change the units the number is displayed in</div>
+        <div>TODO: show some quantities with the same dimension with comparable sizes</div>
         <button onClick={() => this.deleteNumber(selectedId)}>Delete number</button>
         {ws.getVarIdOfNumber(selectedId) &&
           <button onClick={() => this.detachNumber(selectedId)}>Detach number</button>}
