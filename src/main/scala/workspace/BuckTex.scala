@@ -131,7 +131,6 @@ object CompileToBuckTex {
 
     val rhs = expression.mapVariables(varId => makeVariableSpan(varId, varSubscripts.get(varId)))
     val rhsString = this.compileExpression(rhs)
-    println("rhs is", rhs, rhsString)
 
     CompileToBuckTex.centeredBox(List(makeVariableSpan(varId, varSubscripts.get(varId)), Text(" = "),
       rhsString) ++
@@ -163,7 +162,6 @@ object CompileToBuckTex {
     val outsideItems = orderWithConstantsFirst(items -- itemsInsideRadical)
     val radicalItems = orderWithConstantsFirst(itemsInsideRadical.collect({ case Power(base, _) => base }))
 
-    println("lol wut", orderWithConstantsFirst(itemsInsideRadical))
     outsideItems -> radicalItems
   }
 

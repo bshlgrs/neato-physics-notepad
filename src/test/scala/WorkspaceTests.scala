@@ -16,7 +16,6 @@ class WorkspaceTests extends FunSpec {
       assert(ws.expressions(VarId(0, "v")) == (RationalNumber(2) * Variable(VarId(0, "E_K")) / Variable(VarId(0, "m"))).sqrt)
 
       val ws2 = ws.rewriteExpression(VarId(0, "v"), VarId(0, "E_K"), 1)
-//      assert(ws2.exprs((0, "v")) == (RationalNumber(2) * Variable(1 -> "g") * Variable(1 -> "h")).sqrt)
     }
   }
 
@@ -63,7 +62,7 @@ class WorkspaceTests extends FunSpec {
   }
 
   describe("regressions") {
-    it("works") {
+    it("does one thing") {
       val E_T = VarId(2, "E_T")
       val ws = Workspace.empty
         .addEquation(EquationParser.parseEquation("KE = 1/2 * m * v**2").get)
@@ -79,8 +78,53 @@ class WorkspaceTests extends FunSpec {
       assert(ws2.expressions(VarId(2, "E_T")) == Variable(VarId(0, "m")) * (Variable(VarId(0, "v")) ** 2) / 2 + Variable(VarId(1, "PE")))
     }
 
-    it("compares stuff reasonably") {
+    it("does another thing") {
+      val E_T = VarId(2, "E_T")
+      val ws = Workspace.empty
+        .addEquation(EquationLibrary.getByEqId("ke_def"))
+        .addEquation(EquationLibrary.getByEqId("pe_def"))
+        .addEquation(EquationParser.parseEquation("E_T = E_K + E_P").get)
+        .addEquality(VarId(0, "E_K"), VarId(2, "E_K"))
+        .addEquality(VarId(1, "E_P"), VarId(2, "E_P"))
+        .addExpression(E_T)
 
+      assert(ws.expressions(VarId(2, "E_T")) == Variable(VarId(2, "E_K")) + Variable(VarId(2, "E_P")))
+
+      val ws2 = ws.rewriteExpression(E_T, VarId(0, "E_K"), 0)
+      assert(ws2.expressions(VarId(2, "E_T")) == Variable(VarId(0, "m")) * (Variable(VarId(0, "v")) ** 2) / 2 + Variable(VarId(1, "E_P")))
+
+      val ws3 = ws2.rewriteExpression(E_T, VarId(1, "E_P"), 1)
+
+      val potential_energy_expr = Variable(VarId(1,"h")) * Variable(VarId(1,"m")) * Variable(VarId(1,"g"))
+      assert(ws3.expressions(VarId(2, "E_T")) == Variable(VarId(0, "m")) * (Variable(VarId(0, "v")) ** 2) / 2 +
+        potential_energy_expr)
+    }
+
+    it("does a third thing") {
+      val E_T = VarId(2, "E_T")
+      val ws = Workspace.empty
+        .addEquation(EquationLibrary.getByEqId("ke_def"))
+        .addEquation(EquationLibrary.getByEqId("pe_def"))
+        .addEquation(EquationParser.parseEquation("E_T = E_K + E_P").get)
+        .addEquality(VarId(0, "E_K"), VarId(2, "E_K"))
+        .addEquality(VarId(1, "E_P"), VarId(2, "E_P"))
+        .addExpression(E_T)
+        .rewriteExpression(E_T, VarId(0, "E_K"), 0)
+
+      ws.addNumber(PhysicalNumber(5, Dimension.Joule))
+          .attachNumber(0, VarId(2, "E_T"))
+    }
+
+    it("has correct rewrites") {
+      val ws = Workspace.empty
+        .addEquation(EquationLibrary.getByEqId("ke_def"))
+        .addEquation(EquationLibrary.getByEqId("pe_def"))
+        .addEquality(VarId(0, "m"), VarId(1, "m"))
+        .addEquality(VarId(0, "E_K"), VarId(1, "E_P"))
+        .addExpression(VarId(0, "v"))
+        .rewriteExpression(VarId(0, "v"), VarId(0, "E_K"), 1)
+      println(ws.expressions)
+      println(ws.possibleRewritesForExpr(VarId(0, "v")))
     }
   }
 }

@@ -1,6 +1,6 @@
 package workspace
 
-import cas.{Expression, RationalNumber, Variable}
+import cas.{EquationParser, Expression, RationalNumber, Variable}
 
 import scala.scalajs.js
 import scala.scalajs.js.annotation.{JSExport, JSExportAll}
@@ -71,5 +71,24 @@ object Equation {
       rhsVars.mapValues(_._3) + (lhs._1 -> lhs._3),
       rhsVars.mapValues(_._2) + (lhs._1 -> lhs._2),
       tags.split(' ').toSet)
+  }
+
+  def buildFaster(name: String, equationString: String, varNamesAndDimensions: Map[String, (String, Dimension)], tags: String): LibraryEquation = {
+    val nakedEquation = EquationParser.parseEquation(equationString).get
+
+    def display(f: (String => BuckTex)): BuckTex = {
+      CompileToBuckTex.centeredBox(List(
+        CompileToBuckTex.compileExpression(nakedEquation.lhs.mapVariables(f)), Text(" = "),
+        CompileToBuckTex.compileExpression((nakedEquation.rhs).mapVariables(f))))
+    }
+
+    LibraryEquation(
+      name,
+      nakedEquation.expr,
+      display,
+      varNamesAndDimensions.mapValues(_._2),
+      varNamesAndDimensions.mapValues(_._1),
+      tags.split(' ').toSet
+    )
   }
 }

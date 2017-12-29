@@ -37,7 +37,8 @@ object EquationLibrary {
       Map("g" -> (1, "Gravitational acceleration", Meter / Second / Second),
         "m" -> (1, "Mass", Kilogram)),
       "force gravity"
-    )
+    ),
+//    'momentum_def' => Equation.buildFaster("Definition of momentumj")
   )
 
   // unsafe

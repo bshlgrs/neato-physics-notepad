@@ -140,7 +140,7 @@ case class Workspace(equations: Map[Int, Equation] = Map(),
       varId2 <- expr.vars
       (otherEquationId, otherEquation) <- equations
       // if otherEquation is actually a different equation than the one this variable comes from
-      if otherEquationId != varId2.eqIdx
+//      if otherEquationId != varId2.eqIdx
       // if otherEquation contains a related variable
       if otherEquation.expr.vars.exists((varName) => equalities.testEqual(VarId(otherEquationId, varName), varId2))
     } yield (varId2, otherEquationId)

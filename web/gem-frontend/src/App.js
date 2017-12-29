@@ -61,13 +61,7 @@ const checkCollisionWithRef = (ref, pageX, pageY) => {
 class App extends Component {
   constructor () {
     super();
-    this.state = {
-      workspace: Gem.Workspace(),
-      positions: Immutable.Map(),
-      currentAction: null,
-      searchBarText: '',
-      currentlySelected: { type: null, id: null }
-    };
+    this.state = this.getInitialState();
     this.onMouseMoveWhileDraggingThing = this.onMouseMoveWhileDraggingThing.bind(this);
     this.onMouseMoveWhileDragging = this.onMouseMoveWhileDragging.bind(this);
     this.onMouseUp = this.onMouseUp.bind(this);
@@ -79,6 +73,15 @@ class App extends Component {
     this.equationRefs = {};
     this.numberRefs = {};
     this.numberPositions = {};
+  }
+  getInitialState () {
+    return {
+      workspace: Gem.Workspace(),
+      positions: Immutable.Map(),
+      currentAction: null,
+      searchBarText: '',
+      currentlySelected: { type: null, id: null }
+    };
   }
   refreshStoredPositions () {
     const parentPos = getPosition(this.equationSpaceDiv);
@@ -237,6 +240,20 @@ class App extends Component {
         // TODO: check dragged-to equation is legit;
         this.setState({ workspace:
           this.state.workspace.rewriteExpression(exprVarId, varToRemoveId, draggedToEquation) })
+      }
+    } else {
+      const ws =  this.state.workspace
+      const draggedOntoNumberId = this.getDraggedOntoNumberId(e.pageX, e.pageY);
+      if (draggedOntoNumberId !== null) {
+        const number = ws.getNumber(draggedOntoNumberId);
+
+        if (ws.consistentUnitsWithDimension(varToRemoveId, number.dimension)) {
+          this.setState({ workspace: ws.attachNumberJs(draggedOntoNumberId, varToRemoveId) });
+        } else {
+          console.log("dimensions don't match:", number.dimension.toString());
+        }
+      } else {
+        console.log("not dragged onto something");
       }
     }
   }
@@ -426,7 +443,13 @@ class App extends Component {
 
     return (
       <div className="container">
-        <div className="header"><h3>Buck's neato physics notepad</h3></div>
+        <div className="header">
+          <h3>Buck's neato physics notepad</h3>
+          <div>
+            <button style={{fontSize: '20px'}} onClick={() => this.setState(this.getInitialState())} >
+              Reset</button>
+          </div>
+        </div>
 
         <div className="main-app-div">
           <div className="equation-space" ref={(div) => { this.equationSpaceDiv = div; }}
@@ -441,8 +464,9 @@ class App extends Component {
               const muted = currentAction === DRAGGING_FROM_EXPR_VAR && (
                 ws.possibleRewritesForExprJs(this.state.draggedFromExprVarId)
                   .filter((x) => x[1] === equationId)
-                  .size === 0
+                  .length === 0
               );
+
               return <div
                 key={idx}
                 className={"equation " + (muted ? "muted" : "")}

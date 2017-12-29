@@ -95,4 +95,3 @@ case object Kilogram extends SiUnit
 case object Second extends SiUnit
 case object Kelvin extends SiUnit
 case object Ampere extends SiUnit
-
