@@ -58,7 +58,7 @@ class CasTests extends FunSpec {
       it("simplifies in cases of exponents") {
         assert((x ** three) * y / (x ** two) == x * y)
         assert((x ** three) * y * x * (z ** two) / (x ** two) / z == (x ** two) * y * z)
-        assert(h.sqrt * m.sqrt * g.sqrt * (m**RationalNumber(-1, 2)) * two.sqrt == g.sqrt * h.sqrt * two.sqrt)
+        assert(h.sqrt * m.sqrt * g.sqrt * (m ** RationalNumber[String](-1, 2)) * two.sqrt == g.sqrt * h.sqrt * two.sqrt)
       }
 
 //      it("is distributive") {
@@ -67,7 +67,7 @@ class CasTests extends FunSpec {
     }
 
     describe("division") {
-      it("is the same as multiplying by the reciprocal") { assert(x / y == x * (y ** RationalNumber(-1))) }
+      it("is the same as multiplying by the reciprocal") { assert(x / y == x * (y ** -1)) }
       it("simplifies") { assert((x / y) * y == x) }
       it("simplifies numbers") { assert((x / two) * two == x) }
     }
@@ -85,39 +85,40 @@ class CasTests extends FunSpec {
     }
 
     describe("rational numbers") {
+      def RationalNumberS(n: Int, d: Int = 1) = RationalNumber[String](n, d)
       it("simplifies addition") {
-        assert(RationalNumber(2) + RationalNumber(3) == RationalNumber(5))
-        assert(RationalNumber(1, 2) + RationalNumber(1, 2) == RationalNumber(1))
-        assert(RationalNumber(1, 3) + RationalNumber(1, 4) == RationalNumber(7, 12))
-        assert(RationalNumber(3, 4) + RationalNumber(1, 4) == RationalNumber(1))
+        assert(RationalNumberS(2) + RationalNumberS(3) == RationalNumberS(5))
+        assert(RationalNumberS(1, 2) + RationalNumberS(1, 2) == RationalNumberS(1))
+        assert(RationalNumberS(1, 3) + RationalNumberS(1, 4) == RationalNumberS(7, 12))
+        assert(RationalNumberS(3, 4) + RationalNumberS(1, 4) == RationalNumberS(1))
       }
 
       it("simplifies subtraction") {
-        assert(zero - RationalNumber(1, 2) == RationalNumber(-1, 2))
+        assert(zero - RationalNumberS(1, 2) == RationalNumberS(-1, 2))
       }
 
       it("simplifies multiplication") {
-        assert(RationalNumber(2) * RationalNumber(3) == RationalNumber(6))
-        assert(RationalNumber(1, 2) * RationalNumber(1, 2) == RationalNumber(1, 4))
-        assert(RationalNumber(1, 6) * RationalNumber(3, 4) == RationalNumber(1, 8))
-        assert(RationalNumber(1, 6) * RationalNumber(4, 3) == RationalNumber(2, 9))
+        assert(RationalNumberS(2) * RationalNumberS(3) == RationalNumberS(6))
+        assert(RationalNumberS(1, 2) * RationalNumberS(1, 2) == RationalNumberS(1, 4))
+        assert(RationalNumberS(1, 6) * RationalNumberS(3, 4) == RationalNumberS(1, 8))
+        assert(RationalNumberS(1, 6) * RationalNumberS(4, 3) == RationalNumberS(2, 9))
       }
 
       it("simplifies division") {
-        assert(one / two == RationalNumber(1, 2))
-        assert(RationalNumber(-1) / two == RationalNumber(-1, 2))
-        assert(RationalNumber(1, 6) / RationalNumber(3, 4) == RationalNumber(2, 9))
+        assert(one / two == RationalNumberS(1, 2))
+        assert(RationalNumberS(-1) / two == RationalNumberS(-1, 2))
+        assert(RationalNumberS(1, 6) / RationalNumberS(3, 4) == RationalNumberS(2, 9))
       }
 
       it("exponentiates correctly") {
-        assert(RationalNumber(5, 6) ** RationalNumber(1) == RationalNumber(5, 6))
-        assert(RationalNumber(5, 6) ** RationalNumber(-1) == RationalNumber(6, 5))
-        assert(RationalNumber(1, 6) ** RationalNumber(-1) == RationalNumber(6))
-        assert(RationalNumber(3) ** RationalNumber(-1) == RationalNumber(1, 3))
-        assert(RationalNumber(-3) ** RationalNumber(-1) == RationalNumber(-1, 3))
+        assert(RationalNumberS(5, 6) ** RationalNumberS(1) == RationalNumberS(5, 6))
+        assert(RationalNumberS(5, 6) ** RationalNumberS(-1) == RationalNumberS(6, 5))
+        assert(RationalNumberS(1, 6) ** RationalNumberS(-1) == RationalNumberS(6))
+        assert(RationalNumberS(3) ** RationalNumberS(-1) == RationalNumberS(1, 3))
+        assert(RationalNumberS(-3) ** RationalNumberS(-1) == RationalNumberS(-1, 3))
 
-        assert(RationalNumber(5, 6) ** RationalNumber(3) == RationalNumber(125, 216))
-        assert(RationalNumber(5, 6) ** RationalNumber(-3) == RationalNumber(216, 125))
+        assert(RationalNumberS(5, 6) ** RationalNumberS(3) == RationalNumberS(125, 216))
+        assert(RationalNumberS(5, 6) ** RationalNumberS(-3) == RationalNumberS(216, 125))
       }
     }
 
@@ -152,9 +153,9 @@ class CasTests extends FunSpec {
       assert((x + y).vars == Set("x", "y"))
       assert((x * y).vars == Set("x", "y"))
       assert((x ** y).vars == Set("x", "y"))
-      assert((x ** y + RationalNumber(4, 3)).vars == Set("x", "y"))
-      assert((x * y + RationalNumber(3, 1)).vars == Set("x", "y"))
-      assert((x * RationalNumber(3, 1)).vars == Set("x"))
+      assert((x ** y + RationalNumber[String](4, 3)).vars == Set("x", "y"))
+      assert((x * y + RationalNumber[String](3, 1)).vars == Set("x", "y"))
+      assert((x * RationalNumber[String](3, 1)).vars == Set("x"))
       assert(RationalNumber(3, 1).vars == Set())
     }
   }

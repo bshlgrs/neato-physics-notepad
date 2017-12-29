@@ -70,7 +70,7 @@ trait Expression[A] {
           case 1 => {
             // This is like "solve a b^2 f(x) = y for x". The answer there is f^-1(y a^-1 b^-2)
             // which we get by doing (f(x)).solve(x, y a^-1 b^2)
-            factorsWithX.head.solve(x, factorsWithoutX.map(_ ** RationalNumber(-1)).reduce(_ * _) * lhs)
+            factorsWithX.head.solve(x, factorsWithoutX.map(_ ** RationalNumber[A](-1)).reduce(_ * _) * lhs)
           }
           case 2 => {
             // This equation might be quadratic, in which case you have a chance of solving it.
@@ -91,7 +91,7 @@ trait Expression[A] {
     }
   }
 
-  def sqrt: Expression[A] = this ** RationalNumber(1, 2)
+  def sqrt: Expression[A] = this ** RationalNumber[A](1, 2)
 
   def solve(x: Variable[A]): List[Expression[A]] = this.solve(x.thing)
 
@@ -137,6 +137,8 @@ trait Expression[A] {
     case _ => Sum(Set(this)) + Sum(Set(other))
   }
 
+  def +(other: Int): Expression[A] = this + RationalNumber[A](other)
+
   def *(other: Expression[A]): Expression[A] = (this, other) match {
     case (RationalNumber(n1, d1), RationalNumber(n2, d2)) => {
       val numerator = n1 * n2
@@ -161,10 +163,13 @@ trait Expression[A] {
     case (_, _: Product[_]) => Product(Set(this)) * other
     case (_, _) => Product(Set(this)) * Product(Set(other))
   }
+  def *(other: Int): Expression[A] = this * RationalNumber[A](other)
 
   def -(other: Expression[A]): Expression[A] = this + RationalNumber(-1) * other
+  def -(other: Int): Expression[A] = this - RationalNumber[A](other)
 
-  def /(other: Expression[A]): Expression[A] = this * (other ** RationalNumber(-1))
+  def /(other: Expression[A]): Expression[A] = this * (other ** RationalNumber[A](-1))
+  def /(other: Int): Expression[A] = this / RationalNumber[A](other)
 
   def **(other: Expression[A]): Expression[A] = (this, other) match {
     case (RationalNumber(1, 1), _) => RationalNumber(1)
@@ -172,9 +177,9 @@ trait Expression[A] {
     case (RationalNumber(a, b), RationalNumber(c, d)) => {
       if(c < 0) {
         if (a > 0)
-          RationalNumber(b, a) ** RationalNumber(-c, d)
+          RationalNumber[A](b, a) ** RationalNumber[A](-c, d)
         else
-          RationalNumber(-b, -a) ** RationalNumber(-c, d)
+          RationalNumber[A](-b, -a) ** RationalNumber[A](-c, d)
       } else {
         if (d == 1) {
           val (num, den) = (scala.math.pow(a, c).toInt, scala.math.pow(b, c).toInt)
@@ -191,6 +196,7 @@ trait Expression[A] {
     case (Power(base, exponent), newExponent) => base ** (exponent * newExponent)
     case _ => Power(this, other)
   }
+  def **(other: Int): Expression[A] = this ** RationalNumber[A](other)
 
   def mapVariablesToExpressions[B](f: A => Expression[B]): Expression[B] = this match {
     case Sum(terms) => terms.map(_.mapVariablesToExpressions(f)).reduce(_ + _)
@@ -335,7 +341,7 @@ object Expression {
   def buildGoofily(number: Constant[String], factors: Map[String, Int]): Expression[String] = {
     // we get in a bunch of factors. Multiply them all together and say they're equal to 1
     (number * factors.map({case (name, power) => Expression.makePower(Variable(name), RationalNumber(power)) : Expression[String]}).reduce(_ * _)
-      - RationalNumber(1))
+      - 1)
   }
 
   def buildGoofily(factors: Map[String, Int]): Expression[String] = buildGoofily(RationalNumber(1), factors)
@@ -386,4 +392,8 @@ object ExpressionDisplay {
   }
 
   def wrap(tuple: (String, Int), binding: Int): String = if (tuple._2 >= binding) tuple._1 else s"(${tuple._1})"
+
+  def main(args: Array[String]): Unit = {
+    println(orderWithConstantsFirst(Set[Expression[String]](Variable("x"), Variable("y"), RationalNumber[String](2))))
+  }
 }

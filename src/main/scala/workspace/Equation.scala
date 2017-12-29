@@ -40,7 +40,7 @@ object Equation {
     val rhs = rhsVars.map({
       case (symbol, (power, _, _)) => Expression.makePower(Variable(symbol), RationalNumber(power))
     }).reduce(_ * _)
-    val expr = (constant * rhs) / Variable(lhs._1) - RationalNumber(1)
+    val expr = (constant * rhs) / Variable(lhs._1) - 1
     def display(f: (String => BuckTex)): BuckTex = {
       CompileToBuckTex.centeredBox(List(f(lhs._1), Text(" = "),
         CompileToBuckTex.compileExpression((constant * rhs).mapVariables(f))))
