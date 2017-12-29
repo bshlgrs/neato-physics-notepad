@@ -2,14 +2,15 @@ package cas
 
 import fastparse.WhitespaceApi
 import fastparse.core.Parsed
+import workspace.CustomEquation
 
 object EquationParser {
-  def parseEquation(equationString: String): Option[NakedEquation] = for {
+  def parseEquation(equationString: String): Option[CustomEquation] = for {
     list: List[String] <- Option(equationString.split('=').toList)
     if list.size == 2
     lhs <- parseExpression(list(0))
     rhs <- parseExpression(list(1))
-  } yield NakedEquation(lhs, rhs)
+  } yield CustomEquation(lhs, rhs)
 
   def parseExpression(expressionString: String): Option[Expression[String]] = expr.parse(expressionString) match {
     case Parsed.Success(expression, _) => Some(expression)

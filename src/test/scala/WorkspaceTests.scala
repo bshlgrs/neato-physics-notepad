@@ -1,4 +1,4 @@
-import cas.{Expression, RationalNumber, Variable}
+import cas.{EquationParser, Expression, RationalNumber, Variable}
 import org.scalatest.FunSpec
 import workspace._
 
@@ -50,33 +50,17 @@ class WorkspaceTests extends FunSpec {
 
   }
 
-//  describe("subscript generation") {
-//    val ws = Workspace.empty
-//      .addEquation(EquationLibrary.getByEqId("ke_def"))
-//      .addEquation(EquationLibrary.getByEqId("pe_def"))
-//
-//    it("displays equations reasonably") {
-//      println(ws.showEquation(0))
-//      println(ws.showEquation(1))
-//      assert(ws.showEquation(0) == """E_K = \frac12 m_{1} v^2""")
-//      assert(ws.showEquation(1) == "E_P = m_{2} g h")
-//    }
-//
-//    it("understands equalities") {
-//      val ws2 = ws.addEquality(VarId(0, "m"), VarId(1, "m"))
-//
-//      assert(ws2.showEquation(0) == """E_K = \frac12 m v^2""")
-//      assert(ws2.showEquation(1) == "E_P = m g h")
-//    }
-//
-//    it("can show expressions") {
-//      val ws2 = ws.addExpression(VarId(0, "v"))
-//
-//      println(ws2.showExpression(VarId(0, "v")))
-//      println(ws2.expressions(VarId(0, "v")).toString)
-//      // TODO
-//
-//      /// these are gonna be flaky because there are multiple reasonable things to do, and I'm just hardcoding one I like
-//    }
-//  }
+  describe("custom equations") {
+    it("works") {
+      val ws = Workspace.empty
+        .addEquation(EquationParser.parseEquation("KE = 1/2 * m * v**2").get)
+        .addEquation(EquationParser.parseEquation("PE = m * g * h").get)
+        .addEquality(VarId(0, "m"), VarId(1, "m"))
+        .addEquality(VarId(0, "KE"), VarId(1, "PE"))
+        .addExpression(VarId(0, "v"))
+        .rewriteExpression(VarId(0, "v"), VarId(0, "KE"), 1)
+
+      println(ws.expressions(VarId(0, "v")))
+    }
+  }
 }

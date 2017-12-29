@@ -1,6 +1,6 @@
 package workspace
 
-import scala.util.{Failure, Try}
+import scala.util.{Failure, Try, Success}
 import cas.{Expression, RealNumber}
 
 import scala.scalajs.js
@@ -105,10 +105,11 @@ case class Workspace(equations: Map[Int, Equation] = Map(),
     for {
       (number, currentAttachment) <- Try(numbers.get(numberId).get)
       eq: Equation <- Try(this.equations.get(eqIdx).get)
-      variableDimension: Dimension <- Try(eq.dimensions.get(varName).get)
-      _ <- Try({
-        assert(variableDimension.equalUnits(number.dimension), "var dimension does not match")
-      })
+      mbVariableDimension: Option[Dimension] <- Try(getDimension(VarId(eqIdx, varName)))
+      _ <- mbVariableDimension match {
+        case Some(variableDimension) => Try(assert(variableDimension.equalUnits(number.dimension), "var dimension does not match"))
+        case _ => Success()
+      }
     } yield this.copy(numbers = numbers + (numberId -> (number -> Some(varId))))
   }
 
@@ -123,8 +124,9 @@ case class Workspace(equations: Map[Int, Equation] = Map(),
     this.copy(numbers = numbers - numberId)
   }
 
-  def getDimension(varId: VarId): Dimension = {
-    equations(varId.eqIdx).dimensions(varId.varName)
+  def getDimension(varId: VarId): Option[Dimension] = {
+    equations(varId.eqIdx).staticDimensions.get(varId.varName)
+    // TODO: Also you can check it by looking for the dimensions of variables it's equated to, or its number.
   }
 
   def possibleRewritesForExpr(varId: VarId): Set[(VarId, Int)] = {
@@ -171,7 +173,7 @@ case class Workspace(equations: Map[Int, Equation] = Map(),
     }).toMap.collect({case (k, Some(v)) => k -> v})
 
     CompileToBuckTex.showExpression(exprVarId, expression, varSubscripts,
-      this.getNumberForExpression(exprVarId).map((number) => PhysicalNumber(number, getDimension(exprVarId))))
+      this.getNumberForExpression(exprVarId).map((number) => PhysicalNumber(number, getDimension(exprVarId).getOrElse(???))))
   }
 
   def getVariableBuckTex(varId: VarId): BuckTex = {

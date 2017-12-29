@@ -5,30 +5,49 @@ import cas.{Expression, RationalNumber, Variable}
 import scala.scalajs.js
 import scala.scalajs.js.annotation.{JSExport, JSExportAll}
 
-@JSExportAll
-case class Equation(name: String,
-                    expr: Expression[String],
-                    display: (String => BuckTex) => BuckTex,
-                    dimensions: Map[String, Dimension],
-                    varNames: Map[String, String],
-                    tags: Set[String]
-                   ) {
-  assert(expr.vars == dimensions.keys)
-  assert(varNames.keys == dimensions.keys)
+trait Equation {
+  def expr: Expression[String]
+  def display(f: String => BuckTex): BuckTex
+  def staticDimensions: Map[String, Dimension]
+  def varName(varSymbol: String): Option[String]
+  def showNaked: BuckTex = display((varName: String) => CompileToBuckTex.makeVariableSpan(VarId(-1, varName), None))
+  def vars: Set[String] = expr.vars
 
   def solve(varName: String, selfEqId: Int): Expression[VarId] = {
     // TODO: check on the `head` here
     expr.solve(varName).head.mapVariables((name) => VarId(selfEqId, name))
   }
-
   def exprWithEquationId(id: Int): Expression[VarId] = expr.mapVariables((name) => VarId(id, name))
+}
 
-  def vars: Set[String] = expr.vars
+@JSExportAll
+case class LibraryEquation(name: String,
+                    expr: Expression[String],
+                    displayF: (String => BuckTex) => BuckTex,
+                    staticDimensions: Map[String, Dimension],
+                    varNamesMap: Map[String, String],
+                    tags: Set[String]
+                   )  extends Equation {
+  assert(expr.vars == staticDimensions.keys)
+  assert(varNamesMap.keys == staticDimensions.keys)
 
-  def varNamesJs: js.Dictionary[String] = js.Dictionary(varNames.toSeq :_*)
-  def dimensionsJs: js.Dictionary[Dimension] = js.Dictionary(dimensions.toSeq :_*)
+  def varName(symbol: String): Option[String] = varNamesMap.get(symbol)
+  def staticDimensionsJs: js.Dictionary[Dimension] = js.Dictionary(staticDimensions.toSeq :_*)
+  def display(f: String => BuckTex): BuckTex = displayF(f)
+}
 
-  def showNaked: BuckTex = display(varName => CompileToBuckTex.makeVariableSpan(VarId(-1, varName), None))
+@JSExportAll
+case class CustomEquation(lhs: Expression[String], rhs: Expression[String]) extends Equation {
+  def expr: Expression[String] = lhs - rhs
+
+  def varName(varSymbol: String): Option[String] = None
+
+  def display(f: String => BuckTex): BuckTex =
+    CompileToBuckTex.centeredBox(List(CompileToBuckTex.compileExpression(lhs.mapVariables(f)),
+                                     Text("="),
+                                     CompileToBuckTex.compileExpression(rhs.mapVariables(f))))
+
+  def staticDimensions = Map()
 }
 
 object Equation {
@@ -36,7 +55,7 @@ object Equation {
                    lhs: (String, String, Dimension),
                    rhsVars: Map[String, (Int, String, Dimension)],
                    tags: String,
-                   constant: RationalNumber[String] = RationalNumber[String](1)): Equation = {
+                   constant: RationalNumber[String] = RationalNumber[String](1)): LibraryEquation = {
     val rhs = rhsVars.map({
       case (symbol, (power, _, _)) => Expression.makePower(Variable(symbol), RationalNumber(power))
     }).reduce(_ * _)
@@ -46,7 +65,7 @@ object Equation {
         CompileToBuckTex.compileExpression((constant * rhs).mapVariables(f))))
     }
 
-    Equation(name, expr, display,
+    LibraryEquation(name, expr, display,
       rhsVars.mapValues(_._3) + (lhs._1 -> lhs._3),
       rhsVars.mapValues(_._2) + (lhs._1 -> lhs._2),
       tags.split(' ').toSet)

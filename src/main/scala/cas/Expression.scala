@@ -396,4 +396,10 @@ object ExpressionDisplay {
   def main(args: Array[String]): Unit = {
     println(orderWithConstantsFirst(Set[Expression[String]](Variable("x"), Variable("y"), RationalNumber[String](2))))
   }
+
+  // todo: use these
+  def unicodeForNumberSuperscript(int: Int): Char = "⁰¹²³⁴⁵⁶⁷⁸⁹".charAt(int)
+  def unicodeForNumberSubscript(int: Int): Char = "₀₁₂₃₄₅₆₇₈₉".charAt(int)
+
+  def makeIntSuperscripted(int: Int): String = int.toString.map(char => unicodeForNumberSuperscript("0123456789".indexOf(char)))
 }
