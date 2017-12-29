@@ -2,7 +2,6 @@ package workspace
 
 import scala.util.{Failure, Try}
 import cas.{Expression, RealNumber}
-import wrapper.ToJS
 
 import scala.scalajs.js
 import scala.scalajs.js.annotation.{JSExportAll, JSExportTopLevel}
@@ -144,34 +143,13 @@ case class Workspace(equations: Map[Int, Equation] = Map(),
 
   def deleteExpression(id: VarId): Workspace = this.copy(expressions = expressions - id)
 
-  def showEquation(idx: Int): String = {
-    ???
-    val equation = equations(idx)
-    val varSubscripts: Map[String, Int] = equation.vars.map((varName) => {
-      varName -> getVarSubscript(VarId(idx, varName))
-    }).toMap.collect({case (k, Some(v)) => k -> v})
-//    StringDisplay.showEquation(equations(idx), varSubscripts)
-    // Currently broken-- I broke showEquation because I didn't need it
-    ???
-  }
-
   def getEquationBuckTex(idx: Int): BuckTex = {
     val equation = equations(idx)
     val varSubscripts: Map[String, Int] = equation.vars.map((varName) => {
       varName -> getVarSubscript(VarId(idx, varName))
     }).toMap.collect({case (k, Some(v)) => k -> v})
-    CompileToBuckTex.showEquation(equation, idx, varSubscripts)
+    CompileToBuckTex.showEquation(equation, idx, varSubscripts);
   }
-
-//  def showExpression(exprVarId: VarId): String = {
-//    val expression = expressions(exprVarId)
-//
-//    val varSubscripts: Map[VarId, Int] = (expression.vars + exprVarId).map((varId) => {
-//      varId -> getVarSubscript(varId)
-//    }).toMap.collect({case (k, Some(v)) => k -> v})
-//
-//    StringDisplay.showExpression(exprVarId, expression, varSubscripts)
-//  }
 
   def getNumberForExpression(exprVarId: VarId): Option[Double] = {
     val expr = expressions(exprVarId)
@@ -186,22 +164,20 @@ case class Workspace(equations: Map[Int, Equation] = Map(),
     getNumberForExpression(exprVarId).orNull
   }
 
-  def getExpressionDisplay(exprVarId: VarId): DisplayMath = {
+  def getExpressionBuckTex(exprVarId: VarId): BuckTex = {
     val expression = expressions(exprVarId)
     val varSubscripts: Map[VarId, Int] = (expression.vars + exprVarId).map((varId) => {
       varId -> getVarSubscript(varId)
     }).toMap.collect({case (k, Some(v)) => k -> v})
 
-    DisplayMath.showExpression(exprVarId, expression, varSubscripts,
+    CompileToBuckTex.showExpression(exprVarId, expression, varSubscripts,
       this.getNumberForExpression(exprVarId).map((number) => PhysicalNumber(number, getDimension(exprVarId))))
   }
 
-  def getVarDisplay(varId: VarId): DisplayMath = {
-    val subscripts =  Map(varId -> getVarSubscript(varId)).filter(_._2.isDefined).mapValues(_.get)
-    DisplayMath.showVariable(varId, subscripts)
+  def getVariableBuckTex(varId: VarId): BuckTex = {
+    val subscripts = Map(varId -> getVarSubscript(varId)).filter(_._2.isDefined).mapValues(_.get)
+    CompileToBuckTex.showVariable(varId, subscripts)
   }
-
-  def showVar(varId: VarId): String = StringDisplay.showVar(varId.varName, getVarSubscript(varId))
 
   def getVarSubscript(varId: VarId): Option[Int] = {
     // If, of the variables that aren't equal to you, none of them share your name, you don't need a subscript.
@@ -246,3 +222,4 @@ case class VarId(eqIdx: Int, varName: String)
 object Workspace {
   def empty = Workspace(Map(), SetOfSets[VarId](Set()), Map(), Map())
 }
+

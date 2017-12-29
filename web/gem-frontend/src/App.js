@@ -3,7 +3,7 @@ import './App.css';
 import './math.css';
 import Gem from './Gem';
 import Immutable from 'immutable';
-import DisplayMath from './DisplayMath';
+import BuckTex from './BuckTex';
 
 const DRAGGING = "dragging";
 const DRAGGING_FROM_VAR = "dragging-from-var";
@@ -255,6 +255,7 @@ class App extends Component {
     /// Start drag
     if (e.button !== 0) return;
     e.preventDefault();
+    e.stopPropagation();
     const parentPos = getPosition(this.equationSpaceDiv);
     const dragPos = { x: e.pageX - parentPos.left, y: e.pageY - parentPos.top };
     this.setState({
@@ -371,35 +372,27 @@ class App extends Component {
       const equation = ws.getEquation(selectedId);
 
       return <div className='info-box'>
-        <DisplayMath
-          stuff={ws.getEquationDisplay(selectedId).jsItems}
+        <BuckTex
+          el={ws.getEquationBuckTex(selectedId)}
         />
         <p>{equation.name}</p>
         {Object.keys(equation.varNamesJs).map((varSymbol) =>
           <div key={varSymbol}>{equation.varNamesJs[varSymbol]} &nbsp;
-            <DisplayMath
-              stuff={ws.getVarDisplay(Gem.VarId(selectedId, varSymbol)).jsItems}
-            /> ::&nbsp;
-            <DisplayMath
-              stuff={equation.dimensionsJs[varSymbol].toDisplayMath.jsItems}
-            />
+            <BuckTex inline el={ws.getVariableBuckTex(Gem.VarId(selectedId, varSymbol))} /> ::&nbsp;
+            <BuckTex inline el={equation.dimensionsJs[varSymbol].toBuckTex} />
           </div>
         )}
         <button onClick={() => this.deleteEquation(selectedId)}>Delete equation</button>
       </div>
     } else if (selectedType === "expression") {
       return <div className='info-box expression-info-box'>
-        <DisplayMath
-          stuff={ws.getExpressionDisplay(selectedId).jsItems}
-        />
+        <BuckTex el={ws.getExpressionBuckTex(selectedId)} />
         <button onClick={() => this.deleteExpression(selectedId)}>Delete expression</button>
       </div>
     } else if (selectedType === "number") {
       const number = ws.getNumber(selectedId);
       return <div className='info-box expression-info-box'>
-        <DisplayMath
-          stuff={number.toDisplayMath.jsItems}
-        />
+        <BuckTex el={number.toBuckTex} />
         <button onClick={() => this.deleteNumber(selectedId)}>Delete number</button>
         {ws.getVarIdOfNumber(selectedId) &&
           <button onClick={() => this.detachNumber(selectedId)}>Detach number</button>}
@@ -440,7 +433,7 @@ class App extends Component {
                 style={{top: pos.get("y"), left: pos.get("x")}}
                 ref={(div) => { this.equationRefs[equationId] = div; }}
                 >
-                <DisplayMath
+                <BuckTex
                   onSpanMouseDown={(e) =>
                     this.handleStartDrag(e, 'equation-' + equationId, this.equationRefs[equationId],
                                         { type: 'equation', id: equationId })}
@@ -452,7 +445,7 @@ class App extends Component {
                   draggedFromVarId={this.state.draggedFromVarId}
                   idPrefix="variable-"
                   currentAction={currentAction}
-                  stuff={ws.getEquationDisplay(equationId).jsItems}
+                  el={ws.getEquationBuckTex(equationId)}
                 />
               </div>
             })}
@@ -464,7 +457,7 @@ class App extends Component {
                    ref={(div) => { this.expressionRefs[exprVarId] = div; }}
                    style={{top: pos.get("y"), left: pos.get("x")}}
                    >
-                <DisplayMath
+                <BuckTex
                   onSpanMouseDown={(e) =>
                     this.handleStartDrag(e, 'expression-' + exprVarId, this.expressionRefs[exprVarId],
                                         { type: 'expression', id: exprVarId })}
@@ -475,7 +468,7 @@ class App extends Component {
                   idPrefix={`expression-${exprVarId}-`}
                   draggedFromVarId={this.state.draggedFromVarId}
                   currentAction={currentAction}
-                  stuff={ws.getExpressionDisplay(exprVarId).jsItems} />
+                  el={ws.getExpressionBuckTex(exprVarId)} />
               </div>;
             })}
 
@@ -489,8 +482,8 @@ class App extends Component {
                           style={{position: 'absolute', top: pos.get("y"), left: pos.get("x"), color: (muted && 'grey')}}
                           ref={(div) => { this.numberRefs[numberId] = div; }}
                           key={numberId}>
-                <DisplayMath
-                  stuff={number.toDisplayMath.jsItems}
+                <BuckTex
+                  el={number.toBuckTex}
                   onSpanMouseDown={(e) =>
                     this.handleStartDrag(e, 'number-' + numberId, this.numberRefs[numberId], { type: 'number', id: numberId })}
                   />
@@ -511,8 +504,8 @@ class App extends Component {
                 placeholder="Search for equations or type numbers here"/>
               {Gem.EquationLibrary.relevantEquationIds(this.state.searchBarText).map((eqId) =>
                 <div key={eqId} className='search-result' onClick={() => this.addEquation(eqId)}>
-                  <DisplayMath
-                    stuff={Gem.DisplayMath.showNakedEquation(Gem.EquationLibrary.getByEqId(eqId)).jsItems}
+                  <BuckTex
+                    el={Gem.EquationLibrary.getByEqId(eqId).showNaked}
                   />
                 </div>
               )}
@@ -521,7 +514,7 @@ class App extends Component {
                 return dim ?
                   <div className='physical-number'
                     onClick={() => this.handleSearchBarSubmit()}>
-                    <DisplayMath stuff={dim.toDisplayMath.jsItems} /></div> :
+                    <BuckTex stuff={dim.toBuckTex} /></div> :
                   null;
               })()}
             </div>

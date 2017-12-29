@@ -46,21 +46,20 @@ case class Fraction(numerator: List[BuckTex], denominator: List[BuckTex]) extend
   @JSExport
   def jsDenominator: js.Array[BuckTex] = js.Array(denominator :_*)
 }
-@JSExport
+@JSExportAll
 case class Text(text: String) extends BuckTex
-@JSExport
-case class Wrapper(item: BuckTex, data: js.Dictionary[js.Any] = js.Dictionary()) extends BuckTex
+@JSExportAll
+case class Wrapper(item: BuckTex, data: js.Dictionary[Any] = js.Dictionary()) extends BuckTex
 
 object CompileToBuckTex {
   def horizontalBox(items: List[BuckTex]) = FlexBox(items, Row, FlexEnd)
   def centeredBox(items: List[BuckTex]) = FlexBox(items, Row, Center)
 
-  type VarStuff = (BuckTex, js.Dictionary[js.Any])
-  def compileExpression(expr: Expression[VarStuff]): BuckTex = {
+  def compileExpression(expr: Expression[BuckTex]): BuckTex = {
     compileExpressionWithBinding(expr, 0)
   }
 
-  def compileExpressionWithBinding(expr: Expression[VarStuff], strongestPullFromOutside: Int): BuckTex = {
+  def compileExpressionWithBinding(expr: Expression[BuckTex], strongestPullFromOutside: Int): BuckTex = {
     def wrapIfNeeded(stuff: BuckTex, pullStrengthAtWhichWrappingIsNeeded: Int): BuckTex = {
       if (pullStrengthAtWhichWrappingIsNeeded > strongestPullFromOutside) {
         horizontalBox(List(stuff))
@@ -70,20 +69,68 @@ object CompileToBuckTex {
     }
     expr match {
       case Sum(set) => {
-        wrapIfNeeded(horizontalBox(set.toList.flatMap((x) => List(Text(" + "), compileExpressionWithBinding(x, 1))).tail),
+        wrapIfNeeded(centeredBox(set.toList.flatMap((x) => List(Text(" + "), compileExpressionWithBinding(x, 1))).tail),
           1)
       }
       case Product(set) => {
-        wrapIfNeeded(horizontalBox(set.toList.flatMap((x) => List(Text(" + "), compileExpressionWithBinding(x, 1))).tail),
+        wrapIfNeeded(centeredBox(set.toList.flatMap((x) => List(Text(" "), compileExpressionWithBinding(x, 2))).tail),
           2)
       }
-      case Power(lhs, rhs) => horizontalBox(List(compileExpressionWithBinding(lhs, strongestPullFromOutside),
+      case Power(lhs, rhs) => centeredBox(List(compileExpressionWithBinding(lhs, strongestPullFromOutside),
         Sup(List(compileExpressionWithBinding(rhs, 0)))
       ))
-      case Variable((buckTex, data)) => Wrapper(buckTex, data)
+      case Variable(buckTex) => buckTex
       case RealNumber(r) => Text(r.toString)
       case RationalNumber(n, 1) => Text(n.toString)
+      case RationalNumber(1, 2) => Text("½")
+      case RationalNumber(-1, 2) => Text("-½")
       case RationalNumber(n, d) => Fraction(List(Text(n.toString)), List(Text(d.toString)))
     }
+  }
+
+  def showEquation(equation: Equation, idx: Int, varSubscripts: Map[String, Int]): BuckTex = {
+    equation.display((varName: String) =>
+      makeVariableSpan(VarId(idx, varName), varSubscripts.get(varName)))
+  }
+
+  def showVariable(varId: VarId, varSubscripts: Map[VarId, Int]): BuckTex = {
+    makeVariableSpan(varId, varSubscripts.get(varId))
+  }
+
+  def makeVariableSpan(varId: VarId, mbNum: Option[Int]): BuckTex = {
+    val name = varId.varName
+
+    def showVarWithStr(numStr: String): BuckTex = {
+      if (name.contains("_")) {
+        var List(mainText, subscript) = name.split('_').toList
+        CompileToBuckTex.horizontalBox(List(Text(mainText), Sub(List(Text(subscript + numStr)))))
+      } else {
+        if (numStr.isEmpty)
+          Text(name)
+        else
+          CompileToBuckTex.horizontalBox(List(Text(name), Sub(List(Text(numStr)))))
+      }
+    }
+
+    val list = mbNum match {
+      case Some(num) => showVarWithStr(num.toString)
+      case None => showVarWithStr("")
+    }
+    Wrapper(list, js.Dictionary[Any]("varId" -> (varId: Any), "type" -> "Variable")) // todo: remove type annotation?
+  }
+
+  def showExpression(varId: VarId,
+                     expression: Expression[VarId],
+                     varSubscripts: Map[VarId, Int],
+                     mbNumericValue: Option[PhysicalNumber]): BuckTex = {
+    val numericValueDisplay = mbNumericValue match {
+      case None => List()
+      case Some(PhysicalNumber(numericValue, dimension)) =>
+        List(Text(s" = ${numericValue.toString.take(5)}"), dimension.toBuckTex)
+    }
+
+    CompileToBuckTex.centeredBox(List(makeVariableSpan(varId, varSubscripts.get(varId)), Text(" = "),
+      this.compileExpression(expression.mapVariables(varId => makeVariableSpan(varId, varSubscripts.get(varId))))) ++
+      numericValueDisplay)
   }
 }

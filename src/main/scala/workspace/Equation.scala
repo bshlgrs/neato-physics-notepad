@@ -8,7 +8,7 @@ import scala.scalajs.js.annotation.{JSExport, JSExportAll}
 @JSExportAll
 case class Equation(name: String,
                     expr: Expression[String],
-                    display: (String => VariableSpan) => DisplayMath,
+                    display: (String => BuckTex) => BuckTex,
                     dimensions: Map[String, Dimension],
                     varNames: Map[String, String],
                     tags: Set[String]
@@ -27,6 +27,8 @@ case class Equation(name: String,
 
   def varNamesJs: js.Dictionary[String] = js.Dictionary(varNames.toSeq :_*)
   def dimensionsJs: js.Dictionary[Dimension] = js.Dictionary(dimensions.toSeq :_*)
+
+  def showNaked: BuckTex = display(varName => CompileToBuckTex.makeVariableSpan(VarId(-1, varName), None))
 }
 
 object Equation {
@@ -39,8 +41,9 @@ object Equation {
       case (symbol, (power, _, _)) => Expression.makePower(Variable(symbol), RationalNumber(power))
     }).reduce(_ * _)
     val expr = (constant * rhs) / Variable(lhs._1) - RationalNumber(1)
-    def display(f: (String => VariableSpan)): DisplayMath = {
-      DisplayMath(List(f(lhs._1), Span(" = "))) ++ DisplayMath.render((constant * rhs).mapVariables(f))
+    def display(f: (String => BuckTex)): BuckTex = {
+      CompileToBuckTex.centeredBox(List(f(lhs._1), Text(" = "),
+        CompileToBuckTex.compileExpression((constant * rhs).mapVariables(f))))
     }
 
     Equation(name, expr, display,
