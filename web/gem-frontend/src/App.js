@@ -507,9 +507,7 @@ class App extends Component {
                 placeholder="Search for equations or type numbers here"/>
               {Gem.EquationLibrary.relevantEquationIds(this.state.searchBarText).map((eqId) =>
                 <div key={eqId} className='search-result' onClick={() => this.addEquation(eqId)}>
-                  <BuckTex
-                    el={Gem.EquationLibrary.getByEqId(eqId).showNaked}
-                  />
+                  <BuckTex el={Gem.EquationLibrary.getByEqId(eqId).showNaked} />
                 </div>
               )}
               {(() => {
@@ -517,7 +515,7 @@ class App extends Component {
                 return dim ?
                   <div className='physical-number'
                     onClick={() => this.handleSearchBarSubmit()}>
-                    <BuckTex stuff={dim.toBuckTex} /></div> :
+                    <BuckTex el={dim.toBuckTex} /></div> :
                   null;
               })()}
             </div>
