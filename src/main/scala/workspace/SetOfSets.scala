@@ -14,4 +14,6 @@ case class SetOfSets[A](sets: Set[Set[A]]) {
   def setEqual(x: A, y: A): SetOfSets[A] = SetOfSets(sets - getSet(x) - getSet(y) + (getSet(x) ++ getSet(y)))
 
   def remove(x: A): SetOfSets[A] = SetOfSets(sets.map(_ - x))
+
+  def getRepresentative(item: A): A = getSet(item).minBy(_.toString)
 }

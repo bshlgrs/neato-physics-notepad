@@ -37,7 +37,7 @@ object EquationLibrary {
       Map("g" -> (1, "Gravitational acceleration", Meter / Second / Second),
         "m" -> (1, "Mass", Kilogram)),
       "force gravity"
-    ),
+    )
   )
 
   // unsafe

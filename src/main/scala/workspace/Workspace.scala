@@ -1,7 +1,7 @@
 package workspace
 
-import scala.util.{Failure, Try, Success}
-import cas.{Expression, RealNumber}
+import scala.util.{Failure, Success, Try}
+import cas.{Expression, RationalNumber, RealNumber}
 
 import scala.scalajs.js
 import scala.scalajs.js.annotation.{JSExportAll, JSExportTopLevel}
@@ -64,6 +64,7 @@ case class Workspace(equations: Map[Int, Equation] = Map(),
     // from a different equation.
 
     // let's look up the equation we're going to solve to use:
+    val two = RationalNumber(2)
     val swapEquationExpr: Expression[VarId] = equations(equationIdToUse).exprWithEquationId(equationIdToUse)
 //    assert(swapEquationExpr.vars.contains(varToRemoveId))
 
@@ -71,13 +72,15 @@ case class Workspace(equations: Map[Int, Equation] = Map(),
     // variable.
     val subbedSwapExpr = swapEquationExpr.simplifyWithEquivalenceClasses(equalities)
 
-    val solutions = subbedSwapExpr.solve(equalities.getSet(varToRemoveId).minBy(_.toString))
+    val normalizedVarToRemoveId = equalities.getSet(varToRemoveId).minBy(_.toString)
+    val solutions = subbedSwapExpr.solve(normalizedVarToRemoveId)
 
     assert(solutions.size == 1, solutions)
     val exprToSubIn = solutions.head
 
     // now sub that into the current expression
-    val newExpr = expressions(exprVarId).substitute(varToRemoveId, exprToSubIn)
+    val normalizedCurrentExpr = expressions(exprVarId).simplifyWithEquivalenceClasses(equalities)
+    val newExpr = normalizedCurrentExpr.substitute(normalizedVarToRemoveId, exprToSubIn)
     this.copy(expressions = expressions + (exprVarId -> newExpr))
   }
 

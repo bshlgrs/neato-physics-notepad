@@ -1,5 +1,6 @@
 import org.scalatest.FunSpec
 import cas._
+import workspace.{CompileToBuckTex, Text}
 
 class CasTests extends FunSpec {
   val ke = Variable("ke")
@@ -127,6 +128,10 @@ class CasTests extends FunSpec {
         val half = one / two
         val keDefinition = ke - half
       }
+
+      it("handles substitution correctly") {
+        assert((x + y + z).substituteMany(Set("x", "y", "z"), "y") == y * 3)
+      }
     }
   }
 
@@ -146,8 +151,6 @@ class CasTests extends FunSpec {
   }
 
   describe("vars") {
-    val x = Variable("x")
-    val y = Variable("y")
 
     it("knows about vars") {
       assert((x + y).vars == Set("x", "y"))
@@ -163,6 +166,14 @@ class CasTests extends FunSpec {
   describe("display stuff") {
     it("knows how to order stuff") {
       assert(ExpressionDisplay.orderWithConstantsFirst(Set[Expression[String]](two, x)) == List(two, x))
+    }
+
+    it("can render stuff") {
+//      println(CompileToBuckTex.compileExpression((x * y).mapVariables(name => Text(name))))
+//      println(CompileToBuckTex.compileExpression((x / y).mapVariables(name => Text(name))))
+      println(CompileToBuckTex.compileExpression((x.sqrt * z.sqrt / y * RationalNumber[String](2).sqrt).mapVariables(name => Text(name))))
+//      println(CompileToBuckTex.compileExpression((x * 2).mapVariables(name => Text(name))))
+
     }
   }
 }

@@ -61,4 +61,26 @@ class WorkspaceTests extends FunSpec {
       assert(ws.expressions(VarId(0, "v")) == (Variable(VarId(1, "g")) * Variable(VarId(1, "h")) * 2).sqrt)
     }
   }
+
+  describe("regressions") {
+    it("works") {
+      val E_T = VarId(2, "E_T")
+      val ws = Workspace.empty
+        .addEquation(EquationParser.parseEquation("KE = 1/2 * m * v**2").get)
+        .addEquation(EquationParser.parseEquation("PE = m * g * h").get)
+        .addEquation(EquationParser.parseEquation("E_T = KE + PE").get)
+        .addEquality(VarId(0, "KE"), VarId(2, "KE"))
+        .addEquality(VarId(1, "PE"), VarId(2, "PE"))
+        .addExpression(E_T)
+
+      assert(ws.expressions(VarId(2, "E_T")) == Variable(VarId(2, "KE")) + Variable(VarId(2, "PE")))
+
+      val ws2 = ws.rewriteExpression(E_T, VarId(0, "KE"), 0)
+      assert(ws2.expressions(VarId(2, "E_T")) == Variable(VarId(0, "m")) * (Variable(VarId(0, "v")) ** 2) / 2 + Variable(VarId(1, "PE")))
+    }
+
+    it("compares stuff reasonably") {
+
+    }
+  }
 }

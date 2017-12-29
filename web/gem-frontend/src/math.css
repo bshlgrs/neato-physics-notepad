@@ -11,6 +11,7 @@
   border-width: thin;
   padding-left: 3px;
   padding-right: 3px;
+  display: flex;
 }
 
 .denominator {
@@ -19,6 +20,7 @@
   margin-top: -1px;
   padding-left: 3px;
   padding-right: 3px;
+  display: flex;
 }
 
 .math-row {

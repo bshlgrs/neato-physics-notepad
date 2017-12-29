@@ -219,7 +219,10 @@ trait Expression[A] {
   def substituteMany(from: Set[A], to: A): Expression[A] = this.mapVariables((x) => if (from.contains(x)) to else x)
 
   def simplifyWithEquivalenceClasses(equalities: SetOfSets[A]): Expression[A] =
-    equalities.sets.foldLeft(this)({ case (expr: Expression[A], set: Set[A]) => expr.substituteMany(set, set.minBy(_.toString))})
+    equalities.sets.foldLeft(this)({ case (expr: Expression[A], set: Set[A]) => {
+      expr.substituteMany(set, set.minBy(_.toString))
+    }})
+
 
   protected def asTerm: (Expression[A], Constant[A]) = {
     // 2*x -> (x, 2)
@@ -387,7 +390,7 @@ object ExpressionDisplay {
   }
 
   def orderWithConstantsFirst[A](stuff: Set[Expression[A]]): List[Expression[A]] = {
-    val (first, second) = stuff.partition(_.isInstanceOf[Constant[_]])
+    val (first, second) = stuff.partition({ case _: Constant[A] => true; case _ => false })
     first.toList ++ second.toList
   }
 

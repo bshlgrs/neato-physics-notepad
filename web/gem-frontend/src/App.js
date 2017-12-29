@@ -190,7 +190,7 @@ class App extends Component {
     const dim = ws.getDimension(draggedFromVarId);
 
     if (draggedOntoVarId) {
-      if (ws.getDimension(draggedOntoVarId).toString() === dim.toString()) {
+      if (ws.consistentUnits(draggedFromVarId, draggedOntoVarId)) {
         this.setState({ workspace: ws.addEquality(draggedFromVarId, draggedOntoVarId)});
       }
     } else {
@@ -198,7 +198,7 @@ class App extends Component {
       if (draggedOntoNumberId !== null) {
         const number = ws.getNumber(draggedOntoNumberId);
 
-        if (number.dimension.equalUnits(dim)) {
+        if (ws.consistentUnitsWithDimension(draggedFromVarId, number.dimension)) {
           this.setState({ workspace: ws.attachNumberJs(draggedOntoNumberId, draggedFromVarId) });
         } else {
           console.log("dimensions don't match:", number.dimension.toString(), dim.toString());
@@ -340,12 +340,21 @@ class App extends Component {
     if (num) {
       this.addNumber(num);
       this.setState({ searchBarText: '' });
+      return;
     }
 
     const relevantEquations = Gem.EquationLibrary.relevantEquationIds(this.state.searchBarText);
     if (relevantEquations[0]) {
       this.addEquation(Gem.EquationLibrary.getByEqId(relevantEquations[0]));
       this.setState({ searchBarText: '' });
+      return;
+    }
+
+    const customEquation = Gem.EquationParser.parseEquationJs(this.state.searchBarText);
+    if (customEquation) {
+      this.addEquation(customEquation);
+      this.setState({ searchBarText: "" });
+      return;
     }
   }
   deleteEquation(id) {

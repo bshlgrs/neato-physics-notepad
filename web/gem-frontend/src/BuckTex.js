@@ -20,11 +20,11 @@ const BuckTex = (props) => {
       {makeChildren(el.jsItems)}
     </div>
   } else if (type === "Sup") {
-    return <div style={{marginBottom: "17px", fontSize: "75%"}}>
+    return <div style={{marginBottom: "0.7em", fontSize: "75%"}}>
       {makeChildren(el.jsItems)}
     </div>
   } else if (type === "Sub") {
-    return <div style={{marginBottom: "-5px", marginLeft: "-2px", fontSize: "75%"}}>
+    return <div style={{marginBottom: "-0.3em", marginLeft: "-0.15em", fontSize: "75%"}}>
       {makeChildren(el.jsItems)}
     </div>
   } else if (type === "Fraction") {

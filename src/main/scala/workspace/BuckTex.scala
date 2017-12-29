@@ -1,5 +1,6 @@
 package workspace
 
+import cas.ExpressionDisplay.{orderWithConstantsFirst}
 import cas._
 
 import scala.scalajs.js
@@ -59,10 +60,12 @@ object CompileToBuckTex {
     compileExpressionWithBinding(expr, 0)
   }
 
+
+
   def compileExpressionWithBinding(expr: Expression[BuckTex], strongestPullFromOutside: Int): BuckTex = {
     def wrapIfNeeded(stuff: BuckTex, pullStrengthAtWhichWrappingIsNeeded: Int): BuckTex = {
       if (pullStrengthAtWhichWrappingIsNeeded > strongestPullFromOutside) {
-        horizontalBox(List(stuff))
+        horizontalBox(List(Text("("), stuff, Text(")")))
       } else {
         stuff
       }
@@ -72,10 +75,7 @@ object CompileToBuckTex {
         wrapIfNeeded(centeredBox(set.toList.flatMap((x) => List(Text(" + "), compileExpressionWithBinding(x, 1))).tail),
           1)
       }
-      case Product(set) => {
-        wrapIfNeeded(centeredBox(set.toList.flatMap((x) => List(Text(" "), compileExpressionWithBinding(x, 2))).tail),
-          2)
-      }
+      case Product(set) => renderFractionGroup(set)
       case Power(lhs, rhs) => centeredBox(List(compileExpressionWithBinding(lhs, strongestPullFromOutside),
         Sup(List(compileExpressionWithBinding(rhs, 0)))
       ))
@@ -129,8 +129,57 @@ object CompileToBuckTex {
         List(Text(s" = ${numericValue.toString.take(5)}"), dimension.toBuckTex)
     }
 
+    val rhs = expression.mapVariables(varId => makeVariableSpan(varId, varSubscripts.get(varId)))
+    val rhsString = this.compileExpression(rhs)
+    println("rhs is", rhs, rhsString)
+
     CompileToBuckTex.centeredBox(List(makeVariableSpan(varId, varSubscripts.get(varId)), Text(" = "),
-      this.compileExpression(expression.mapVariables(varId => makeVariableSpan(varId, varSubscripts.get(varId))))) ++
+      rhsString) ++
       numericValueDisplay)
+  }
+
+  def renderFractionGroup(set: Set[Expression[BuckTex]]): BuckTex = {
+    // TODO: Do something cleverer here: support grouped square roots and fractions
+    val denominatorItems: Set[Expression[BuckTex]] = set.collect({ case x@Power(_, RationalNumber(n, _)) if n < 0 => x })
+    val numeratorItems = set -- denominatorItems
+
+    val flippedDenominatorItems = denominatorItems.collect(
+      { case Power(base, RationalNumber(n, d)) => Expression.makePower(base, RationalNumber(-n, d)): Expression[BuckTex] }
+    )
+
+    val numeratorList = renderProductOfPositivePowerTerms(numeratorItems)
+    val denominatorList = renderProductOfPositivePowerTerms(flippedDenominatorItems)
+
+    (numeratorList, denominatorList) match {
+      case (Nil, Nil) => ???
+      case (_, Nil) => centeredBox(numeratorList)
+      case (Nil, _) => Fraction(List(Text("1")), denominatorList)
+      case _ => Fraction(numeratorList, denominatorList)
+    }
+  }
+
+  def groupWithRadical[A](items: Set[Expression[A]]): (List[Expression[A]], List[Expression[A]]) = {
+    val itemsInsideRadical = items.collect({ case x@Power(_, RationalNumber(1, 2)) => x: Expression[A]})
+    val outsideItems = orderWithConstantsFirst(items -- itemsInsideRadical)
+    val radicalItems = orderWithConstantsFirst(itemsInsideRadical.collect({ case Power(base, _) => base }))
+
+    println("lol wut", orderWithConstantsFirst(itemsInsideRadical))
+    outsideItems -> radicalItems
+  }
+
+  // assumes these have been sorted
+  def renderProductOfPositivePowerTerms(set: Set[Expression[BuckTex]]): List[BuckTex] = {
+    val (outsideRadical, insideRadical) = groupWithRadical(set)
+    val outsideRadicalTex = outsideRadical.map(factor => compileExpressionWithBinding(factor, 2))
+    insideRadical match {
+      case Nil => outsideRadicalTex
+      case List(x) => {
+        outsideRadicalTex ++ List(Text("√"), compileExpressionWithBinding(x, 2))
+      }
+      case _ => {
+        val insideRadicalTex = insideRadical.map(factor => compileExpressionWithBinding(factor, 2))
+        outsideRadicalTex ++ List(Text("√(")) ++ insideRadicalTex ++ List(Text(")"))
+      }
+    }
   }
 }
