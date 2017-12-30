@@ -90,6 +90,7 @@ Also:
 - "a - b" is rendered as "a + -1b"
 - the nondeterministic ordering of items in a rendering of equation make it flicker
 - you can get "v = v" as an expression result
+- Reattaching numbers doesn't work
 
 ## improvements
 
@@ -103,6 +104,7 @@ Also:
 - Visual feedback for when you've successfully dragged onto something
 - Maybe I should build an automated test suite using that "PossibleActions" code that I had but deleted
 - If equations have a value, they should display it.
+- key shortcuts
 
 ## Build notes
 

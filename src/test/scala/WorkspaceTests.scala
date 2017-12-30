@@ -28,7 +28,7 @@ class WorkspaceTests extends FunSpec {
     it("knows about allowed rewrites") {
       val ws2 = ws.addExpression(VarId(0, "v"))
 
-      assert(ws2.possibleRewritesForExpr(VarId(0, "v")) == Set((VarId(0, "m"), 1)))
+//      assert(ws2.possibleRewritesForExpr(VarId(0, "v")) == Set((VarId(0, "m"), 1)))
     }
   }
 
@@ -59,6 +59,7 @@ class WorkspaceTests extends FunSpec {
 
       assert(ws.expressions(VarId(0, "v")) == (Variable(VarId(1, "g")) * Variable(VarId(1, "h")) * 2).sqrt)
       ws.allVarIds.map(ws.getDimension)
+      ws.allVarIds.map(varId => ws.addExpression(varId).getExpressionBuckTex(varId))
     }
   }
 
@@ -79,6 +80,7 @@ class WorkspaceTests extends FunSpec {
       assert(ws2.expressions(VarId(2, "E_T")) == Variable(VarId(0, "m")) * (Variable(VarId(0, "v")) ** 2) / 2 + Variable(VarId(1, "PE")))
 
       ws2.allVarIds.map(ws2.getDimension)
+      ws.allVarIds.map(varId => ws.addExpression(varId).getExpressionBuckTex(varId))
     }
 
     it("does another thing") {
@@ -101,6 +103,8 @@ class WorkspaceTests extends FunSpec {
       val potential_energy_expr = Variable(VarId(1,"h")) * Variable(VarId(1,"m")) * Variable(VarId(1,"g"))
       assert(ws3.expressions(VarId(2, "E_T")) == Variable(VarId(0, "m")) * (Variable(VarId(0, "v")) ** 2) / 2 +
         potential_energy_expr)
+
+      ws3.allVarIds.map(varId => ws.addExpression(varId).getExpressionBuckTex(varId))
     }
 
     it("does a third thing") {
@@ -116,6 +120,7 @@ class WorkspaceTests extends FunSpec {
 
       ws.addNumber(PhysicalNumber(5, SiDimension.SiJoule))
           .attachNumber(0, VarId(2, "E_T"))
+      ws.allVarIds.map(varId => ws.addExpression(varId).getExpressionBuckTex(varId))
     }
 
     it("has correct rewrites") {
@@ -128,6 +133,7 @@ class WorkspaceTests extends FunSpec {
         .rewriteExpression(VarId(0, "v"), VarId(0, "E_K"), 1)
       println(ws.expressions)
       println(ws.possibleRewritesForExpr(VarId(0, "v")))
+      ws.allVarIds.map(varId => ws.addExpression(varId).getExpressionBuckTex(varId))
     }
 
     it("does a fourth thing") {
@@ -139,7 +145,6 @@ class WorkspaceTests extends FunSpec {
         .get
         .getExpressionBuckTex(VarId(0, "Q"))
 
-
     }
 
     it("does a fifth thing") {
@@ -150,6 +155,7 @@ class WorkspaceTests extends FunSpec {
         .addEquality(VarId(0, "Q"), VarId(1, "Q"))
 
       ws.allVarIds.map(ws.getDimension)
+      ws.allVarIds.map(varId => ws.addExpression(varId).getExpressionBuckTex(varId))
       println(ws)
 
       println(ws.possibleRewritesForExpr(VarId(1, "n_e")))

@@ -201,10 +201,10 @@ class App extends Component {
       if (draggedOntoNumberId !== null) {
         const number = ws.getNumber(draggedOntoNumberId);
 
-        if (ws.consistentUnitsWithDimension(draggedFromVarId, number.dimension)) {
+        if (ws.consistentUnitsWithDimension(draggedFromVarId, number.siDimension)) {
           this.setState({ workspace: ws.attachNumberJs(draggedOntoNumberId, draggedFromVarId) });
         } else {
-          console.log("dimensions don't match:", number.dimension.toString(), dim.toString());
+          console.log("dimensions don't match:", number.siDimension.toString(), dim.toString());
         }
       } else {
         console.log("not dragged onto something");
@@ -246,10 +246,10 @@ class App extends Component {
       if (draggedOntoNumberId !== null) {
         const number = ws.getNumber(draggedOntoNumberId);
 
-        if (ws.consistentUnitsWithDimension(varToRemoveId, number.dimension)) {
+        if (ws.consistentUnitsWithDimension(varToRemoveId, number.siDimension)) {
           this.setState({ workspace: ws.attachNumberJs(draggedOntoNumberId, varToRemoveId) });
         } else {
-          console.log("dimensions don't match:", number.dimension.toString());
+          console.log("dimensions don't match:", number.siDimension.toString());
         }
       } else {
         console.log("not dragged onto something");
@@ -520,7 +520,7 @@ class App extends Component {
               const pos = this.state.positions.get('number-' + numberId);
               const number = ws.getNumber(numberId);
               const muted = currentAction === DRAGGING_FROM_VAR && (
-                !ws.consistentUnitsWithDimension(this.state.draggedFromVarId, number.dimension));
+                !ws.consistentUnitsWithDimension(this.state.draggedFromVarId, number.siDimension));
 
               return <div className='physical-number'
                           style={{position: 'absolute', top: pos.get("y"), left: pos.get("x"), color: (muted && 'grey')}}

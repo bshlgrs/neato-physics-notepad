@@ -184,4 +184,13 @@ class CasTests extends FunSpec {
       assert((x * y).differentiate("x") == y)
     }
   }
+
+  describe("guessing floating point numbers") {
+    it ("can guess") {
+      assert(RationalNumber.makeFromDouble(4.0).contains(RationalNumber(4)))
+      assert(RationalNumber.makeFromDouble(5.5).contains(RationalNumber(11, 2)))
+      assert(RationalNumber.makeFromDouble(5.2).contains(RationalNumber(26, 5)))
+      assert(RationalNumber.makeFromDouble(1.132439502).isEmpty)
+    }
+  }
 }

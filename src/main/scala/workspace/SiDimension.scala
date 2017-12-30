@@ -1,5 +1,6 @@
 package workspace
 
+import cas.RationalNumber
 import workspace.SiDimension.{SiCoulomb, SiJoule, SiNewton, SiOhm}
 
 import scala.scalajs.js.annotation.{JSExport, JSExportTopLevel}
@@ -7,23 +8,18 @@ import scala.util.Try
 
 trait SiDimension {
 
-  val units: Map[SiUnit, Int]
+  val units: Map[SiUnit, RationalNumber[String]]
 
   def *(other: SiDimension): SiDimension = SiDimension(
     (units.keys ++ other.units.keys)
-      .map((u) => u -> (this.units.getOrElse(u, 0) + other.units.getOrElse(u, 0)))
-      .filter(_._2 != 0)
+      .map((u) => u -> (this.units.getOrElse(u, RationalNumber[String](0)) + other.units.getOrElse(u, RationalNumber[String](0))).asInstanceOf[RationalNumber[String]])
+      .filter(_._2 != RationalNumber(0))
       .toMap
   )
 
-  def /(other: SiDimension): SiDimension = SiDimension(
-    (units.keys ++ other.units.keys)
-      .map((u) => u -> (this.units.getOrElse(u, 0) - other.units.getOrElse(u, 0)))
-      .filter(_._2 != 0)
-      .toMap
-  )
-
-  def **(other: Int): SiDimension = SiDimension(this.units.mapValues(_ * other))
+  def /(other: SiDimension): SiDimension = this * (other ** -1)
+  def **(other: Int): SiDimension = SiDimension(this.units.mapValues(x => (x * other).asInstanceOf[RationalNumber[String]]))
+  def **(other: RationalNumber[String]): SiDimension = SiDimension(this.units.mapValues(n => n * other))
 
   @JSExport
   lazy val toBuckTex: BuckTex = this match {
@@ -31,7 +27,7 @@ trait SiDimension {
     case SiDimension.SiNewton => Text("N")
     case SiDimension.SiCoulomb => Text("C")
     case _ => CompileToBuckTex.horizontalBox(units.toList.sortBy(_._1.symbol).map({
-      case (unit, 1) => Text(unit.symbol)
+      case (unit, RationalNumber(1, 1)) => Text(unit.symbol)
       case (unit, power) => CompileToBuckTex.horizontalBox(List(Text(" " + unit.symbol), Sup(List(Text(power.toString)))))
     }))
   }
@@ -40,11 +36,11 @@ trait SiDimension {
   def equalUnits(other: SiDimension): Boolean = this.units == other.units
 }
 
-case class ConcreteSiDimension(units: Map[SiUnit, Int]) extends SiDimension
+case class ConcreteSiDimension(units: Map[SiUnit, RationalNumber[String]]) extends SiDimension
 
 
 object SiDimension {
-  val SiNewton = SiDimension(Map(Kilogram -> 1, Meter -> 1, Second -> -2))
+  val SiNewton = SiDimension.fromInts(Map[SiUnit, Int](Kilogram -> 1, Meter -> 1, Second -> -2))
   val SiJoule: SiDimension = SiNewton * Meter
   val SiCoulomb: SiDimension = Ampere * Second
   val Volt: SiDimension = SiJoule / SiCoulomb
@@ -52,32 +48,52 @@ object SiDimension {
   val SiOhm: SiDimension = Volt / Ampere
   val Dimensionless = ConcreteSiDimension(Map())
 
-  def apply(units: Map[SiUnit, Int]): SiDimension = ConcreteSiDimension(units)
+  def apply(units: Map[SiUnit, RationalNumber[String]]): SiDimension = ConcreteSiDimension(units)
+  def fromInts(units: Map[SiUnit, Int]): SiDimension = ConcreteSiDimension(units.mapValues(int => RationalNumber[String](int)))
 }
 
 case class Unit(value: Double, dimension: SiDimension, name: UnitName) {
-  def toDim: Dimension = Dimension(Map(this -> 1))
+  def toDim: Dimension = Dimension(Map(this -> RationalNumber(1)))
 }
 
 
 
-case class Dimension(units: Map[Unit, Int]) {
-  def totalConstant: Double = units.map({ case (unit: Unit, power: Int) => math.pow(unit.value, power) }).product
+case class Dimension(units: Map[Unit, RationalNumber[String]]) {
+  def totalConstant: Double = units.map({ case (unit: Unit, power: RationalNumber[String]) => math.pow(unit.value, power.toDouble) }).product
 
-  def siDimension: SiDimension = units.map({ case (unit: Unit, power: Int) => unit.dimension ** power })
+  def siDimension: SiDimension = units.map({ case (unit: Unit, power: RationalNumber[String]) => unit.dimension ** power })
     .reduceOption(_ * _)
     .getOrElse(SiDimension.Dimensionless)
 
   def *(other: Dimension): Dimension = {
     Dimension((units.keys ++ other.units.keys)
-      .map((u) => u -> (this.units.getOrElse(u, 0) + other.units.getOrElse(u, 0)))
-      .filter(_._2 != 0)
+      .map((u) => u ->
+        (this.units.getOrElse(u, RationalNumber(0)) + other.units.getOrElse(u, RationalNumber(0))).asInstanceOf[RationalNumber[String]]
+      )
+      .filter(_._2 != RationalNumber(0))
       .toMap)
   }
 
   def /(other: Dimension): Dimension = this * (other ** -1)
 
-  def **(other: Int): Dimension = Dimension(this.units.mapValues(_ * other))
+  def **(other: RationalNumber[String]): Dimension = Dimension(this.units.mapValues(n => n * other))
+  def **(other: Int): Dimension = Dimension(this.units.mapValues(n => n * RationalNumber[String](other)))
+
+  def toBuckTex(value: Double): BuckTex = if (this.units.isEmpty) Text("") else {
+      def makeSubscript(num: RationalNumber[String]): Option[BuckTex] = {
+        if (num == RationalNumber(1)) None else Some(Sup(List(Text(num.toString))))
+      }
+
+      val initialUnitsTex = units.dropRight(1).flatMap({ case (unit: Unit, num: RationalNumber[String]) =>
+        List(Text(unit.name.getString(1))) ++ makeSubscript(num).toList
+      })
+
+      val (lastUnit, lastUnitPower) = units.last
+      val lastUnitsTex: List[BuckTex] = List(Text(lastUnit.name.getString(value))) ++ makeSubscript(lastUnitPower).toList
+
+      CompileToBuckTex.horizontalBox((initialUnitsTex ++ lastUnitsTex).toList)
+    }
+
 }
 
 object Dimension {
@@ -133,13 +149,15 @@ object Dimension {
         val divisionSign = Option(divisionSignOrNull)
         Dimension.units.find(_._1.contains(unitString)).map(_._2).getOrElse({
           throw new RuntimeException(s"unknown unit $unitString")
-        }).toDim ** (exponent.map(_.toInt).getOrElse(1) * (if (divisionSign.isDefined) -1 else 1))
+        }).toDim ** (
+          exponent.map((x) => RationalNumber[String](x.toInt)).getOrElse(RationalNumber[String](1))
+          * (if (divisionSign.isDefined) RationalNumber[String](-1) else RationalNumber[String](1)))
     }).reduce(_ * _)
   })
 }
 
 sealed trait SiUnit extends SiDimension {
-  val units = Map(this -> 1)
+  val units = Map(this -> RationalNumber(1))
 
   def symbol: String = this match {
     case Meter => "m"
@@ -162,5 +180,5 @@ case class SymbolUnitName(symbol: String) extends UnitName {
   def getString(x: Double): String = symbol
 }
 case class PluralizingUnitName(name: String) extends UnitName {
-  def getString(x: Double): String = if (x == 1.0) name else name + "s"
+  def getString(x: Double): String = if (x == 1.0) name + " " else name + "s "
 }

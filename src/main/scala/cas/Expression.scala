@@ -312,8 +312,7 @@ trait Expression[A] {
               exponent.evaluate match {
                 case None => BottomDimensionInference
                 case Some(x) => {
-                  assert((x - x.round).abs < 0.00001, "my shitty assumption is wrong safdgu8tefws")
-                  ConcreteDimensionInference(baseDimension ** x.toInt)
+                  ConcreteDimensionInference(baseDimension ** RationalNumber.makeFromDouble[String](x).get)
                 }
               }
             }
@@ -357,6 +356,11 @@ trait Constant[A] extends Expression[A]
 case class RealNumber[A](value: Double) extends Constant[A]
 case class RationalNumber[A](numerator: Int, denominator: Int = 1) extends Constant[A] {
   assert(denominator > 0, "denominator must be > 0")
+
+  def toDouble: Double = numerator.toDouble / denominator
+
+  def *(other: RationalNumber[A]): RationalNumber[A] = super.*(other).asInstanceOf[RationalNumber[A]]
+//  def *(other: Int): RationalNumber[A] = this * RationalNumber[A](other)
 }
 case class NamedNumber[A](value: Double, name: String) extends Constant[A]
 
@@ -377,6 +381,14 @@ object RationalNumber {
       }
       RationalNumber(numerator / gcd, denominator / gcd)
     }
+  }
+
+  def makeFromDouble[A](double: Double): Option[RationalNumber[A]] = {
+    (for {
+      i <- Range(1, 10) // inclusive
+      maybeNum = double * i
+      if math.abs(maybeNum - maybeNum.round) < 0.0001
+    } yield RationalNumber[A](maybeNum.round.toInt, i)).headOption
   }
 }
 
