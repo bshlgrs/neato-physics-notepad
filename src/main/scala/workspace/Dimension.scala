@@ -27,6 +27,7 @@ trait Dimension {
   lazy val toBuckTex: BuckTex = this match {
     case Dimension.Joule => Text("J")
     case Dimension.Newton => Text("N")
+    case Dimension.Coulomb => Text("C")
     case _ => CompileToBuckTex.horizontalBox(units.toList.sortBy(_._1.symbol).map({
       case (unit, 1) => Text(unit.symbol)
       case (unit, power) => CompileToBuckTex.horizontalBox(List(Text(" " + unit.symbol), Sup(List(Text(power.toString)))))
@@ -39,15 +40,15 @@ trait Dimension {
 
 case class ConcreteDimension(units: Map[SiUnit, Int]) extends Dimension
 
-@JSExportTopLevel("Gem.Dimension")
+
 object Dimension {
   val Newton = Dimension(Map(Kilogram -> 1, Meter -> 1, Second -> -2))
   val Joule: Dimension = Newton * Meter
-  var Coulomb: Dimension = Ampere * Second
-  var Volt: Dimension = Joule / Coulomb
-  var Watt: Dimension = Joule / Second
-  var Ohm: Dimension = Volt / Ampere
-  var Dimensionless = ConcreteDimension(Map())
+  val Coulomb: Dimension = Ampere * Second
+  val Volt: Dimension = Joule / Coulomb
+  val Watt: Dimension = Joule / Second
+  val Ohm: Dimension = Volt / Ampere
+  val Dimensionless = ConcreteDimension(Map())
 
 
   def apply(units: Map[SiUnit, Int]): Dimension = ConcreteDimension(units)
@@ -64,15 +65,6 @@ object Dimension {
     }).reduce(_ * _)
   })
 
-  def parsePhysicalNumber(string: String): Try[PhysicalNumber] = for {
-    (numberPart, unitsPart) <- Try(string.splitAt(string.indexWhere(char => !(char == '.' || char.isDigit))))
-    number <- Try(numberPart.toDouble)
-    dimension <- Dimension.parse(unitsPart)
-  } yield PhysicalNumber(number, dimension)
-
-  @JSExport("parsePhysicalNumber")
-  def parsePhysicalNumberJs(string: String): PhysicalNumber = parsePhysicalNumber(string).getOrElse(null)
-
   val symbolMap: Map[String, Dimension] = Map(
     "m" -> Meter,
     "kg" -> Kilogram,
@@ -82,7 +74,8 @@ object Dimension {
     "J" -> Joule,
     "N" -> Newton,
     "Hz" -> (Second ** -1),
-    "ohm" -> Ohm
+    "ohm" -> Ohm,
+    "C" -> Coulomb
   )
 }
 

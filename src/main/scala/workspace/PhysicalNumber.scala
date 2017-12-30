@@ -1,6 +1,7 @@
 package workspace
 
-import scala.scalajs.js.annotation.{JSExport, JSExportAll}
+import scala.scalajs.js.annotation.{JSExport, JSExportAll, JSExportTopLevel}
+import scala.util.Try
 
 @JSExportAll
 case class PhysicalNumber(value: Double, dimension: Dimension) {
@@ -22,4 +23,16 @@ object NonSiUnit {
     Set("lightyear") -> NonSiUnit(9.4607e15, Meter, "light year"),
     Set("parsec") -> NonSiUnit(3.08567758e16, Meter, "parsec"),
   )
+}
+
+@JSExportTopLevel("Gem.PhysicalNumber")
+object PhysicalNumber {
+  def parsePhysicalNumber(string: String): Try[PhysicalNumber] = for {
+    (numberPart, unitsPart) <- Try(string.splitAt(string.indexWhere(char => !(".e-".contains(char) || char.isDigit))))
+    number <- Try(numberPart.toDouble)
+    dimension <- Dimension.parse(unitsPart)
+  } yield PhysicalNumber(number, dimension)
+
+  @JSExport("parsePhysicalNumber")
+  def parsePhysicalNumberJs(string: String): PhysicalNumber = parsePhysicalNumber(string).getOrElse(null)
 }

@@ -53,14 +53,14 @@ Then try to do a bunch of the problems I claim I'm able to do, which involves ad
 
 Then, in this order:
 
-- Nonstandard units
-  - I think this is just a small change to dimension parsing: let dimensions be `PhysicalNumber`s instead of `Dimension`s.
-  - Numbers are displayed according to how they were input. Perhaps there's a toggle in the number menu to convert to different units.
 - Creating equations
   - requires a parser. FastParse?
   - requires specifying units, maybe
     - I could just have equations be dynamically typed: they object if you try something unreasonable but are otherwise chill.
       - I think this is probably the way to go.
+- Nonstandard units
+  - I think this is just a small change to dimension parsing: let dimensions be `PhysicalNumber`s instead of `Dimension`s.
+  - Numbers are displayed according to how they were input. Perhaps there's a toggle in the number menu to convert to different units.
 - Triangle diagrams
 - Differentiation
   - just differentiate F=ma to dF/dM = dM a or whatever.

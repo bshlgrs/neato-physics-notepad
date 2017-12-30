@@ -176,4 +176,12 @@ class CasTests extends FunSpec {
 
     }
   }
+
+  describe("differentiation") {
+    it("works") {
+      assert((x + y).differentiate("x") == one)
+
+      assert((x * y).differentiate("x") == y)
+    }
+  }
 }

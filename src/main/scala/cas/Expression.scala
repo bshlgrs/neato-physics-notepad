@@ -325,6 +325,24 @@ trait Expression[A] {
     case _: Constant[_] => ConcreteDimensionInference(Dimension.Dimensionless)
     case _ => throw new RuntimeException("I don't know how to do this asdfyuihk")
   }
+
+  def differentiate(wrt: A): Expression[A] = this match {
+    case Sum(factors) => factors.toList.map(_.differentiate(wrt)).reduce(_ + _)
+    case Product(factors) => {
+      val factorList = factors.toList
+      factorList.zipWithIndex.map({ case (factor: Expression[A], idx: Int) =>
+        (factorList.take(idx) ++ List(factor.differentiate(wrt)) ++ factorList.drop(idx + 1)).reduce(_ * _)}).reduce(_ + _)
+    }
+    case _: Constant[_] => RationalNumber(0)
+    case Variable(x) => if (x == wrt) RationalNumber(1) else RationalNumber(0)
+    case Power(base: Expression[A], exponent: Expression[A]) => {
+      if (exponent.evaluate.isEmpty) {
+        throw new RuntimeException("We don't have an implementation of differentiation for nonconstant exponents yet")
+      } else {
+        exponent * (base ** (exponent - 1)) * base.differentiate(wrt)
+      }
+    }
+  }
 }
 
 case class Sum[A](terms: Set[Expression[A]]) extends Expression[A]

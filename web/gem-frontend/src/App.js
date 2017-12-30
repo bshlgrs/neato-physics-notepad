@@ -352,7 +352,7 @@ class App extends Component {
     });
   }
   handleSearchBarSubmit () {
-    const num = Gem.Dimension.parsePhysicalNumber(this.state.searchBarText.trim());
+    const num = Gem.PhysicalNumber.parsePhysicalNumber(this.state.searchBarText.trim());
     if (num) {
       this.addNumber(num);
       this.setState({ searchBarText: '' });
@@ -555,7 +555,7 @@ class App extends Component {
                 </div>;
               })}
               {(() => {
-                const dim = Gem.Dimension.parsePhysicalNumber(this.state.searchBarText);
+                const dim = Gem.PhysicalNumber.parsePhysicalNumber(this.state.searchBarText);
                 return dim ?
                   <div className='physical-number'
                     onClick={() => this.handleSearchBarSubmit()}>
