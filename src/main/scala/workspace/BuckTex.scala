@@ -14,7 +14,7 @@ trait BuckTex {
     case _: Sub => "Sub"
     case _: Fraction => "Fraction"
     case _: Text => "Text"
-    case _: Wrapper => "Wrapper"
+    case _: VariableWrapper => "VariableWrapper"
   }
 }
 
@@ -50,7 +50,7 @@ case class Fraction(numerator: List[BuckTex], denominator: List[BuckTex]) extend
 @JSExportAll
 case class Text(text: String) extends BuckTex
 @JSExportAll
-case class Wrapper(item: BuckTex, data: js.Dictionary[Any] = js.Dictionary()) extends BuckTex
+case class VariableWrapper(item: BuckTex, varId: VarId) extends BuckTex
 
 object CompileToBuckTex {
   def horizontalBox(items: List[BuckTex]) = FlexBox(items, Row, FlexEnd)
@@ -59,8 +59,6 @@ object CompileToBuckTex {
   def compileExpression(expr: Expression[BuckTex]): BuckTex = {
     compileExpressionWithBinding(expr, 0)
   }
-
-
 
   def compileExpressionWithBinding(expr: Expression[BuckTex], strongestPullFromOutside: Int): BuckTex = {
     def wrapIfNeeded(stuff: BuckTex, pullStrengthAtWhichWrappingIsNeeded: Int): BuckTex = {
@@ -116,7 +114,7 @@ object CompileToBuckTex {
       case Some(num) => showVarWithStr(num.toString)
       case None => showVarWithStr("")
     }
-    Wrapper(list, js.Dictionary[Any]("varId" -> (varId: Any), "type" -> "Variable")) // todo: remove type annotation?
+    VariableWrapper(list, varId)
   }
 
   def showExpression(varId: VarId,

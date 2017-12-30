@@ -1,6 +1,6 @@
 package cas
 
-import workspace.SetOfSets
+import workspace._
 
 trait Expression[A] {
   import ExpressionDisplay.wrap
@@ -41,7 +41,7 @@ trait Expression[A] {
     }
   }
 
-  def solve(x: A, lhs: Expression[A] = RationalNumber(0)): List[Expression[A]] = {
+  def solve(x: A, lhs: Expression[A] = RationalNumber(0)): Set[Expression[A]] = {
     assert(!lhs.vars.contains(x))
     this match {
       case Sum(set) => {
@@ -49,7 +49,7 @@ trait Expression[A] {
 
         termsWithX.size match {
           // if x isn't here, we're hosed
-          case 0 => List()
+          case 0 => Set()
           // if x is in exactly one of our terms (eg we know x*y + z == 0) then we solve for x in the term x is in
           case 1 => {
             val nonXTerms = lhs - Expression.makeSum(termsWithoutX)
@@ -58,7 +58,7 @@ trait Expression[A] {
           case _ => {
             // This is situations like solving ax + bx == c for x -- you should do it by factoring.
             // TODO: implement that
-            List()
+            Set()
           }
         }
       }
@@ -66,7 +66,7 @@ trait Expression[A] {
         val (factorsWithX, factorsWithoutX) = set.partition(_.vars.contains(x))
 
         factorsWithX.size match {
-          case 0 => List()
+          case 0 => Set()
           case 1 => {
             // This is like "solve a b^2 f(x) = y for x". The answer there is f^-1(y a^-1 b^-2)
             // which we get by doing (f(x)).solve(x, y a^-1 b^2)
@@ -74,26 +74,26 @@ trait Expression[A] {
           }
           case 2 => {
             // This equation might be quadratic, in which case you have a chance of solving it.
-            List()
+            Set()
           }
-          case _ => List() // this is hard
+          case _ => Set() // this is hard
         }
       }
-      case Variable(y) => if (x == y) List(lhs) else List()
-      case _: Constant[A] => List()
+      case Variable(y) => if (x == y) Set(lhs) else Set()
+      case _: Constant[A] => Set()
       case Power(base, power) => (base.vars.contains(x), power.vars.contains(x)) match {
         case (true, false) => // eg x^2
-          List(lhs ** (RationalNumber(1)/power))
-        case (false, false) => List()
+          Set(lhs ** (RationalNumber(1)/power))
+        case (false, false) => Set()
         case (false, true) => ??? // We should be able to handle this with a logarithm
-        case (true, true) => List() // Transcendental equation, you're hosed
+        case (true, true) => Set() // Transcendental equation, you're hosed
       }
     }
   }
 
   def sqrt: Expression[A] = this ** RationalNumber[A](1, 2)
 
-  def solve(x: Variable[A]): List[Expression[A]] = this.solve(x.thing)
+  def solve(x: Variable[A]): Set[Expression[A]] = this.solve(x.thing)
 
   def subs(x: A): Expression[A] = ???
 
@@ -111,6 +111,9 @@ trait Expression[A] {
       val denominator = d1 * d2
       RationalNumber.build(numerator, denominator)
     }
+    case (RealNumber(x), RationalNumber(n, d)) => RealNumber(x + n.toDouble / d)
+    case (RationalNumber(n, d), RealNumber(x)) => RealNumber(x + n.toDouble / d)
+    case (RealNumber(x), RealNumber(y)) => RealNumber(x + y)
     case (Sum(lhs), Sum(rhs)) => {
       val lhsTermTuples = lhs.map(_.asTerm).toMap
       val rhsTermTuples = rhs.map(_.asTerm).toMap
@@ -145,6 +148,9 @@ trait Expression[A] {
       val denominator = d1 * d2
       RationalNumber.build(numerator, denominator)
     }
+    case (RealNumber(x), RationalNumber(n, d)) => RealNumber(x * n / d)
+    case (RationalNumber(n, d), RealNumber(x)) => RealNumber(x * n / d)
+    case (RealNumber(x), RealNumber(y)) => RealNumber(x * y)
     case (Product(lhs), Product(rhs)) => {
       val lhsFactorTuples = lhs.map(_.asFactor).toMap
       val rhsFactorTuples = rhs.map(_.asFactor).toMap
@@ -199,9 +205,9 @@ trait Expression[A] {
   def **(other: Int): Expression[A] = this ** RationalNumber[A](other)
 
   def mapVariablesToExpressions[B](f: A => Expression[B]): Expression[B] = this match {
-    case Sum(terms) => terms.map(_.mapVariablesToExpressions(f)).reduce(_ + _)
+    case Sum(terms) => terms.toList.map(_.mapVariablesToExpressions(f)).reduce(_ + _)
     case Product(factors) => {
-      val mappedFactors = factors.map(_.mapVariablesToExpressions(f))
+      val mappedFactors = factors.toList.map(_.mapVariablesToExpressions(f))
       mappedFactors.reduce(_ * _)
     }
     case Variable(thing) => f(thing)
@@ -276,6 +282,49 @@ trait Expression[A] {
     case NamedNumber(x, _) => Some(x)
     case RationalNumber(n, d) => Some(n.toDouble / d)
   }
+
+  // None means "inconsistency", Some(None) means "any"
+  def calculateDimension(getDimensionDirectly: A => DimensionInference): DimensionInference = this match {
+    case Sum(terms) => {
+      val calculatedDimensions: Set[DimensionInference] = terms.map(_.calculateDimension(getDimensionDirectly))
+
+      calculatedDimensions.reduce((x: DimensionInference, y: DimensionInference) => {
+        x.combineWithEquals(y)
+      })
+    }
+    case Product(factors) => {
+      val calculatedDimensions: Set[DimensionInference] = factors.map(_.calculateDimension(getDimensionDirectly))
+      calculatedDimensions.reduce((x: DimensionInference, y: DimensionInference) => x.combine(y, _ * _))
+    }
+    case Power(base, exponent) => exponent.calculateDimension(getDimensionDirectly) match {
+        // For consistency, the exponent has to be dimensionless, and either the base is dimensionless or the exponent is constant.
+      case BottomDimensionInference => BottomDimensionInference
+      case ConcreteDimensionInference(x) if !x.equalUnits(Dimension.Dimensionless) => BottomDimensionInference
+      case _ => {
+        base.calculateDimension(getDimensionDirectly) match {
+          case BottomDimensionInference => BottomDimensionInference
+          case TopDimensionInference => TopDimensionInference
+          case ConcreteDimensionInference(baseDimension) => {
+            // If the baseDimension is not (), the exponent must be constant
+            if (baseDimension.equalUnits(Dimension.Dimensionless)) {
+              ConcreteDimensionInference(Dimension.Dimensionless)
+            } else {
+              exponent.evaluate match {
+                case None => BottomDimensionInference
+                case Some(x) => {
+                  assert((x - x.round).abs < 0.00001, "my shitty assumption is wrong safdgu8tefws")
+                  ConcreteDimensionInference(baseDimension ** x.toInt)
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    case Variable(name) => getDimensionDirectly(name)
+    case _: Constant[_] => ConcreteDimensionInference(Dimension.Dimensionless)
+    case _ => throw new RuntimeException("I don't know how to do this asdfyuihk")
+  }
 }
 
 case class Sum[A](terms: Set[Expression[A]]) extends Expression[A]
@@ -315,6 +364,7 @@ object RationalNumber {
 
 object Expression {
   val Zero = RationalNumber(0)
+  val Pi = NamedNumber(3.14159265359, "π")
 
   def makeProduct[A](factors: Set[Expression[A]]): Expression[A] = {
     val nonOneFactors = factors.filterNot(_ == RationalNumber(1))

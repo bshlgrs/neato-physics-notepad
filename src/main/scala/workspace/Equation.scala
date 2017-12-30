@@ -19,6 +19,10 @@ trait Equation {
     // TODO: check on the `head` here
     expr.solve(varName).head.mapVariables((name) => VarId(selfEqId, name))
   }
+
+  def solutions(varName: String, selfEqId: Int): Set[Expression[VarId]] = {
+    expr.solve(varName).map(_.mapVariables((name) => VarId(selfEqId, name)))
+  }
   def exprWithEquationId(id: Int): Expression[VarId] = expr.mapVariables((name) => VarId(id, name))
 }
 
@@ -28,14 +32,15 @@ case class LibraryEquation(name: String,
                     displayF: (String => BuckTex) => BuckTex,
                     staticDimensions: Map[String, Dimension],
                     varNamesMap: Map[String, String],
-                    tags: Set[String]
+                           extraTags: Set[String]
                    )  extends Equation {
-  assert(expr.vars == staticDimensions.keys)
-  assert(varNamesMap.keys == staticDimensions.keys)
+  assert(expr.vars == staticDimensions.keys.toSet, s"assert 234876 $name ${expr.vars} ${staticDimensions.keys}")
+  assert(varNamesMap.keys == staticDimensions.keys, "12387340")
 
   def varName(symbol: String): Option[String] = varNamesMap.get(symbol)
   def staticDimensionsJs: js.Dictionary[Dimension] = js.Dictionary(staticDimensions.toSeq :_*)
   def display(f: String => BuckTex): BuckTex = displayF(f)
+  def tags: Set[String] = (extraTags ++ varNamesMap.values ++ name.split(' ').toSet).map(_.toLowerCase)
 }
 
 @JSExportAll
@@ -73,7 +78,7 @@ object Equation {
       tags.split(' ').toSet)
   }
 
-  def buildFaster(name: String, equationString: String, varNamesAndDimensions: Map[String, (String, Dimension)], tags: String): LibraryEquation = {
+  def buildFaster(name: String, equationString: String, varNamesAndDimensions: Map[String, (String, Dimension)], tags: String = ""): LibraryEquation = {
     val nakedEquation = EquationParser.parseEquation(equationString).get
 
     def display(f: (String => BuckTex)): BuckTex = {

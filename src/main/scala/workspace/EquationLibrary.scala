@@ -6,7 +6,7 @@ import scala.scalajs.js.annotation.{JSExport, JSExportTopLevel}
 
 @JSExportTopLevel("Gem.EquationLibrary")
 object EquationLibrary {
-  import Dimension.{Joule,Newton}
+  import Dimension._
 
   val library: Map[String, LibraryEquation] = Map(
     "ke_def" -> LibraryEquation("Definition of kinetic energy",
@@ -39,6 +39,33 @@ object EquationLibrary {
       "force gravity"
     ),
 //    'momentum_def' => Equation.buildFaster("Definition of momentumj")
+    "ohms_law" -> Equation.buildFaster(
+      "Ohm's law",
+      "I = V / R",
+      Map("I" -> ("Current", Ampere), "V" -> ("Voltage", Volt), "R" -> ("Resistance", Ohm))
+    ),
+    "ampere_def" -> Equation.buildFaster(
+      "Definition of ampere",
+      "I = Q / t",
+      Map("I" -> ("Current", Ampere), "Q" -> ("Charge", Coulomb), "t" -> ("Time", Second))
+    ),
+    "resistance_of_wire" -> Equation.buildFaster(
+      "Resistance of a conducting wire",
+      "R = rho * L / A",
+      Map("L" -> ("Length", Meter), "A" -> ("Cross-sectional area", Meter ** 2), "rho" -> ("Resistivity", Ohm * Meter), "R" -> ("Resistance", Ohm))
+    ),
+    "electric_power" -> Equation.buildFaster("Definition of electric power",
+      "P = I * V",
+      Map("P" -> ("Power", Dimension.Watt), "I" -> ("Current", Ampere), "V" -> ("Voltage", Volt))
+    ),
+    "resistive_dissipation" -> Equation.buildFaster("Resistive dissipation",
+      "P = V**2 / R",
+      Map("P" -> ("Power", Dimension.Watt), "V" -> ("Voltage", Dimension.Volt), "R" -> ("Resistance", Ohm))
+    ),
+    "resistive_dissipation_2" -> Equation.buildFaster("Resistive dissipation",
+      "P = I**2 / R",
+      Map("P" -> ("Power", Dimension.Watt), "I" -> ("Current", Ampere), "R" -> ("Resistance", Ohm))
+    )
   )
 
   // unsafe

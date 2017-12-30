@@ -42,7 +42,13 @@ case class ConcreteDimension(units: Map[SiUnit, Int]) extends Dimension
 @JSExportTopLevel("Gem.Dimension")
 object Dimension {
   val Newton = Dimension(Map(Kilogram -> 1, Meter -> 1, Second -> -2))
-  val Joule = Newton * Meter
+  val Joule: Dimension = Newton * Meter
+  var Coulomb: Dimension = Ampere * Second
+  var Volt: Dimension = Joule / Coulomb
+  var Watt: Dimension = Joule / Second
+  var Ohm: Dimension = Volt / Ampere
+  var Dimensionless = ConcreteDimension(Map())
+
 
   def apply(units: Map[SiUnit, Int]): Dimension = ConcreteDimension(units)
   def parse(str: String): Try[Dimension] = Try({
@@ -75,7 +81,8 @@ object Dimension {
     "A" -> Ampere,
     "J" -> Joule,
     "N" -> Newton,
-    "Hz" -> (Second ** -1)
+    "Hz" -> (Second ** -1),
+    "ohm" -> Ohm
   )
 }
 

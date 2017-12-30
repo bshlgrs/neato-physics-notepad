@@ -58,6 +58,7 @@ class WorkspaceTests extends FunSpec {
         .rewriteExpression(VarId(0, "v"), VarId(0, "KE"), 1)
 
       assert(ws.expressions(VarId(0, "v")) == (Variable(VarId(1, "g")) * Variable(VarId(1, "h")) * 2).sqrt)
+      ws.allVarIds.map(ws.getDimension)
     }
   }
 
@@ -76,6 +77,8 @@ class WorkspaceTests extends FunSpec {
 
       val ws2 = ws.rewriteExpression(E_T, VarId(0, "KE"), 0)
       assert(ws2.expressions(VarId(2, "E_T")) == Variable(VarId(0, "m")) * (Variable(VarId(0, "v")) ** 2) / 2 + Variable(VarId(1, "PE")))
+
+      ws2.allVarIds.map(ws2.getDimension)
     }
 
     it("does another thing") {
@@ -125,6 +128,32 @@ class WorkspaceTests extends FunSpec {
         .rewriteExpression(VarId(0, "v"), VarId(0, "E_K"), 1)
       println(ws.expressions)
       println(ws.possibleRewritesForExpr(VarId(0, "v")))
+    }
+
+    it("does a fourth thing") {
+      val expr = Workspace.empty
+        .addEquation(EquationLibrary.getByEqId("ampere_def"))
+        .addExpression(VarId(0, "Q"))
+        .addNumber(PhysicalNumber(240, Second))
+        .attachNumber(0, VarId(0, "t"))
+        .get
+        .getExpressionBuckTex(VarId(0, "Q"))
+
+
+    }
+
+    it("does a fifth thing") {
+      val ws = Workspace.empty
+        .addEquation(EquationLibrary.getByEqId("ampere_def"))
+        .addEquation(EquationParser.parseEquation("Q = n_e * q_e").get)
+        .addExpression(VarId(1, "n_e"))
+        .addEquality(VarId(0, "Q"), VarId(1, "Q"))
+
+      ws.allVarIds.map(ws.getDimension)
+      println(ws)
+
+      println(ws.possibleRewritesForExpr(VarId(1, "n_e")))
+      println(ws.checkRewriteAttemptIsValid(VarId(1, "n_e"), VarId(0, "Q"), 0))
     }
   }
 }

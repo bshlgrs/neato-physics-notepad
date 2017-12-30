@@ -236,11 +236,10 @@ class App extends Component {
     const draggedOntoVarId = this.getDraggedOntoVarId(e.pageX, e.pageY)
     if (draggedOntoVarId) {
       const draggedToEquation = draggedOntoVarId.eqIdx;
-      if (draggedToEquation) {
-        // TODO: check dragged-to equation is legit;
-        this.setState({ workspace:
-          this.state.workspace.rewriteExpression(exprVarId, varToRemoveId, draggedToEquation) })
-      }
+
+      console.log('attempting to rewrite');
+      this.setState({ workspace:
+        this.state.workspace.rewriteExpression(exprVarId, varToRemoveId, draggedToEquation) })
     } else {
       const ws =  this.state.workspace
       const draggedOntoNumberId = this.getDraggedOntoNumberId(e.pageX, e.pageY);
@@ -466,6 +465,11 @@ class App extends Component {
                   .filter((x) => x[1] === equationId)
                   .length === 0
               );
+
+              // if (currentAction === DRAGGING_FROM_EXPR_VAR) {
+              //   const that = this;
+              //   debugger;
+              // }
 
               return <div
                 key={idx}

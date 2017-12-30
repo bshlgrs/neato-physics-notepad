@@ -108,7 +108,7 @@ case class Workspace(equations: Map[Int, Equation] = Map(),
     for {
       (number, currentAttachment) <- Try(numbers.get(numberId).get)
       eq: Equation <- Try(this.equations.get(eqIdx).get)
-      mbVariableDimension: Option[Dimension] <- Try(getDimension(VarId(eqIdx, varName)))
+      mbVariableDimension: Option[Dimension] <- Try(getDimensionDirectly(VarId(eqIdx, varName)))
       _ <- mbVariableDimension match {
         case Some(variableDimension) => Try(assert(variableDimension.equalUnits(number.dimension), "var dimension does not match"))
         case _ => Success()
@@ -127,23 +127,37 @@ case class Workspace(equations: Map[Int, Equation] = Map(),
     this.copy(numbers = numbers - numberId)
   }
 
-  def getDimension(varId: VarId): Option[Dimension] = {
-    equations(varId.eqIdx).staticDimensions.get(varId.varName)
+  def getDimensionDirectly(varId: VarId): Option[Dimension] = {
+    equations(varId.eqIdx).staticDimensions.get(varId.varName).orElse(getNumber(varId).map(_.dimension))
     // TODO: Also you can check it by looking for the dimensions of variables it's equated to, or its number.
+  }
+
+  def getDimension(varId: VarId): Option[Dimension] = {
+    equalities.getSet(varId).flatMap({ case VarId(eqIdx, varName) => {
+      equations(eqIdx).solutions(varName, eqIdx).map(_.calculateDimension((x) => DimensionInference.fromTopOption(getDimensionDirectly(x))))
+    }}).reduce(_ combineWithEquals _).asTopOption
   }
 
   def getDimensionJs(varId: VarId): Dimension = getDimension(varId).orNull
 
-  def possibleRewritesForExpr(varId: VarId): Set[(VarId, Int)] = {
-    val expr = expressions(varId)
+  def possibleRewritesForExpr(exprVarId: VarId): Set[(VarId, Int)] = {
+    // todo: prevent allowing you to make tautologies like "v = v"
+    val expr = expressions(exprVarId)
     for {
-      varId2 <- expr.vars
-      (otherEquationId, otherEquation) <- equations
-      // if otherEquation is actually a different equation than the one this variable comes from
-//      if otherEquationId != varId2.eqIdx
-      // if otherEquation contains a related variable
-      if otherEquation.expr.vars.exists((varName) => equalities.testEqual(VarId(otherEquationId, varName), varId2))
-    } yield (varId2, otherEquationId)
+      varToRemoveId <- expr.vars
+      equationIdToUse <- equations.keys
+      // if equationToUse is actually a different equation than the one this variable comes from
+//      if equationIdToUse != exprVarId.eqIdx
+
+      // if equationToUse contains a related variable
+      if checkRewriteAttemptIsValid(exprVarId, varToRemoveId, equationIdToUse)
+    } yield (varToRemoveId, equationIdToUse)
+  }
+
+  def checkRewriteAttemptIsValid(exprVarId: VarId, varToRemoveId: VarId, equationIdToUse: Int): Boolean = {
+    val equation = equations(equationIdToUse);
+    val varIds = equation.vars.map(name => VarId(equationIdToUse, name))
+    varIds.exists(varId => equalities.testEqual(varId, varToRemoveId))
   }
 
   def possibleRewritesForExprJs(varId: VarId): js.Array[js.Any] = arr(possibleRewritesForExpr(varId).map(x => js.Array(x._1, x._2)))
@@ -155,7 +169,7 @@ case class Workspace(equations: Map[Int, Equation] = Map(),
     val varSubscripts: Map[String, Int] = equation.vars.map((varName) => {
       varName -> getVarSubscript(VarId(idx, varName))
     }).toMap.collect({case (k, Some(v)) => k -> v})
-    CompileToBuckTex.showEquation(equation, idx, varSubscripts);
+    CompileToBuckTex.showEquation(equation, idx, varSubscripts)
   }
 
   def getNumberForExpression(exprVarId: VarId): Option[Double] = {
@@ -178,7 +192,8 @@ case class Workspace(equations: Map[Int, Equation] = Map(),
     }).toMap.collect({case (k, Some(v)) => k -> v})
 
     CompileToBuckTex.showExpression(exprVarId, expression, varSubscripts,
-      this.getNumberForExpression(exprVarId).map((number) => PhysicalNumber(number, getDimension(exprVarId).getOrElse(???))))
+      this.getNumberForExpression(exprVarId).map((number) =>
+        PhysicalNumber(number, getDimension(exprVarId).getOrElse(Dimension.Dimensionless))))
   }
 
   def getVariableBuckTex(varId: VarId): BuckTex = {
@@ -205,7 +220,7 @@ case class Workspace(equations: Map[Int, Equation] = Map(),
     for {
       var1 <- allVarIds
       var2 <- allVarIds
-      if getDimension(var1) == getDimension(var2)
+      if getDimensionDirectly(var1) == getDimensionDirectly(var2)
       if !equalities.testEqual(var1, var2)
       if var1.toString > var2.toString
     } yield (var1, var2)
@@ -217,12 +232,12 @@ case class Workspace(equations: Map[Int, Equation] = Map(),
 
   private def arr[A](x: Iterable[A]): js.Array[A] = js.Array(x.toSeq : _*)
 
-  def consistentUnits(varId1: VarId, varId2: VarId): Boolean = (getDimension(varId1), getDimension(varId2)) match {
+  def consistentUnits(varId1: VarId, varId2: VarId): Boolean = (getDimensionDirectly(varId1), getDimensionDirectly(varId2)) match {
     case (Some(x), Some(y)) => x.equalUnits(y)
     case _ => true
   }
 
-  def consistentUnitsWithDimension(varId1: VarId, dimension: Dimension): Boolean = getDimension(varId1) match {
+  def consistentUnitsWithDimension(varId1: VarId, dimension: Dimension): Boolean = getDimensionDirectly(varId1) match {
     case Some(var1Dimension) => var1Dimension.equalUnits(dimension)
     case _ => true
   }

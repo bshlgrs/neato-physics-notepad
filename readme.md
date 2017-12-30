@@ -86,22 +86,23 @@ Also:
 - Numbers aren't on the LHS of products
 - The maps that I use will assign the same ID to multiple numbers.
     - To get around this I should make a "IdAssigningMap" class
-- I sometimes get absurd stuff when I try to solve?
-- "a - b" is rendered as "a + b-1", where that former thing is trying to be a product.
+- I sometimes get non-simplified stuff when I solve?
+- "a - b" is rendered as "a + -1b"
 - the nondeterministic ordering of items in a rendering of equation make it flicker
-
+- you can get "v = v" as an expression result
 
 ## improvements
 
-- toString methods currently suck
+- [x] toString methods currently suck
 - [x] use minimum spanning tree to display equalities
 - [x] display lines that don't start from before the variables
 - when rewriting equations, blank out equations that can't be used
   - Also rewriting sometimes doesn't work
 - allow dimensionless numbers
-- dragging from expr var to number should attach it
+- [x] dragging from expr var to number should attach it
 - Visual feedback for when you've successfully dragged onto something
 - Maybe I should build an automated test suite using that "PossibleActions" code that I had but deleted
+- If equations have a value, they should display it.
 
 ## Build notes
 
