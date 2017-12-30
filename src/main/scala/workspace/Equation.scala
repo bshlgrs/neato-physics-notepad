@@ -9,7 +9,7 @@ import scala.scalajs.js.annotation.{JSExport, JSExportAll}
 trait Equation {
   def expr: Expression[String]
   def display(f: String => BuckTex): BuckTex
-  def staticDimensions: Map[String, Dimension]
+  def staticDimensions: Map[String, SiDimension]
   def varName(varSymbol: String): Option[String]
   def varNameJs(varSymbol: String): String = varName(varSymbol).orNull
   def showNaked: BuckTex = display((varName: String) => CompileToBuckTex.makeVariableSpan(VarId(-1, varName), None))
@@ -28,17 +28,17 @@ trait Equation {
 
 @JSExportAll
 case class LibraryEquation(name: String,
-                    expr: Expression[String],
-                    displayF: (String => BuckTex) => BuckTex,
-                    staticDimensions: Map[String, Dimension],
-                    varNamesMap: Map[String, String],
+                           expr: Expression[String],
+                           displayF: (String => BuckTex) => BuckTex,
+                           staticDimensions: Map[String, SiDimension],
+                           varNamesMap: Map[String, String],
                            extraTags: Set[String]
                    )  extends Equation {
   assert(expr.vars == staticDimensions.keys.toSet, s"assert 234876 $name ${expr.vars} ${staticDimensions.keys}")
   assert(varNamesMap.keys == staticDimensions.keys, "12387340")
 
   def varName(symbol: String): Option[String] = varNamesMap.get(symbol)
-  def staticDimensionsJs: js.Dictionary[Dimension] = js.Dictionary(staticDimensions.toSeq :_*)
+  def staticDimensionsJs: js.Dictionary[SiDimension] = js.Dictionary(staticDimensions.toSeq :_*)
   def display(f: String => BuckTex): BuckTex = displayF(f)
   def tags: Set[String] = (extraTags ++ varNamesMap.values ++ name.split(' ').toSet).map(_.toLowerCase)
 }
@@ -59,8 +59,8 @@ case class CustomEquation(lhs: Expression[String], rhs: Expression[String]) exte
 
 object Equation {
   def buildQuickly(name: String,
-                   lhs: (String, String, Dimension),
-                   rhsVars: Map[String, (Int, String, Dimension)],
+                   lhs: (String, String, SiDimension),
+                   rhsVars: Map[String, (Int, String, SiDimension)],
                    tags: String,
                    constant: RationalNumber[String] = RationalNumber[String](1)): LibraryEquation = {
     val rhs = rhsVars.map({
@@ -78,7 +78,7 @@ object Equation {
       tags.split(' ').toSet)
   }
 
-  def buildFaster(name: String, equationString: String, varNamesAndDimensions: Map[String, (String, Dimension)], tags: String = ""): LibraryEquation = {
+  def buildFaster(name: String, equationString: String, varNamesAndDimensions: Map[String, (String, SiDimension)], tags: String = ""): LibraryEquation = {
     val nakedEquation = EquationParser.parseEquation(equationString).get
 
     def display(f: (String => BuckTex)): BuckTex = {

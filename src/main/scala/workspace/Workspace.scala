@@ -108,9 +108,9 @@ case class Workspace(equations: Map[Int, Equation] = Map(),
     for {
       (number, currentAttachment) <- Try(numbers.get(numberId).get)
       eq: Equation <- Try(this.equations.get(eqIdx).get)
-      mbVariableDimension: Option[Dimension] <- Try(getDimensionDirectly(VarId(eqIdx, varName)))
+      mbVariableDimension: Option[SiDimension] <- Try(getDimensionDirectly(VarId(eqIdx, varName)))
       _ <- mbVariableDimension match {
-        case Some(variableDimension) => Try(assert(variableDimension.equalUnits(number.dimension), "var dimension does not match"))
+        case Some(variableDimension) => Try(assert(variableDimension.equalUnits(number.siDimension), "var dimension does not match"))
         case _ => Success()
       }
     } yield this.copy(numbers = numbers + (numberId -> (number -> Some(varId))))
@@ -127,18 +127,18 @@ case class Workspace(equations: Map[Int, Equation] = Map(),
     this.copy(numbers = numbers - numberId)
   }
 
-  def getDimensionDirectly(varId: VarId): Option[Dimension] = {
-    equations(varId.eqIdx).staticDimensions.get(varId.varName).orElse(getNumber(varId).map(_.dimension))
+  def getDimensionDirectly(varId: VarId): Option[SiDimension] = {
+    equations(varId.eqIdx).staticDimensions.get(varId.varName).orElse(getNumber(varId).map(_.siDimension))
     // TODO: Also you can check it by looking for the dimensions of variables it's equated to, or its number.
   }
 
-  def getDimension(varId: VarId): Option[Dimension] = {
+  def getDimension(varId: VarId): Option[SiDimension] = {
     equalities.getSet(varId).flatMap({ case VarId(eqIdx, varName) => {
       equations(eqIdx).solutions(varName, eqIdx).map(_.calculateDimension((x) => DimensionInference.fromTopOption(getDimensionDirectly(x))))
     }}).reduce(_ combineWithEquals _).asTopOption
   }
 
-  def getDimensionJs(varId: VarId): Dimension = getDimension(varId).orNull
+  def getDimensionJs(varId: VarId): SiDimension = getDimension(varId).orNull
 
   def possibleRewritesForExpr(exprVarId: VarId): Set[(VarId, Int)] = {
     // todo: prevent allowing you to make tautologies like "v = v"
@@ -193,7 +193,7 @@ case class Workspace(equations: Map[Int, Equation] = Map(),
 
     CompileToBuckTex.showExpression(exprVarId, expression, varSubscripts,
       this.getNumberForExpression(exprVarId).map((number) =>
-        PhysicalNumber(number, getDimension(exprVarId).getOrElse(Dimension.Dimensionless))))
+        PhysicalNumber(number, getDimension(exprVarId).getOrElse(SiDimension.Dimensionless), None)))
   }
 
   def getVariableBuckTex(varId: VarId): BuckTex = {
@@ -237,7 +237,7 @@ case class Workspace(equations: Map[Int, Equation] = Map(),
     case _ => true
   }
 
-  def consistentUnitsWithDimension(varId1: VarId, dimension: Dimension): Boolean = getDimensionDirectly(varId1) match {
+  def consistentUnitsWithDimension(varId1: VarId, dimension: SiDimension): Boolean = getDimensionDirectly(varId1) match {
     case Some(var1Dimension) => var1Dimension.equalUnits(dimension)
     case _ => true
   }

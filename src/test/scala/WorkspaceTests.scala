@@ -114,7 +114,7 @@ class WorkspaceTests extends FunSpec {
         .addExpression(E_T)
         .rewriteExpression(E_T, VarId(0, "E_K"), 0)
 
-      ws.addNumber(PhysicalNumber(5, Dimension.Joule))
+      ws.addNumber(PhysicalNumber(5, SiDimension.SiJoule))
           .attachNumber(0, VarId(2, "E_T"))
     }
 

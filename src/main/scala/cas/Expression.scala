@@ -299,15 +299,15 @@ trait Expression[A] {
     case Power(base, exponent) => exponent.calculateDimension(getDimensionDirectly) match {
         // For consistency, the exponent has to be dimensionless, and either the base is dimensionless or the exponent is constant.
       case BottomDimensionInference => BottomDimensionInference
-      case ConcreteDimensionInference(x) if !x.equalUnits(Dimension.Dimensionless) => BottomDimensionInference
+      case ConcreteDimensionInference(x) if !x.equalUnits(SiDimension.Dimensionless) => BottomDimensionInference
       case _ => {
         base.calculateDimension(getDimensionDirectly) match {
           case BottomDimensionInference => BottomDimensionInference
           case TopDimensionInference => TopDimensionInference
           case ConcreteDimensionInference(baseDimension) => {
             // If the baseDimension is not (), the exponent must be constant
-            if (baseDimension.equalUnits(Dimension.Dimensionless)) {
-              ConcreteDimensionInference(Dimension.Dimensionless)
+            if (baseDimension.equalUnits(SiDimension.Dimensionless)) {
+              ConcreteDimensionInference(SiDimension.Dimensionless)
             } else {
               exponent.evaluate match {
                 case None => BottomDimensionInference
@@ -322,7 +322,7 @@ trait Expression[A] {
       }
     }
     case Variable(name) => getDimensionDirectly(name)
-    case _: Constant[_] => ConcreteDimensionInference(Dimension.Dimensionless)
+    case _: Constant[_] => ConcreteDimensionInference(SiDimension.Dimensionless)
     case _ => throw new RuntimeException("I don't know how to do this asdfyuihk")
   }
 

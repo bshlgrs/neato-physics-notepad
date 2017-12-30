@@ -6,34 +6,34 @@ import scala.scalajs.js.annotation.{JSExport, JSExportTopLevel}
 
 @JSExportTopLevel("Gem.EquationLibrary")
 object EquationLibrary {
-  import Dimension._
+  import SiDimension._
 
   val library: Map[String, LibraryEquation] = Map(
     "ke_def" -> LibraryEquation("Definition of kinetic energy",
       Expression.buildGoofily(RationalNumber(1, 2), Map("E_K" -> -1, "m" -> 1, "v" -> 2)),
       (f: String => BuckTex) => CompileToBuckTex.centeredBox(List(f("E_K"), Text(" = ½"), f("m"), f("v"), Sup(List(Text("2"))))),
-      Map("E_K" -> Joule, "m" -> Kilogram, "v" -> Meter / Second),
+      Map("E_K" -> SiJoule, "m" -> Kilogram, "v" -> Meter / Second),
       Map("E_K" -> "Kinetic energy", "m" -> "Mass", "v" -> "Velocity"),
       Set("kinetic", "energy")),
     "pe_def" -> LibraryEquation("Definition of gravitational potential energy", Expression.buildGoofily(Map("E_P" -> -1, "m" -> 1, "g" -> 1, "h" -> 1)),
       (f: String => BuckTex) => CompileToBuckTex.centeredBox(List(f("E_P"), Text(" = "), f("m"), f("g"), f("h"))),
-      Map("E_P" -> Joule, "m" -> Kilogram, "g" -> Meter / (Second ** 2), "h" -> Meter),
+      Map("E_P" -> SiJoule, "m" -> Kilogram, "g" -> Meter / (Second ** 2), "h" -> Meter),
       Map("E_P" -> "Potential energy", "m" -> "Mass", "g" -> "Strength of gravity", "h" -> "Height"),
       Set("gravitational", "potential", "energy")
     ),
-    "hookes_law" -> Equation.buildQuickly("Hooke's law", ("F", "Spring force", Newton),
-      Map("k" -> (1, "Spring constant", Newton / Meter),
+    "hookes_law" -> Equation.buildQuickly("Hooke's law", ("F", "Spring force", SiNewton),
+      Map("k" -> (1, "Spring constant", SiNewton / Meter),
         "x" -> (1, "Displacement", Meter)),
       "spring hooke's law",
       RationalNumber(-1)
     ),
-    "energy_of_spring" -> Equation.buildQuickly("Energy of spring", ("E_S", "Spring potential energy", Joule),
-      Map("k" -> (1, "Spring constant", Newton / Meter),
+    "energy_of_spring" -> Equation.buildQuickly("Energy of spring", ("E_S", "Spring potential energy", SiJoule),
+      Map("k" -> (1, "Spring constant", SiNewton / Meter),
         "x" -> (2, "Displacement", Meter)),
       "spring hooke's law",
       RationalNumber(1, 2)
     ),
-    "force_due_to_gravity" -> Equation.buildQuickly("Force due to gravity", ("F", "Gravitational force", Newton),
+    "force_due_to_gravity" -> Equation.buildQuickly("Force due to gravity", ("F", "Gravitational force", SiNewton),
       Map("g" -> (1, "Gravitational acceleration", Meter / Second / Second),
         "m" -> (1, "Mass", Kilogram)),
       "force gravity"
@@ -42,29 +42,29 @@ object EquationLibrary {
     "ohms_law" -> Equation.buildFaster(
       "Ohm's law",
       "I = V / R",
-      Map("I" -> ("Current", Ampere), "V" -> ("Voltage", Volt), "R" -> ("Resistance", Ohm))
+      Map("I" -> ("Current", Ampere), "V" -> ("Voltage", Volt), "R" -> ("Resistance", SiOhm))
     ),
     "ampere_def" -> Equation.buildFaster(
       "Definition of ampere",
       "I = Q / t",
-      Map("I" -> ("Current", Ampere), "Q" -> ("Charge", Coulomb), "t" -> ("Time", Second))
+      Map("I" -> ("Current", Ampere), "Q" -> ("Charge", SiCoulomb), "t" -> ("Time", Second))
     ),
     "resistance_of_wire" -> Equation.buildFaster(
       "Resistance of a conducting wire",
       "R = rho * L / A",
-      Map("L" -> ("Length", Meter), "A" -> ("Cross-sectional area", Meter ** 2), "rho" -> ("Resistivity", Ohm * Meter), "R" -> ("Resistance", Ohm))
+      Map("L" -> ("Length", Meter), "A" -> ("Cross-sectional area", Meter ** 2), "rho" -> ("Resistivity", SiOhm * Meter), "R" -> ("Resistance", SiOhm))
     ),
     "electric_power" -> Equation.buildFaster("Definition of electric power",
       "P = I * V",
-      Map("P" -> ("Power", Dimension.Watt), "I" -> ("Current", Ampere), "V" -> ("Voltage", Volt))
+      Map("P" -> ("Power", SiDimension.Watt), "I" -> ("Current", Ampere), "V" -> ("Voltage", Volt))
     ),
     "resistive_dissipation" -> Equation.buildFaster("Resistive dissipation",
       "P = V**2 / R",
-      Map("P" -> ("Power", Dimension.Watt), "V" -> ("Voltage", Dimension.Volt), "R" -> ("Resistance", Ohm))
+      Map("P" -> ("Power", SiDimension.Watt), "V" -> ("Voltage", SiDimension.Volt), "R" -> ("Resistance", SiOhm))
     ),
     "resistive_dissipation_2" -> Equation.buildFaster("Resistive dissipation",
       "P = I**2 / R",
-      Map("P" -> ("Power", Dimension.Watt), "I" -> ("Current", Ampere), "R" -> ("Resistance", Ohm))
+      Map("P" -> ("Power", SiDimension.Watt), "I" -> ("Current", Ampere), "R" -> ("Resistance", SiOhm))
     )
   )
 
