@@ -6,34 +6,30 @@ import cas.{Expression, RationalNumber, RealNumber}
 import scala.scalajs.js
 import scala.scalajs.js.annotation.{JSExportAll, JSExportTopLevel}
 
-
-
-
 @JSExportAll
 @JSExportTopLevel("Gem.Workspace")
-case class Workspace(equations: Map[Int, Equation] = Map(),
+case class Workspace(equations: MapWithIds[Equation] = MapWithIds.empty[Equation],
                      equalities: SetOfSets[VarId] = SetOfSets(Set()),
                      expressions: Map[VarId, Expression[VarId]] = Map(),
-                     numbers: Map[Int, (PhysicalNumber, Option[VarId])] = Map()) {
+                     numbers: MapWithIds[(PhysicalNumber, Option[VarId])] = MapWithIds.empty) {
 
   def equationIds: js.Array[Int] = arr(equations.keySet)
   def getEquation(id: Int): Equation = equations.get(id).orNull
   def expressionIds: js.Array[VarId] = arr(expressions.keySet)
   def numberIds: js.Array[Int] = arr(numbers.keySet)
   def getNumber(numberId: Int): PhysicalNumber = numbers.getOrElse(numberId, null)._1
-  def getVarIdOfNumber(numberId: Int): VarId = numbers.get(numberId).flatMap(_._2).getOrElse(null)
+  def getVarIdOfNumber(numberId: Int): VarId = numbers.get(numberId).flatMap(_._2).orNull
 
   def addableExpressionIds: js.Array[VarId] = {
     arr(allVarIds.filter((varId) => equalities.getSet(varId).forall((varId2) => !expressions.contains(varId2))))
   }
 
-  def lastEqId: Int = if (equations.isEmpty) -1 else equations.keys.max
-  def lastNumberId: Int = if (numbers.isEmpty) -1 else numbers.keys.max
+  def nextEqId: Int = equations.nextId
+  def nextNumberId: Int = numbers.nextId
 
-  def addEquation(equation: Equation): Workspace = this.copy(equations=this.equations + (this.lastEqId + 1 -> equation))
+  def addEquation(equation: Equation): Workspace = this.copy(equations=this.equations.addWithNextId(equation))
 
-  def addNumber(physicalNumber: PhysicalNumber): Workspace =
-    this.copy(numbers=this.numbers + (this.lastNumberId + 1 -> (physicalNumber, None)))
+  def addNumber(physicalNumber: PhysicalNumber): Workspace = this.copy(numbers=this.numbers.addWithNextId((physicalNumber, None)))
 
   def allVarIds: Set[VarId] = for {
     (equationId, equation) <- equations.toSet
@@ -89,7 +85,7 @@ case class Workspace(equations: Map[Int, Equation] = Map(),
   }
 
   def deleteEquation(id: Int): Workspace = {
-    this.copy(equations = equations - id)
+    this.copy(equations = equations.delete(id))
   }
 
   def getNumber(varId: VarId): Option[PhysicalNumber] = numbers.values.find({
@@ -113,18 +109,24 @@ case class Workspace(equations: Map[Int, Equation] = Map(),
         case Some(variableDimension) => Try(assert(variableDimension.equalUnits(number.siDimension), "var dimension does not match"))
         case _ => Success()
       }
-    } yield this.copy(numbers = numbers + (numberId -> (number -> Some(varId))))
+    } yield {
+      val detachedWorkspace: Workspace = getNumberIdOfVar(varId) match {
+        case numId: Int => this.detachNumber(numId); case _ => this
+      }
+
+      detachedWorkspace.copy(numbers = detachedWorkspace.numbers.set(numberId, number -> Some(varId)))
+    }
   }
 
   def attachNumberJs(numberId: Int, varId: VarId): Workspace = attachNumber(numberId, varId).toOption.orNull
 
   def detachNumber(numberId: Int): Workspace = {
     val physicalNumber = numbers(numberId)._1
-    this.copy(numbers = numbers + (numberId -> (physicalNumber -> None)))
+    this.copy(numbers = numbers.set(numberId, physicalNumber -> None))
   }
 
   def deleteNumber(numberId: Int): Workspace = {
-    this.copy(numbers = numbers - numberId)
+    this.copy(numbers = numbers.delete(numberId))
   }
 
   def getDimensionDirectly(varId: VarId): Option[SiDimension] = {
@@ -155,7 +157,7 @@ case class Workspace(equations: Map[Int, Equation] = Map(),
   }
 
   def checkRewriteAttemptIsValid(exprVarId: VarId, varToRemoveId: VarId, equationIdToUse: Int): Boolean = {
-    val equation = equations(equationIdToUse);
+    val equation = equations(equationIdToUse)
     val varIds = equation.vars.map(name => VarId(equationIdToUse, name))
     varIds.exists(varId => equalities.testEqual(varId, varToRemoveId))
   }
@@ -252,6 +254,6 @@ case class VarId(eqIdx: Int, varName: String)
 @JSExportTopLevel("Gem.WorkspaceOps")
 @JSExportAll
 object Workspace {
-  def empty = Workspace(Map(), SetOfSets[VarId](Set()), Map(), Map())
+  def empty = Workspace(MapWithIds.empty, SetOfSets[VarId](Set()), Map(), MapWithIds.empty)
 }
 

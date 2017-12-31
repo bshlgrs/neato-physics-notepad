@@ -136,6 +136,7 @@ object Dimension {
     Set("parsec") -> parsec,
     Set("m") -> meter,
     Set("kg") -> kilogram,
+    Set("g") -> Unit(0.001, Kilogram, SymbolUnitName("g")),
     Set("s") -> second,
     Set("K") -> degreeKelvin,
     Set("A") -> ampere,

@@ -135,12 +135,11 @@ class App extends Component {
   }
   addEquation(equation) {
     const ws = this.state.workspace;
-    const newWs = ws.addEquation(equation);
-    const newEqId = newWs.lastEqId;
+    const newEqId = ws.nextEqId;
 
     const newPosition = Immutable.Map({x: Math.random() * 300, y: Math.random() * 300});
     this.setState({
-      workspace: newWs,
+      workspace: ws.addEquation(equation),
       positions: this.state.positions.set('equation-' + newEqId, newPosition),
       currentlySelected: { type: 'equation', id: newEqId }
     });
@@ -156,10 +155,9 @@ class App extends Component {
   }
   addNumber(number) {
     const newPosition = Immutable.Map({x: Math.random() * 300, y: Math.random() * 300});
-    const newWs = this.state.workspace.addNumber(number);
-    const newNumberId = newWs.lastNumberId;
+    const newNumberId = this.state.workspace.nextNumberId;
     this.setState({
-      workspace: newWs,
+      workspace: this.state.workspace.addNumber(number),
       positions: this.state.positions.set('number-' + newNumberId, newPosition)
     });
     setTimeout(() => { this.refreshStoredPositions(); }, 10);

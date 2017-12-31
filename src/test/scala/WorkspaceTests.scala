@@ -174,5 +174,22 @@ class WorkspaceTests extends FunSpec {
       ws.allVarIds.map(varId => ws.addExpression(varId).getExpressionBuckTex(varId))
       println(ws)
     }
+
+    it("does a seventh thing") {
+      val num1 = PhysicalNumber(10, Kilogram)
+      val num2 = PhysicalNumber(20, Kilogram)
+      val ws = Workspace.empty
+        .addEquation(EquationLibrary.getByEqId("energy_of_spring"))
+        .addNumber(num1)
+        .addNumber(num2)
+        .attachNumber(0, VarId(0, "m")).get
+
+      ws.allVarIds.map(ws.getDimension)
+      ws.allVarIds.map(varId => ws.addExpression(varId).getExpressionBuckTex(varId))
+      assert(ws.getNumber(VarId(0, "m")).contains(num1))
+
+      val ws2 = ws.attachNumber(1, VarId(0, "m")).get
+      assert(ws2.getNumber(VarId(0, "m")).contains(num2))
+    }
   }
 }
