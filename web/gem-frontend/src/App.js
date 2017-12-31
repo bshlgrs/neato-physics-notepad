@@ -421,6 +421,7 @@ class App extends Component {
       const number = ws.getNumber(selectedId);
       return <div className='info-box expression-info-box'>
         <BuckTex el={number.toBuckTex} />
+        <BuckTex el={number.siUnitToBuckTex} />
         <div>TODO: allow you to change the units the number is displayed in</div>
         <div>TODO: show some quantities with the same dimension with comparable sizes</div>
         <button onClick={() => this.deleteNumber(selectedId)}>Delete number</button>

@@ -7,12 +7,12 @@ import scala.util.Try
 case class PhysicalNumber(value: Double, siDimension: SiDimension, originalInput: Option[(Double, Dimension)]) {
   @JSExport
   lazy val toBuckTex: BuckTex = originalInput match {
-    case None => CompileToBuckTex.horizontalBox(List(Text(value.toString + " "), siDimension.toBuckTex))
-    case Some((originalValue, originalDimension)) => CompileToBuckTex.horizontalBox(List(Text(originalValue.toString + " "), originalDimension.toBuckTex(originalValue)))
+    case None => siUnitToBuckTex
+    case Some((originalValue, originalDimension)) => CompileToBuckTex.horizontalBox(List(Text(originalValue.toString.take(6) + " "), originalDimension.toBuckTex(originalValue)))
   }
 
   @JSExport
-  lazy val siUnitToBuckTex: BuckTex = CompileToBuckTex.horizontalBox(List(Text(value.toString + " "), siDimension.toBuckTex))
+  lazy val siUnitToBuckTex: BuckTex = CompileToBuckTex.horizontalBox(List(Text(value.toString.take(6) + " "), siDimension.toBuckTex))
 
   // TODO: some method that outputs it in its original units
 }
