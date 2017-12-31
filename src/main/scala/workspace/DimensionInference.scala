@@ -1,5 +1,6 @@
 package workspace
 
+
 sealed trait DimensionInference {
   def combine(other: DimensionInference, f: (SiDimension, SiDimension) => SiDimension): DimensionInference = {
     flatCombine(other, (x: SiDimension, y: SiDimension) => ConcreteDimensionInference(f(x, y)): DimensionInference)

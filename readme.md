@@ -79,34 +79,26 @@ Also:
 ## later
 
 - magic triangle GUI element
-- make parsers for equations and dimensions and stuff
+- another UI feature: a "sum" object
 
 ## bugs
 
-- Reattaching numbers doesn't work
-- Deleting equations reveals lots of bugs
 - You can get a variable on the rhs of its expression
-- The maps that I use will assign the same ID to multiple numbers.
-    - To get around this I should make a "IdAssigningMap" class
 - I sometimes get non-simplified stuff when I solve?
 - "a - b" is rendered as "a + -1b"
-- the nondeterministic ordering of items in a rendering of equation make it flicker
 - you can get "v = v" as an expression result
+- Units are calculated incorrectly sometimes
 
 
 ## improvements
 
-- [x] toString methods currently suck
-- [x] use minimum spanning tree to display equalities
-- [x] display lines that don't start from before the variables
-- when rewriting equations, blank out equations that can't be used
-  - Also rewriting sometimes doesn't work
 - allow dimensionless numbers
 - [x] dragging from expr var to number should attach it
 - Visual feedback for when you've successfully dragged onto something
+  - just make it easier to drag on
 - Maybe I should build an automated test suite using that "PossibleActions" code that I had but deleted
 - If equations have a value, they should display it.
-- Be smarter about calculating numerical values--search harder for answers
+- Be smarter about calculating numerical values--search harder for answers.
 - key shortcuts
 - Refuse to let you drag equations out of the equation arena.
 
@@ -117,3 +109,4 @@ Also:
 ## Equations to add
 
 - Conversion between frequency and wavelength for light
+- areas, volumes

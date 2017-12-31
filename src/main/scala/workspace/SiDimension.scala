@@ -5,6 +5,7 @@ import cas.RationalNumber
 import scala.scalajs.js.annotation.{JSExport, JSExportTopLevel}
 import scala.util.Try
 
+
 trait SiDimension {
 
   val units: Map[SiUnit, RationalNumber[String]]

@@ -37,7 +37,7 @@ const getRelativePositionOfEvent = (e, ref, parentRef) => {
 
 const makePaddedLine = (x1, y1, x2, y2, padding) => {
   if (((x1 - x2)**2) + ((y1 - y2)**2) < (padding * 2)**2) {
-    return null;
+    return [x1, y1, x2, y2];
   }
   const dx = x2 - x1;
   const dy = y2 - y1;
@@ -158,7 +158,8 @@ class App extends Component {
     const newNumberId = this.state.workspace.nextNumberId;
     this.setState({
       workspace: this.state.workspace.addNumber(number),
-      positions: this.state.positions.set('number-' + newNumberId, newPosition)
+      positions: this.state.positions.set('number-' + newNumberId, newPosition),
+      currentlySelected: { type: 'number', id: newNumberId }
     });
     setTimeout(() => { this.refreshStoredPositions(); }, 10);
   }
@@ -421,7 +422,9 @@ class App extends Component {
       const number = ws.getNumber(selectedId);
       return <div className='info-box expression-info-box'>
         <BuckTex el={number.toBuckTex} />
-        <BuckTex el={number.siUnitToBuckTex} />
+
+        {number.toBuckTex.toString() !== number.siUnitToBuckTex.toString() && <div>
+          SI units: <BuckTex inline el={number.siUnitToBuckTex} /></div>}
         <div>TODO: allow you to change the units the number is displayed in</div>
         <div>TODO: show some quantities with the same dimension with comparable sizes</div>
         <button onClick={() => this.deleteNumber(selectedId)}>Delete number</button>

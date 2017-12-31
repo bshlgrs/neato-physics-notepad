@@ -25,7 +25,7 @@ const BuckTex = (props) => {
       {makeChildren(el.jsItems)}
     </div>
   } else if (type === "Sub") {
-    return <div style={{marginBottom: "-0.3em", marginLeft: "-0.15em", fontSize: "75%"}} className='bucktex'>
+    return <div style={{marginBottom: "-0.3em", marginLeft: "-0.1em", fontSize: "75%"}} className='bucktex'>
       {makeChildren(el.jsItems)}
     </div>
   } else if (type === "Fraction") {
@@ -59,7 +59,7 @@ const BuckTexVariable = (props) => {
       if (props.workspace.equalities.testEqual(varId, draggedFromVarId)) {
         color = "green";
       } else {
-        color = "red";
+        color = "lightgreen";
       }
     } else {
       color = 'grey';
