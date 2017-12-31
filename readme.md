@@ -1,5 +1,7 @@
 # graphical equation manipulator, Scala edition
 
+## Deployed [here](http://physics.shlegeris.com/)
+
 I had the idea for this software in 2013, but I wasn't a good enough programmer to make it. You can see my first attempt
 on YouTube [here](https://www.youtube.com/watch?v=16eiGLrX248)
 (featuring an Australian accent much stronger than the one I have after living in the US for a few years). Matt Alger then

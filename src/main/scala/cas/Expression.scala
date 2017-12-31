@@ -1,6 +1,7 @@
 package cas
 
 import workspace._
+import workspace.SetOfSets
 
 trait Expression[A] {
   import ExpressionDisplay.wrap

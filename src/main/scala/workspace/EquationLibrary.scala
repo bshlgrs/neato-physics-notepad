@@ -81,6 +81,12 @@ object EquationLibrary {
     "uniform_circular_motion" -> Equation.buildFaster("Uniform circular motion",
       "a = v**2 / r",
       Map("a" -> ("Centripital acceleration", Meter / Second / Second), "v" -> ("Speed", Meter/Second), "r" -> ("Radius" -> Meter))
+    ),
+    "universal_gravitation" -> Equation.buildFaster("Universal gravitation",
+      "F = G * m_A * m_B / r**2",
+      Map("F" -> ("Gravitational force", SiNewton), "m_A" -> ("First mass", Kilogram), "m_B" -> ("Second mass", Kilogram), "r" -> ("Distance between masses", Meter)),
+      "",
+      Set(PhysicalConstant.G)
     )
   )
 

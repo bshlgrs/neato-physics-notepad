@@ -1,9 +1,10 @@
 package workspace
 
-import cas.{EquationParser, Expression, RationalNumber, Variable}
+import cas._
 
 import scala.scalajs.js
 import scala.scalajs.js.annotation.{JSExport, JSExportAll}
+import cas.EquationParser
 
 @JSExportAll
 trait Equation {
@@ -78,18 +79,34 @@ object Equation {
       tags.split(' ').toSet)
   }
 
-  def buildFaster(name: String, equationString: String, varNamesAndDimensions: Map[String, (String, SiDimension)], tags: String = ""): LibraryEquation = {
+  def buildFaster(name: String,
+                  equationString: String,
+                  varNamesAndDimensions: Map[String, (String, SiDimension)],
+                  tags: String = "",
+                  constantsUsed: Set[PhysicalConstant] = Set()): LibraryEquation = {
     val nakedEquation = EquationParser.parseEquation(equationString).get
 
+    val exprWithoutConstants = nakedEquation.expr.mapVariablesToExpressions((varName: String) => {
+      constantsUsed.find(_.symbol == varName) match {
+        case None => Variable(varName)
+        case Some(constant) => NamedNumber(constant.value, constant.symbol)
+      }
+    })
+
     def display(f: (String => BuckTex)): BuckTex = {
+      val wrappedF: String => BuckTex = (varName: String) => constantsUsed.find(_.symbol == varName) match {
+        case None => f(varName)
+        case Some(constant) => Text(varName)
+      }
+
       CompileToBuckTex.centeredBox(List(
-        CompileToBuckTex.compileExpression(nakedEquation.lhs.mapVariables(f)), Text(" = "),
-        CompileToBuckTex.compileExpression(nakedEquation.rhs.mapVariables(f))))
+        CompileToBuckTex.compileExpression(nakedEquation.lhs.mapVariables(wrappedF)), Text(" = "),
+        CompileToBuckTex.compileExpression(nakedEquation.rhs.mapVariables(wrappedF))))
     }
 
     LibraryEquation(
       name,
-      nakedEquation.expr,
+      exprWithoutConstants,
       display,
       varNamesAndDimensions.mapValues(_._2),
       varNamesAndDimensions.mapValues(_._1),
