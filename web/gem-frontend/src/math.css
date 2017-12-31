@@ -36,3 +36,15 @@
 .bucktex {
   font-family: serif;
 }
+
+.surd {
+  flex-direction: row;
+  display: flex;
+  margin-top: 0.1em;
+}
+
+.surd-contents {
+  border-top: solid;
+  border-width: 1px;
+  display: flex;
+}

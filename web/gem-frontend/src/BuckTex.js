@@ -32,6 +32,10 @@ const BuckTex = (props) => {
       <div className='numerator'>{makeChildren(el.jsNumerator)}</div>
       <div className='denominator'>{makeChildren(el.jsDenominator)}</div>
     </div>;
+  } else if (type === "Surd") {
+    return <div className='surd bucktex' >
+      √<div className='surd-contents'>{makeChildren(el.jsItems)}</div>
+    </div>;
   } else if (type === "Text") {
     return <span className='bucktex' onMouseDown={props.onSpanMouseDown && ((e) => props.onSpanMouseDown(e))}>
       {el.text}

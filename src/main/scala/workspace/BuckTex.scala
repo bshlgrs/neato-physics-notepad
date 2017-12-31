@@ -15,6 +15,7 @@ trait BuckTex {
     case _: Fraction => "Fraction"
     case _: Text => "Text"
     case _: VariableWrapper => "VariableWrapper"
+    case _: Surd => "Surd"
   }
 }
 
@@ -46,6 +47,10 @@ case class Fraction(numerator: List[BuckTex], denominator: List[BuckTex]) extend
   def jsNumerator: js.Array[BuckTex] = js.Array(numerator :_*)
   @JSExport
   def jsDenominator: js.Array[BuckTex] = js.Array(denominator :_*)
+}
+case class Surd(items: List[BuckTex]) extends BuckTex {
+  @JSExport
+  def jsItems: js.Array[BuckTex] = js.Array(items :_*)
 }
 @JSExportAll
 case class Text(text: String) extends BuckTex
@@ -177,12 +182,16 @@ object CompileToBuckTex {
     val outsideRadicalTex = outsideRadical.map(renderAsMinusIfExprIsMinusOne)
     insideRadical match {
       case Nil => outsideRadicalTex
-      case List(x) => {
-        outsideRadicalTex ++ List(Text("√"), renderAsMinusIfExprIsMinusOne(x))
-      }
+//      case List(x) => {
+//        outsideRadicalTex ++ List(Text("√"), renderAsMinusIfExprIsMinusOne(x))
+//      }
+//      case _ => {
+//        val insideRadicalTex = insideRadical.map(renderAsMinusIfExprIsMinusOne)
+//        outsideRadicalTex ++ List(Text("√(")) ++ insideRadicalTex ++ List(Text(")"))
+//      }
       case _ => {
         val insideRadicalTex = insideRadical.map(renderAsMinusIfExprIsMinusOne)
-        outsideRadicalTex ++ List(Text("√(")) ++ insideRadicalTex ++ List(Text(")"))
+        outsideRadicalTex ++ List(Surd(insideRadicalTex))
       }
     }
   }
