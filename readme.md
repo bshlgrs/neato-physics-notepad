@@ -46,6 +46,15 @@ unnecessary to check dimensions, because the software doesn't let you thinks tha
 There are a lot of physics problems that this software is totally useless for. But it's very useful for a large class of
 problems.
 
+## History
+
+I had the idea for this software in 2013, but I wasn't a good enough programmer to make it very well. Craig Savage of the
+ANU Physics department supervised me as I did some education research on my prototype. You can see my first attempt 
+on YouTube [here](https://www.youtube.com/watch?v=16eiGLrX248) (featuring an Australian accent much stronger than the one 
+I have after living in the US for a few years). Matt Alger then [rewrote some of it in Coffeescript](https://github.com/MatthewJA/Graphical-Equation-Manipulator).
+
+This time, I wrote it using ScalaJS for the business logic and React for the UI. 
+
 ## Usage notes
 
 You should try to pick up the usage by looking at the GIF above. A few things to note:
