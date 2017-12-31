@@ -70,10 +70,13 @@ object CompileToBuckTex {
     }
     expr match {
       case Sum(set) => {
-        wrapIfNeeded(centeredBox(set.toList.flatMap((x) => List(Text(" + "), compileExpressionWithBinding(x, 1))).tail),
-          1)
+        wrapIfNeeded(centeredBox(set.toList.flatMap((x) => {
+          val (useMinusSign, positivizedExpression) = extractMinusFromExpression(x)
+          List(Text(if (useMinusSign) " - " else " + "), compileExpressionWithBinding(positivizedExpression, 1))
+        }).tail), 1)
       }
-      case Product(set) => renderFractionGroup(set)
+      case Product(set) =>
+        renderFractionGroup(set)
       case Power(lhs, rhs) => centeredBox(List(compileExpressionWithBinding(lhs, strongestPullFromOutside),
         Sup(List(compileExpressionWithBinding(rhs, 0)))
       ))
@@ -165,17 +168,34 @@ object CompileToBuckTex {
 
   // assumes these have been sorted
   def renderProductOfPositivePowerTerms(set: Set[Expression[BuckTex]]): List[BuckTex] = {
+    def renderAsMinusIfExprIsMinusOne(factor: Expression[BuckTex]):BuckTex = factor match {
+      case RationalNumber(-1, 1) => Text("-")
+      case _ => compileExpressionWithBinding(factor, 2)
+    }
+
     val (outsideRadical, insideRadical) = groupWithRadical(set)
-    val outsideRadicalTex = outsideRadical.map(factor => compileExpressionWithBinding(factor, 2))
+    val outsideRadicalTex = outsideRadical.map(renderAsMinusIfExprIsMinusOne)
     insideRadical match {
       case Nil => outsideRadicalTex
       case List(x) => {
-        outsideRadicalTex ++ List(Text("√"), compileExpressionWithBinding(x, 2))
+        outsideRadicalTex ++ List(Text("√"), renderAsMinusIfExprIsMinusOne(x))
       }
       case _ => {
-        val insideRadicalTex = insideRadical.map(factor => compileExpressionWithBinding(factor, 2))
+        val insideRadicalTex = insideRadical.map(renderAsMinusIfExprIsMinusOne)
         outsideRadicalTex ++ List(Text("√(")) ++ insideRadicalTex ++ List(Text(")"))
       }
     }
+  }
+
+  def extractMinusFromExpression(expr: Expression[BuckTex]): (Boolean, Expression[BuckTex]) = expr match {
+    case Product(factors) => {
+      orderWithConstantsFirst(factors).headOption match {
+        case Some(x: Constant[_]) if x.evaluate.get < 0 => (true, expr * -1)
+        case _ => (false, expr)
+      }
+    }
+    case RationalNumber(n, d) if n < 0 => (true, RationalNumber(-n, d))
+    case RealNumber(r) if r < 0 => (true, RealNumber(-r))
+    case _ => (false, expr)
   }
 }

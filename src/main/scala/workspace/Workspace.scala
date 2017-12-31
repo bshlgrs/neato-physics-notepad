@@ -137,7 +137,7 @@ case class Workspace(equations: MapWithIds[Equation] = MapWithIds.empty[Equation
   def getDimension(varId: VarId): Option[SiDimension] = {
     equalities.getSet(varId).flatMap({ case VarId(eqIdx, varName) => {
       equations(eqIdx).solutions(varName, eqIdx).map(_.calculateDimension((x) => DimensionInference.fromTopOption(getDimensionDirectly(x))))
-    }}).reduce(_ combineWithEquals _).asTopOption
+    }}).reduceOption(_ combineWithEquals _).getOrElse(TopDimensionInference).asTopOption
   }
 
   def getDimensionJs(varId: VarId): SiDimension = getDimension(varId).orNull

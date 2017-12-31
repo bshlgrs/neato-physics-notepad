@@ -84,7 +84,7 @@ object Equation {
     def display(f: (String => BuckTex)): BuckTex = {
       CompileToBuckTex.centeredBox(List(
         CompileToBuckTex.compileExpression(nakedEquation.lhs.mapVariables(f)), Text(" = "),
-        CompileToBuckTex.compileExpression((nakedEquation.rhs).mapVariables(f))))
+        CompileToBuckTex.compileExpression(nakedEquation.rhs.mapVariables(f))))
     }
 
     LibraryEquation(
