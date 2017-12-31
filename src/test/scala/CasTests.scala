@@ -132,6 +132,11 @@ class CasTests extends FunSpec {
       it("handles substitution correctly") {
         assert((x + y + z).substituteMany(Set("x", "y", "z"), "y") == y * 3)
       }
+
+      it("multiplies rational square roots correctly") {
+        assert((one / two).sqrt * two.sqrt == RationalNumber(1))
+        assert((one / two).sqrt * three.sqrt == RationalNumber(3, 2).sqrt)
+      }
     }
   }
 

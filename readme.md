@@ -104,9 +104,9 @@ Also:
 - Visual feedback for when you've successfully dragged onto something
 - Maybe I should build an automated test suite using that "PossibleActions" code that I had but deleted
 - If equations have a value, they should display it.
-- Be smarter about calculating numerical values.
+- Be smarter about calculating numerical values--search harder for answers
 - key shortcuts
-
+- Refuse to let you drag equations out of the equation arena.
 
 ## Build notes
 

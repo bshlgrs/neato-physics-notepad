@@ -165,6 +165,8 @@ trait Expression[A] {
 
       if (numericFactor == RationalNumber(0)) RationalNumber(0) else Expression.makeProduct(nonNumericFactors + numericFactor)
     }
+    case (Power(r1: RationalNumber[A], exp1), Power(r2: RationalNumber[A], exp2)) if exp1 == exp2 =>
+      Expression.makePower[A](r1 * r2, exp1)
     case (_: Product[_], _) => this * Product(Set(other))
     case (_, _: Product[_]) => Product(Set(this)) * other
     case (_, _) => Product(Set(this)) * Product(Set(other))
@@ -414,8 +416,11 @@ object Expression {
     }
   }
 
-  def makePower[A](base: Expression[A], exponent: Expression[A]): Expression[A] = exponent match {
-    case RationalNumber(1, 1) => base
+  def makePower[A](base: Expression[A], exponent: Expression[A]): Expression[A] = (base, exponent) match {
+    case (_, RationalNumber(1, 1)) => base
+    case (_, RationalNumber(0, 1)) => RationalNumber(1)
+    case (RationalNumber(1, 1), _) => RationalNumber(1)
+    case (RationalNumber(0, 1), _) => RationalNumber(0)
     case _ => Power(base, exponent)
   }
 

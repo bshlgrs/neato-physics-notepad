@@ -10,7 +10,9 @@ case class PhysicalNumber(value: Double, siDimension: SiDimension, originalInput
     case None => CompileToBuckTex.horizontalBox(List(Text(value.toString + " "), siDimension.toBuckTex))
     case Some((originalValue, originalDimension)) => CompileToBuckTex.horizontalBox(List(Text(originalValue.toString + " "), originalDimension.toBuckTex(originalValue)))
   }
-//  lazy val toBuckTex: BuckTex = CompileToBuckTex.horizontalBox(List(Text(value.toString), siDimension.toBuckTex))
+
+  @JSExport
+  lazy val siUnitToBuckTex: BuckTex = CompileToBuckTex.horizontalBox(List(Text(value.toString + " "), siDimension.toBuckTex))
 
   // TODO: some method that outputs it in its original units
 }

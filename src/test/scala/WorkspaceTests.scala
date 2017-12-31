@@ -161,5 +161,18 @@ class WorkspaceTests extends FunSpec {
       println(ws.possibleRewritesForExpr(VarId(1, "n_e")))
       println(ws.checkRewriteAttemptIsValid(VarId(1, "n_e"), VarId(0, "Q"), 0))
     }
+
+    it("does a sixth thing") {
+      val ws = Workspace.empty
+        .addEquation(EquationLibrary.getByEqId("energy_of_spring"))
+        .addEquation(EquationLibrary.getByEqId("ke_def"))
+        .addEquality(VarId(0, "E_S"), VarId(1, "E_K"))
+        .addExpression(VarId(1, "v"))
+        .rewriteExpression(VarId(1, "v"), VarId(1, "E_K"), 0)
+
+      ws.allVarIds.map(ws.getDimension)
+      ws.allVarIds.map(varId => ws.addExpression(varId).getExpressionBuckTex(varId))
+      println(ws)
+    }
   }
 }
