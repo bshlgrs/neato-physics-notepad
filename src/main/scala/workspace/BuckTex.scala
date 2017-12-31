@@ -87,7 +87,7 @@ object CompileToBuckTex {
       ))
       case Variable(buckTex) => buckTex
       case RealNumber(r) => Text(r.toString)
-      case NamedNumber(v, n, d) => Text(n.toString)
+      case NamedNumber(_, n, _) => showVarWithStr(n, "")
       case RationalNumber(n, 1) => Text(n.toString)
       case RationalNumber(1, 2) => Text("½")
       case RationalNumber(-1, 2) => Text("-½")
@@ -104,24 +104,24 @@ object CompileToBuckTex {
     makeVariableSpan(varId, varSubscripts.get(varId))
   }
 
+  def showVarWithStr(name: String, numStr: String): BuckTex = {
+    if (name.contains("_")) {
+      var List(mainText, subscript) = name.split('_').toList
+      CompileToBuckTex.horizontalBox(List(Text(mainText), Sub(List(Text(subscript + numStr)))))
+    } else {
+      if (numStr.isEmpty)
+        Text(name)
+      else
+        CompileToBuckTex.horizontalBox(List(Text(name), Sub(List(Text(numStr)))))
+    }
+  }
+
   def makeVariableSpan(varId: VarId, mbNum: Option[Int]): BuckTex = {
     val name = varId.varName
 
-    def showVarWithStr(numStr: String): BuckTex = {
-      if (name.contains("_")) {
-        var List(mainText, subscript) = name.split('_').toList
-        CompileToBuckTex.horizontalBox(List(Text(mainText), Sub(List(Text(subscript + numStr)))))
-      } else {
-        if (numStr.isEmpty)
-          Text(name)
-        else
-          CompileToBuckTex.horizontalBox(List(Text(name), Sub(List(Text(numStr)))))
-      }
-    }
-
     val list = mbNum match {
-      case Some(num) => showVarWithStr(num.toString)
-      case None => showVarWithStr("")
+      case Some(num) => showVarWithStr(name, num.toString)
+      case None => showVarWithStr(name, "")
     }
     VariableWrapper(list, varId)
   }

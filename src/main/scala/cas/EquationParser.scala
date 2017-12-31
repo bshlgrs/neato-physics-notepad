@@ -41,7 +41,7 @@ object EquationParser {
 
   val number: P[Expression[String]] = P( CharIn('0'to'9').rep(1).!.map(str => RationalNumber[String](str.toInt)))
   val variable: P[Expression[String]] = P(
-    (CharIn('a' to 'z', 'A' to 'Z').rep(1).! ~ ("_" ~ CharIn('a' to 'z', 'A' to 'Z').rep(1).!).?).map({
+    (CharsWhile(_.isLetter).rep(1).! ~ ("_" ~ CharsWhile(_.isLetterOrDigit).rep(1).!).?).map({
       case (x, None) => Variable(x)
       case (x, Some(subscript)) => Variable(x + "_" + subscript)
     }))

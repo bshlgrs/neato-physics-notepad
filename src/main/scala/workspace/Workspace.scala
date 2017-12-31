@@ -129,12 +129,16 @@ case class Workspace(equations: MapWithIds[Equation] = MapWithIds.empty[Equation
     this.copy(numbers = numbers.delete(numberId))
   }
 
-  def getDimensionDirectly(varId: VarId): Option[SiDimension] = Util.traceShow({
+  def getDimensionDirectly(varId: VarId): Option[SiDimension] = {
     equations(varId.eqIdx).staticDimensions.get(varId.varName).orElse(getNumber(varId).map(_.siDimension))
     // TODO: Also you can check it by looking for the dimensions of variables it's equated to, or its number.
-  })
+  }
 
-  def getDimension(varId: VarId): Option[SiDimension] = {
+  def getDimension(varId: VarId): Option[SiDimension] = allDimensions.get(varId).flatten
+
+  lazy val allDimensions: Map[VarId, Option[SiDimension]] = allVarIds.map(varId => varId -> getDimensionCalc(varId)).toMap
+
+  def getDimensionCalc(varId: VarId): Option[SiDimension] = {
     val calculatedTypes = equalities.getSet(varId).flatMap({ case VarId(eqIdx, varName) => {
       val solutions = equations(eqIdx).solutions(varName, eqIdx)
       val types = solutions.map(_.calculateDimension((x) => DimensionInference.fromTopOption(getDimensionDirectly(x))))

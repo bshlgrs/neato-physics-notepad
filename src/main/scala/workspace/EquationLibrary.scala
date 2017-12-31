@@ -51,8 +51,8 @@ object EquationLibrary {
     ),
     "resistance_of_wire" -> Equation.buildFaster(
       "Resistance of a conducting wire",
-      "R = rho * L / A",
-      Map("L" -> ("Length", Meter), "A" -> ("Cross-sectional area", Meter ** 2), "rho" -> ("Resistivity", SiOhm * Meter), "R" -> ("Resistance", SiOhm))
+      "R = ρ * L / A",
+      Map("L" -> ("Length", Meter), "A" -> ("Cross-sectional area", Meter ** 2), "ρ" -> ("Resistivity", SiOhm * Meter), "R" -> ("Resistance", SiOhm))
     ),
     "electric_power" -> Equation.buildFaster("Definition of electric power",
       "P = I * V",
@@ -102,7 +102,13 @@ object EquationLibrary {
     ),
     "newtons_second_law" -> Equation.buildFaster("Newton's second law",
     "F = m * a",
-      Map("F" -> ("Force", SiNewton), "m" -> ("Mass", Kilogram), "a" -> ("Acceleration", Meter / Second / Second)))
+      Map("F" -> ("Force", SiNewton), "m" -> ("Mass", Kilogram), "a" -> ("Acceleration", Meter / Second / Second))),
+    "coulombs_law" -> Equation.buildFaster("Coulomb's law",
+      "F = k_E * q_A * q_B / r**2",
+      Map("F" -> ("Force", SiNewton), "q_A" -> ("First charge", SiCoulomb), "q_B" -> ("Second charge", SiCoulomb), "r" -> ("Distance between charges", Meter)),
+      "electric field",
+      Set(PhysicalConstant.k_E)
+    )
   )
 
   // unsafe

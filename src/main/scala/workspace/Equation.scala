@@ -83,7 +83,8 @@ object Equation {
                   varNamesAndDimensions: Map[String, (String, SiDimension)],
                   tags: String = "",
                   constantsUsed: Set[PhysicalConstant] = Set()): LibraryEquation = {
-    val nakedEquation = EquationParser.parseEquation(equationString).get
+    val nakedEquation = EquationParser.parseEquation(equationString).getOrElse({
+      throw new RuntimeException(s"Error thrown while trying to parse $name $equationString")})
 
     def removeConstants(expr: Expression[String]): Expression[String] = expr.mapVariablesToExpressions[String]((varName: String) => {
       constantsUsed.find(_.namedNumber.name == varName) match {

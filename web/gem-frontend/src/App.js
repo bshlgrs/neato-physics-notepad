@@ -61,20 +61,28 @@ const checkCollisionWithRef = (ref, pageX, pageY) => {
 class App extends Component {
   constructor () {
     super();
+    this.resetLocalVars();
     this.state = this.getInitialState();
     this.onMouseMoveWhileDraggingThing = this.onMouseMoveWhileDraggingThing.bind(this);
     this.onMouseMoveWhileDragging = this.onMouseMoveWhileDragging.bind(this);
     this.onMouseUp = this.onMouseUp.bind(this);
     this.onMouseUpFromVarDrag = this.onMouseUpFromVarDrag.bind(this);
     this.onMouseUpFromExprVarDrag = this.onMouseUpFromExprVarDrag.bind(this);
+  }
+  resetLocalVars () {
     this.varRefs = {};
     this.varPositions = {};
     this.expressionRefs = {};
     this.equationRefs = {};
     this.numberRefs = {};
     this.numberPositions = {};
+    this.needsPositionRefresh = false;
   }
-  getInitialState () {
+  reset () {
+    this.resetLocalVars();
+    this.setState(this.getInitialState());
+  }
+  getInitialState() {
     return {
       workspace: Gem.Workspace(),
       positions: Immutable.Map(),
@@ -84,21 +92,26 @@ class App extends Component {
     };
   }
   refreshStoredPositions () {
+    console.log(this.varRefs);
     const parentPos = getPosition(this.equationSpaceDiv);
     Object.keys(this.varRefs).forEach((varRefString) => {
-      const varCenter = getCenterOfElement(this.varRefs[varRefString]);
-      this.varPositions[varRefString] = {
-        left: varCenter.left - parentPos.left,
-        top: varCenter.top - parentPos.top
-      };
+      if (this.varRefs[varRefString]) {
+        const varCenter = getCenterOfElement(this.varRefs[varRefString]);
+        this.varPositions[varRefString] = {
+          left: varCenter.left - parentPos.left,
+          top: varCenter.top - parentPos.top
+        };
+      }
     });
 
     Object.keys(this.numberRefs).forEach((numberRefString) => {
-      const numCenter = getCenterOfElement(this.numberRefs[numberRefString]);
-      this.numberPositions[numberRefString] = {
-        left: numCenter.left - parentPos.left,
-        top: numCenter.top - parentPos.top
-      };
+      if (this.numberRefs[numberRefString]) {
+        const numCenter = getCenterOfElement(this.numberRefs[numberRefString]);
+        this.numberPositions[numberRefString] = {
+          left: numCenter.left - parentPos.left,
+          top: numCenter.top - parentPos.top
+        };
+      }
     });
   }
   componentDidUpdate (props, state) {
@@ -129,9 +142,10 @@ class App extends Component {
       document.removeEventListener('mousemove', this.onMouseMoveWhileDragging);
     }
 
-    if (state.currentAction === DRAGGING) {
+    // if (state.currentAction === DRAGGING || this.needsPositionRefresh) {
       this.refreshStoredPositions();
-    }
+      this.needsPositionRefresh = false;
+    // }
   }
   addEquation(equation) {
     const ws = this.state.workspace;
@@ -194,6 +208,7 @@ class App extends Component {
     if (draggedOntoVarId) {
       if (ws.consistentUnits(draggedFromVarId, draggedOntoVarId)) {
         this.setState({ workspace: ws.addEquality(draggedFromVarId, draggedOntoVarId)});
+        this.needsPositionRefresh = true;
       }
     } else {
       const draggedOntoNumberId = this.getDraggedOntoNumberId(pageX, pageY);
@@ -447,7 +462,7 @@ class App extends Component {
         <div className="header">
           <h3>Buck's neato physics notepad</h3>
           <div>
-            <button style={{fontSize: '20px'}} onClick={() => this.setState(this.getInitialState())} >
+            <button style={{fontSize: '20px'}} onClick={() => this.reset()} >
               Reset</button>
           </div>
         </div>

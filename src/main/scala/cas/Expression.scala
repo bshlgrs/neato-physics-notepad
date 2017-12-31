@@ -482,9 +482,10 @@ object ExpressionDisplay {
 
   def orderWithConstantsFirst[A](stuff: Set[Expression[A]]): List[Expression[A]] = {
     val foo = (x: Expression[A]) => x match {
-      case _: Constant[A] => 1
-      case _: NamedNumber[A] => 2
-      case _ => 3
+      case _: Constant[A] => 1 -> ""
+      case n: NamedNumber[A] => 2 -> n.name
+      case v: Variable[A] => 3 -> v.toString
+      case _ => 3 -> x.toString
     }
 
     stuff.toList.sortBy(foo)
