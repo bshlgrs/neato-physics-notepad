@@ -4,7 +4,6 @@ import cas._
 
 import scala.scalajs.js
 import scala.scalajs.js.annotation.{JSExport, JSExportAll}
-import cas.EquationParser
 
 @JSExportAll
 trait Equation {
