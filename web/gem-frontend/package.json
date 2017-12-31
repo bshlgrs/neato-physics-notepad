@@ -17,7 +17,5 @@
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
   },
-  "homepage": {
-    "http://physics.shlegeris.com/"
-  }
+  "homepage": "http://physics.shlegeris.com/"
 }

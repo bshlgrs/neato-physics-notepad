@@ -8,7 +8,7 @@
 
 .numerator {
   border-bottom: solid;
-  border-width: thin;
+  border-bottom-width: thin;
   padding-left: 0.15em;
   padding-right: 0.15em;
   display: flex;
@@ -17,11 +17,11 @@
 
 .denominator {
   border-top: solid;
-  border-width: thin;
-  margin-top: -1px;
+  border-top-width: thin;
   padding-left: 0.15em;
   padding-right: 0.15em;
   display: flex;
+  margin-top: -0.03em;
 }
 
 .math-row {
