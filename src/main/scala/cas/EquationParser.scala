@@ -49,8 +49,8 @@ object EquationParser {
   val atom: P[Expression[String]] = P( number | variable | parens )
 
   val power: P[Expression[String]] = P(atom ~ "**" ~ atom | atom).map({
-    case x: Expression[String] => x
-    case (x: Expression[String], y: Expression[String]) => Expression.makePower(x, y)
+    case x: Expression[_] => x.asInstanceOf[Expression[String]]
+    case (x: Expression[_], y: Expression[_]) => Expression.makePower(x.asInstanceOf[Expression[String]], y.asInstanceOf[Expression[String]])
   })
   val divMul: P[Expression[String]] = P( power ~ (CharIn("*/").! ~/ power).rep ).map(eval)
   val addSub: P[Expression[String]] = P( divMul ~ (CharIn("+-").! ~/ divMul).rep ).map(eval)

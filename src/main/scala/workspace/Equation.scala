@@ -85,22 +85,24 @@ object Equation {
                   constantsUsed: Set[PhysicalConstant] = Set()): LibraryEquation = {
     val nakedEquation = EquationParser.parseEquation(equationString).get
 
-    val exprWithoutConstants = nakedEquation.expr.mapVariablesToExpressions((varName: String) => {
-      constantsUsed.find(_.symbol == varName) match {
+    def removeConstants(expr: Expression[String]): Expression[String] = expr.mapVariablesToExpressions[String]((varName: String) => {
+      constantsUsed.find(_.namedNumber.name == varName) match {
         case None => Variable(varName)
-        case Some(constant) => NamedNumber(constant.value, constant.symbol)
+        case Some(constant) => constant.namedNumber
       }
     })
 
+    val exprWithoutConstants = removeConstants(nakedEquation.expr)
+
     def display(f: (String => BuckTex)): BuckTex = {
-      val wrappedF: String => BuckTex = (varName: String) => constantsUsed.find(_.symbol == varName) match {
-        case None => f(varName)
-        case Some(constant) => Text(varName)
-      }
+//      val wrappedF: String => BuckTex = (varName: String) => constantsUsed.find(_.namedNumber.name == varName) match {
+//        case None => f(varName)
+//        case Some(constant) => Text(constant.namedNumber.name)
+//      }
 
       CompileToBuckTex.centeredBox(List(
-        CompileToBuckTex.compileExpression(nakedEquation.lhs.mapVariables(wrappedF)), Text(" = "),
-        CompileToBuckTex.compileExpression(nakedEquation.rhs.mapVariables(wrappedF))))
+        CompileToBuckTex.compileExpression(removeConstants(nakedEquation.lhs).mapVariables(f)), Text(" = "),
+        CompileToBuckTex.compileExpression(removeConstants(nakedEquation.rhs).mapVariables(f))))
     }
 
     LibraryEquation(

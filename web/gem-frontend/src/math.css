@@ -9,17 +9,18 @@
 .numerator {
   border-bottom: solid;
   border-width: thin;
-  padding-left: 3px;
-  padding-right: 3px;
+  padding-left: 0.15em;
+  padding-right: 0.15em;
   display: flex;
+  padding-bottom: 0.2em;
 }
 
 .denominator {
   border-top: solid;
   border-width: thin;
   margin-top: -1px;
-  padding-left: 3px;
-  padding-right: 3px;
+  padding-left: 0.15em;
+  padding-right: 0.15em;
   display: flex;
 }
 

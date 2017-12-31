@@ -3,7 +3,7 @@ package cas
 import workspace._
 import workspace.SetOfSets
 
-trait Expression[A] {
+sealed trait Expression[A] {
   import ExpressionDisplay.wrap
 
   override def toString: String = this.toStringWithBinding._1
@@ -18,6 +18,7 @@ trait Expression[A] {
       case RealNumber(r) => r.toString -> 3
       case RationalNumber(n, 1) => n.toString -> 3
       case RationalNumber(n, d) => s"$n/$d" -> 1
+      case NamedNumber(_, name, _) => name -> 3
     }
   }
 
@@ -37,6 +38,7 @@ trait Expression[A] {
       }
       case Variable(thing) => thing.toString -> 3
       case RealNumber(r) => r.toString -> 3
+      case NamedNumber(_, name, _) => name -> 3
       case RationalNumber(n, 1) => n.toString -> 3
       case RationalNumber(n, d) => s"\\frac{$n}{$d}" -> 3
     }
@@ -82,6 +84,7 @@ trait Expression[A] {
       }
       case Variable(y) => if (x == y) Set(lhs) else Set()
       case _: Constant[A] => Set()
+      case _: NamedNumber[A] => Set()
       case Power(base, power) => (base.vars.contains(x), power.vars.contains(x)) match {
         case (true, false) => // eg x^2
           Set(lhs ** (RationalNumber(1)/power))
@@ -104,6 +107,7 @@ trait Expression[A] {
     case Power(lhs, rhs) => lhs.vars ++ rhs.vars
     case Variable(thing) => Set(thing)
     case _: Constant[_] => Set()
+    case _: NamedNumber[_] => Set()
   }
 
   def +(other: Expression[A]): Expression[A] = (this, other) match {
@@ -152,6 +156,7 @@ trait Expression[A] {
     case (RealNumber(x), RationalNumber(n, d)) => RealNumber(x * n / d)
     case (RationalNumber(n, d), RealNumber(x)) => RealNumber(x * n / d)
     case (RealNumber(x), RealNumber(y)) => RealNumber(x * y)
+
     case (Product(lhs), Product(rhs)) => {
       val lhsFactorTuples = lhs.map(_.asFactor).toMap
       val rhsFactorTuples = rhs.map(_.asFactor).toMap
@@ -217,6 +222,7 @@ trait Expression[A] {
     case Power(lhs, rhs) => lhs.mapVariablesToExpressions(f) ** rhs.mapVariablesToExpressions(f)
     case RationalNumber(n, d) => RationalNumber(n, d)
     case RealNumber(x) => RealNumber(x)
+    case NamedNumber(v, n, d) => NamedNumber(v, n, d)
   }
 
   def mapVariables[B](f: A => B): Expression[B] = this.mapVariablesToExpressions((x) => Variable(f(x)))
@@ -282,7 +288,7 @@ trait Expression[A] {
     }
     case _: Variable[_] => None
     case RealNumber(x) => Some(x)
-    case NamedNumber(x, _) => Some(x)
+    case NamedNumber(x, _, _) => Some(x)
     case RationalNumber(n, d) => Some(n.toDouble / d)
   }
 
@@ -325,6 +331,7 @@ trait Expression[A] {
     }
     case Variable(name) => getDimensionDirectly(name)
     case _: Constant[_] => ConcreteDimensionInference(SiDimension.Dimensionless)
+    case NamedNumber(v, n, dimension) => ConcreteDimensionInference(dimension)
     case _ => throw new RuntimeException("I don't know how to do this asdfyuihk")
   }
 
@@ -336,6 +343,7 @@ trait Expression[A] {
         (factorList.take(idx) ++ List(factor.differentiate(wrt)) ++ factorList.drop(idx + 1)).reduce(_ * _)}).reduce(_ + _)
     }
     case _: Constant[_] => RationalNumber(0)
+    case _: NamedNumber[_] => RationalNumber(0)
     case Variable(x) => if (x == wrt) RationalNumber(1) else RationalNumber(0)
     case Power(base: Expression[A], exponent: Expression[A]) => {
       if (exponent.evaluate.isEmpty) {
@@ -354,18 +362,15 @@ case class Power[A](base: Expression[A], power: Expression[A]) extends Expressio
 }
 case class Variable[A](thing: A) extends Expression[A]
 
-trait Constant[A] extends Expression[A]
+sealed trait Constant[A] extends Expression[A]
 
 case class RealNumber[A](value: Double) extends Constant[A]
 case class RationalNumber[A](numerator: Int, denominator: Int = 1) extends Constant[A] {
   assert(denominator > 0, "denominator must be > 0")
 
   def toDouble: Double = numerator.toDouble / denominator
-
-  def *(other: RationalNumber[A]): RationalNumber[A] = super.*(other).asInstanceOf[RationalNumber[A]]
-//  def *(other: Int): RationalNumber[A] = this * RationalNumber[A](other)
 }
-case class NamedNumber[A](value: Double, name: String) extends Constant[A]
+case class NamedNumber[A](value: Double, name: String, dimension: SiDimension) extends Expression[A]
 
 object RationalNumber {
   def zero = RationalNumber(0)
@@ -397,7 +402,7 @@ object RationalNumber {
 
 object Expression {
   val Zero = RationalNumber(0)
-  val Pi = NamedNumber(3.14159265359, "π")
+  val Pi = NamedNumber(3.14159265359, "π", SiDimension.Dimensionless)
 
   def makeProduct[A](factors: Set[Expression[A]]): Expression[A] = {
     val nonOneFactors = factors.filterNot(_ == RationalNumber(1))
@@ -476,8 +481,13 @@ object ExpressionDisplay {
   }
 
   def orderWithConstantsFirst[A](stuff: Set[Expression[A]]): List[Expression[A]] = {
-    val (first, second) = stuff.partition({ case _: Constant[A] => true; case _ => false })
-    first.toList ++ second.toList
+    val foo = (x: Expression[A]) => x match {
+      case _: Constant[A] => 1
+      case _: NamedNumber[A] => 2
+      case _ => 3
+    }
+
+    stuff.toList.sortBy(foo)
   }
 
   def wrap(tuple: (String, Int), binding: Int): String = if (tuple._2 >= binding) tuple._1 else s"(${tuple._1})"

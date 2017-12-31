@@ -16,6 +16,7 @@ const BuckTex = (props) => {
     }
     return <div // TODO: add this back in: onMouseDown={props.onSpanMouseDown && ((e) => props.onSpanMouseDown(e))}
                 style={style}
+                onMouseDown={(e) => { e.preventDefault() }}
                 className='bucktex'>
       {makeChildren(el.jsItems)}
     </div>

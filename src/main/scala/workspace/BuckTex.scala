@@ -87,6 +87,7 @@ object CompileToBuckTex {
       ))
       case Variable(buckTex) => buckTex
       case RealNumber(r) => Text(r.toString)
+      case NamedNumber(v, n, d) => Text(n.toString)
       case RationalNumber(n, 1) => Text(n.toString)
       case RationalNumber(1, 2) => Text("½")
       case RationalNumber(-1, 2) => Text("-½")

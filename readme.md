@@ -114,3 +114,6 @@ Also:
 
     time sbt clean fastOptJS; and cp target/scala-2.12/scala-gem-fastopt.j* web/gem-frontend/public/
 
+## Equations to add
+
+- Conversion between frequency and wavelength for light

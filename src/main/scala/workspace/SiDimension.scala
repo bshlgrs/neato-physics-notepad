@@ -18,7 +18,7 @@ trait SiDimension {
 
   def /(other: SiDimension): SiDimension = this * (other ** -1)
   def **(other: Int): SiDimension = SiDimension(this.units.mapValues(x => (x * other).asInstanceOf[RationalNumber[String]]))
-  def **(other: RationalNumber[String]): SiDimension = SiDimension(this.units.mapValues(n => n * other))
+  def **(other: RationalNumber[String]): SiDimension = SiDimension(this.units.mapValues(n => (n * other).asInstanceOf[RationalNumber[String]]))
 
   @JSExport
   lazy val toBuckTex: BuckTex = this match {
@@ -78,8 +78,8 @@ case class Dimension(units: Map[Unit, RationalNumber[String]]) {
 
   def /(other: Dimension): Dimension = this * (other ** -1)
 
-  def **(other: RationalNumber[String]): Dimension = Dimension(this.units.mapValues(n => n * other))
-  def **(other: Int): Dimension = Dimension(this.units.mapValues(n => n * RationalNumber[String](other)))
+  def **(other: RationalNumber[String]): Dimension = Dimension(this.units.mapValues(n => (n * other).asInstanceOf[RationalNumber[String]]))
+  def **(other: Int): Dimension = Dimension(this.units.mapValues(n => (n * RationalNumber[String](other)).asInstanceOf[RationalNumber[String]]))
 
   def toBuckTex(value: Double): BuckTex = if (this.units.isEmpty) Text("") else {
     def makeSubscript(num: RationalNumber[String]): Option[BuckTex] = {
@@ -160,7 +160,7 @@ object Dimension {
           throw new RuntimeException(s"unknown unit $unitString")
         }).toDim ** (
           exponent.map((x) => RationalNumber[String](x.toInt)).getOrElse(RationalNumber[String](1))
-          * (if (divisionSign.isDefined) RationalNumber[String](-1) else RationalNumber[String](1)))
+          * (if (divisionSign.isDefined) RationalNumber[String](-1) else RationalNumber[String](1))).asInstanceOf[RationalNumber[String]]
     }).reduce(_ * _)
   })
 }

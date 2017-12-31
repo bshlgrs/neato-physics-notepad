@@ -1,6 +1,6 @@
 import org.scalatest.FunSpec
 import cas._
-import workspace.{CompileToBuckTex, Text}
+import workspace.{CompileToBuckTex, EquationLibrary, Text}
 
 class CasTests extends FunSpec {
   val ke = Variable("ke")
@@ -196,6 +196,12 @@ class CasTests extends FunSpec {
       assert(RationalNumber.makeFromDouble(5.5).contains(RationalNumber(11, 2)))
       assert(RationalNumber.makeFromDouble(5.2).contains(RationalNumber(26, 5)))
       assert(RationalNumber.makeFromDouble(1.132439502).isEmpty)
+    }
+  }
+
+  describe("printing") {
+    it("fsd") {
+      println(EquationLibrary.getByEqId("universal_gravitation").showNaked)
     }
   }
 }

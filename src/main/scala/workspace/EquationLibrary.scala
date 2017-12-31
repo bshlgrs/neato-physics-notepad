@@ -87,7 +87,10 @@ object EquationLibrary {
       Map("F" -> ("Gravitational force", SiNewton), "m_A" -> ("First mass", Kilogram), "m_B" -> ("Second mass", Kilogram), "r" -> ("Distance between masses", Meter)),
       "",
       Set(PhysicalConstant.G)
-    )
+    ),
+    "newtons_second_law" -> Equation.buildFaster("Newton's second law",
+    "F = m * a",
+      Map("F" -> ("Force", SiNewton), "m" -> ("Mass", Kilogram), "a" -> ("Acceleration", Meter / Second / Second)))
   )
 
   // unsafe
