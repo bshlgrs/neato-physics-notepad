@@ -1,7 +1,6 @@
 package workspace
 
 import cas.RationalNumber
-import workspace.SiDimension.{SiCoulomb, SiJoule, SiNewton, SiOhm}
 
 import scala.scalajs.js.annotation.{JSExport, JSExportTopLevel}
 import scala.util.Try
@@ -26,6 +25,10 @@ trait SiDimension {
     case SiDimension.SiJoule => Text("J")
     case SiDimension.SiNewton => Text("N")
     case SiDimension.SiCoulomb => Text("C")
+    case SiDimension.SiVolt => Text("V")
+    case SiDimension.SiWatt => Text("W")
+    case SiDimension.SiOhm => Text("Ω")
+    case SiDimension.SiNewtonsPerCoulomb => Text("N/C")
     case _ => CompileToBuckTex.horizontalBox(units.toList.sortBy(_._1.symbol).map({
       case (unit, RationalNumber(1, 1)) => Text(unit.symbol)
       case (unit, power) => CompileToBuckTex.horizontalBox(List(Text(" " + unit.symbol), Sup(List(Text(power.toString)))))
@@ -40,12 +43,13 @@ case class ConcreteSiDimension(units: Map[SiUnit, RationalNumber[String]]) exten
 
 
 object SiDimension {
-  val SiNewton = SiDimension.fromInts(Map[SiUnit, Int](Kilogram -> 1, Meter -> 1, Second -> -2))
+  val SiNewton: SiDimension = SiDimension.fromInts(Map[SiUnit, Int](Kilogram -> 1, Meter -> 1, Second -> -2))
   val SiJoule: SiDimension = SiNewton * Meter
   val SiCoulomb: SiDimension = Ampere * Second
-  val Volt: SiDimension = SiJoule / SiCoulomb
-  val Watt: SiDimension = SiJoule / Second
-  val SiOhm: SiDimension = Volt / Ampere
+  val SiVolt: SiDimension = SiJoule / SiCoulomb
+  val SiNewtonsPerCoulomb: SiDimension = SiNewton / SiCoulomb
+  val SiWatt: SiDimension = SiJoule / Second
+  val SiOhm: SiDimension = SiVolt / Ampere
   val Dimensionless = ConcreteSiDimension(Map())
 
   def apply(units: Map[SiUnit, RationalNumber[String]]): SiDimension = ConcreteSiDimension(units)
@@ -55,8 +59,6 @@ object SiDimension {
 case class Unit(value: Double, dimension: SiDimension, name: UnitName) {
   def toDim: Dimension = Dimension(Map(this -> RationalNumber(1)))
 }
-
-
 
 case class Dimension(units: Map[Unit, RationalNumber[String]]) {
   def totalConstant: Double = units.map({ case (unit: Unit, power: RationalNumber[String]) => math.pow(unit.value, power.toDouble) }).product
@@ -98,6 +100,7 @@ case class Dimension(units: Map[Unit, RationalNumber[String]]) {
 
 object Dimension {
   val Dimensionless: Dimension = Dimension(Map())
+  import SiDimension._
 
   val minute = Unit(60, Second, PluralizingUnitName("minute"))
   val hour = Unit(60 * 60, Second, PluralizingUnitName("hour"))
@@ -114,10 +117,12 @@ object Dimension {
   val degreeKelvin = Unit(1, Kelvin, SymbolUnitName("°K"))
   val ampere = Unit(1, Ampere, SymbolUnitName("A"))
   val joule = Unit(1, SiJoule, SymbolUnitName("J"))
+  val electronVolt = Unit(1.60217662e-19, SiJoule, SymbolUnitName("eV"))
   val newton = Unit(1, SiNewton, SymbolUnitName("N"))
   val hertz = Unit(1, Second ** -1, SymbolUnitName("Hz"))
   val ohm = Unit(1, SiOhm, SymbolUnitName("Ω"))
   val coulomb = Unit(1, SiCoulomb, SymbolUnitName("C"))
+  val volt = Unit(1, SiVolt, SymbolUnitName("V"))
 
   val units: Set[(Set[String], Unit)] = Set(
     Set("min", "mins", "minute", "minutes") -> minute,
@@ -135,10 +140,12 @@ object Dimension {
     Set("K") -> degreeKelvin,
     Set("A") -> ampere,
     Set("J") -> joule,
+    Set("eV") -> electronVolt,
     Set("N") -> newton,
     Set("Hz") -> hertz,
     Set("ohm") -> ohm,
-    Set("C") -> coulomb
+    Set("C") -> coulomb,
+    Set("V", "volt") -> Unit(1, SiVolt, SymbolUnitName("V"))
   )
 
   def parse(str: String): Try[Dimension] = Try({

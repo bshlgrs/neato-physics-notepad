@@ -416,7 +416,7 @@ class App extends Component {
     } else if (selectedType === "expression") {
       return <div className='info-box expression-info-box'>
         <BuckTex el={ws.getExpressionBuckTex(selectedId)} />
-        <div>TODO: display the dimensions of the quantity</div>
+        <div>TODO: display the dimensions of the quantity, as well as its name</div>
         <button onClick={() => this.deleteExpression(selectedId)}>Delete expression</button>
       </div>
     } else if (selectedType === "number") {
