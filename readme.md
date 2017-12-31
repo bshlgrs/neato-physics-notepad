@@ -1,124 +1,72 @@
-# graphical equation manipulator, Scala edition
+# Neato Physics Notepad
 
-## Deployed [here](http://physics.shlegeris.com/)
+## Deployed [here](http://physics.shlegeris.com/). Full demo video [here](https://youtu.be/RWPHu8Vynv8).
 
 ![demo gif](./demo%20gif.gif)
 
-I had the idea for this software in 2013, but I wasn't a good enough programmer to make it. You can see my first attempt
-on YouTube [here](https://www.youtube.com/watch?v=16eiGLrX248)
-(featuring an Australian accent much stronger than the one I have after living in the US for a few years). Matt Alger then
-[rewrote some of it in Coffeescript](https://github.com/MatthewJA/Graphical-Equation-Manipulator).
+A lot of the physics problems I encounter in my daily life, as well as a lot of the physics problems you get in physics classes 
+up to second year university, follow a pretty consistent format. You get a problem like the one in the GIF above:
 
-I'm going to do it in Scala, because type systems make it much easier for me to think about what I'm doing.
+> A 2.3kg brick slides down a slope, ending up 4.2 meters lower than its starting point. Neglecting friction, how fast is it going when it gets to the bottom?
 
-Features to add:
+You say, okay, so I'm going to reason about this using energy conservation. The gravitational potential energy of the brick
+at the top must equal its kinetic energy at the bottom. So let's write down those two equations:
 
-## [x] Phase 1: build out more backend
+```
+KE = ½ m v²
+PE = m g h
+```
 
-- Add numbers to the workspace
-  - each has an optional variable it's connected to; these must be unique
-- Workspace should expose a list of possible actions:
-  - equality-declaration
-  - expression-creation
-  - expression-rewriting
-  - number-creating
-  - number-connecting
-  - all deletions
-- Equations should know more information about themselves, such as
-  - name of equation
-  - name for every variable
-  - dimensions of every variable
-- Logic to assign subscripts to every variable to remove ambiguity
-- Logic to represent:
-  - Equations as strings. This involves giving them a new field
-  - Expressions as strings
-- Computer algebra system
+And we note to ourselves the two equality relationship here: the kinetic energy in the first equation equals the 
+potential energy in the second, and the masses in the two equations are equal.
 
-## [x] Phase 2: build shitty frontend
+We solve the first equation for `v` and get `√(2 KE/m)`. This is fine, but I don't know the KE. Can we rewrite this in terms 
+of things we do know? As it happens, we can--solve the second equation for PE and you get `m g h` (obviously), and now 
+substitute that in to the expression for `v`, and you get `√(2 m g h/m)` which simplifies to `√(2 g h)`.
 
-Just make logic for displaying everything and also a button for every allowed action
+If we're being good, we stop for a second to sanity check this by dimensional analysis, which works out, and checking the
+functional form--velocity gets bigger if the ramp is taller or gravity is stronger, which seems right.
 
+That's the algebraic solution. Now we substitute in the numbers and then we get our answer, which is about 9m/s. 
 
-## [x] Phase 3: make it less shitty
+The steps here were:
 
-- less shitty GUI
-  - similar to last time should work
-    - I think I should just give up on using KaTeX
-- let you search for equations
+1. Write down the equations relevant to the situation.
+2. Note which variables are equal between the equations.
+3. Get expressions for particular variables of interest
+4. Rewrite those expressions using the equations and equalities established in steps 1 and 2.
+5. Check the dimensions and functional form
+6. Substitute in numbers.
 
-## Current stuff
+My Neato Physics Notebook is built around this workflow. To solve a problem, you search for the relevant equations, or 
+write them down yourself if the software doesn't have them. Then you describe equalites between the equations. After 
+you've done this, you can solve for variables and get their numerical values. As a bonus, this software makes it 
+unnecessary to check dimensions, because the software doesn't let you thinks that aren't dimensionally reasonable.
 
-- render more prettily
-  - this could involve fractions and surds
-  - I am pretty sure I could build surds out of SVG
-- parse equations more nicely?
+There are a lot of physics problems that this software is totally useless for. But it's very useful for a large class of
+problems.
 
-Then try to do a bunch of the problems I claim I'm able to do, which involves adding a bunch of equations, and reassess.
+## Usage notes
 
-Then, in this order:
+You should try to pick up the usage by looking at the GIF above. A few things to note:
 
-- Creating equations
-  - requires a parser. FastParse?
-  - requires specifying units, maybe
-    - I could just have equations be dynamically typed: they object if you try something unreasonable but are otherwise chill.
-      - I think this is probably the way to go.
-- Nonstandard units
-  - I think this is just a small change to dimension parsing: let dimensions be `PhysicalNumber`s instead of `Dimension`s.
-  - Numbers are displayed according to how they were input. Perhaps there's a toggle in the number menu to convert to different units.
-- Triangle diagrams
-- Differentiation
-  - just differentiate F=ma to dF/dM = dM a or whatever.
-  - This is an operation you can do on expressions
-    - I think that these should not be rewritten
+- Currently I don't have that many physics equations in my library.
+- You can only drag equations and expressions by their text--for example, you can't click and drag on the bar of a 
+    fraction to drag it. Obviously I plan to fix this.
 
-Also:
+## Major things this is missing
 
-- Make my own rendering for equations.
-  - Use the square root character for roots
-  - Display fractions properly
-- make a web backend
-
-## later
-
-- magic triangle GUI element
-- another UI feature: a "sum" object
-
-## bugs
-
-- You can get a variable on the rhs of its expression
-- I sometimes get non-simplified stuff when I solve?
-- "a - b" is rendered as "a + -1b"
-- you can get "v = v" as an expression result
-- Units are calculated incorrectly sometimes
+- All equations are in scalars. This means that equations that are usually described in terms of vectors are quite 
+    clunky to use. I plan to change this.
+- It doesn't let you manipulate equations by differentiating them or integrating them.
+- It can't help you with bits of trigonometry that come up. I plan to fix this in a neat way.
+- Currently it can't solve quadratic equations.
+- The most important and boring feature: I want this software to be easy to use as a notepad. For that to work, I need
+    to give people the ability to save, share and fork the pages they make with this. I'm going to make this happen 
+    really soon.
 
 
-## improvements
+## Contributing
 
-- allow dimensionless numbers
-- [x] dragging from expr var to number should attach it
-- Visual feedback for when you've successfully dragged onto something
-  - just make it easier to drag on
-    - THIS IS VERY IMPORTANT
-- Maybe I should build an automated test suite using that "PossibleActions" code that I had but deleted
-- If equations have a value, they should display it.
-- Be smarter about calculating numerical values--search harder for answers.
-- key shortcuts
-- Refuse to let you drag equations out of the equation arena.
-- Nicer number printing
-    - If the value has no more precision, stop printing zeros
-
-## Build notes
-
-    time sbt clean fastOptJS; and cp target/scala-2.12/scala-gem-fastopt.j* web/gem-frontend/public/
-
-## Equations to add
-
-- Conversion between frequency and wavelength for light
-- areas, volumes
-- escape velocity
-
-
-## Mistakes I've made
-
-- Forgetting to turn a Set into a List before mapping over it with a non-one-to-one function
-- Forgetting to add new things to the front of the * definition for Expression, leading to stack overflows 
+If you want to help me out by solving a bunch of physics problems with this software and adding equations to its library
+as you go, that would be amazing.
