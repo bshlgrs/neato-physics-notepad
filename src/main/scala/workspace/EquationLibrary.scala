@@ -77,6 +77,10 @@ object EquationLibrary {
     "mechanical_energy_definition" -> Equation.buildFaster("Work as product of force and displacement",
       "E = F * d",
       Map("E" -> ("Energy", SiJoule), "d" -> ("Displacement", Meter), "F" -> ("Force" -> SiNewton))
+    ),
+    "uniform_circular_motion" -> Equation.buildFaster("Uniform circular motion",
+      "a = v**2 / r",
+      Map("a" -> ("Centripital acceleration", Meter / Second / Second), "v" -> ("Speed", Meter/Second), "r" -> ("Radius" -> Meter))
     )
   )
 

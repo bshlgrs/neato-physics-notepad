@@ -82,19 +82,20 @@ case class Dimension(units: Map[Unit, RationalNumber[String]]) {
   def **(other: Int): Dimension = Dimension(this.units.mapValues(n => n * RationalNumber[String](other)))
 
   def toBuckTex(value: Double): BuckTex = if (this.units.isEmpty) Text("") else {
-      def makeSubscript(num: RationalNumber[String]): Option[BuckTex] = {
-        if (num == RationalNumber(1)) None else Some(Sup(List(Text(num.toString))))
-      }
-
-      val initialUnitsTex = units.dropRight(1).flatMap({ case (unit: Unit, num: RationalNumber[String]) =>
-        List(Text(unit.name.getString(1))) ++ makeSubscript(num).toList
-      })
-
-      val (lastUnit, lastUnitPower) = units.last
-      val lastUnitsTex: List[BuckTex] = List(Text(lastUnit.name.getString(value))) ++ makeSubscript(lastUnitPower).toList
-
-      CompileToBuckTex.horizontalBox((initialUnitsTex ++ lastUnitsTex).toList)
+    def makeSubscript(num: RationalNumber[String]): Option[BuckTex] = {
+      if (num == RationalNumber(1)) None else Some(Sup(List(Text(num.toString))))
     }
+
+    val initialUnitsTex = units.dropRight(1).flatMap({ case (unit: Unit, num: RationalNumber[String]) =>
+      List(Text("·"), Text(unit.name.getString(1))) ++ makeSubscript(num).toList
+    })
+
+    val (lastUnit, lastUnitPower) = units.last
+    val pluralizedLastUnitName = if (lastUnitPower.toDouble > 0) lastUnit.name.getString(value) else lastUnit.name.getString(1)
+    val lastUnitsTex: List[BuckTex] = List(Text("·"), Text(pluralizedLastUnitName)) ++ makeSubscript(lastUnitPower).toList
+
+    CompileToBuckTex.horizontalBox((initialUnitsTex ++ lastUnitsTex).tail.toList)
+  }
 
 }
 
@@ -188,5 +189,5 @@ case class SymbolUnitName(symbol: String) extends UnitName {
   def getString(x: Double): String = symbol
 }
 case class PluralizingUnitName(name: String) extends UnitName {
-  def getString(x: Double): String = if (x == 1.0) name + " " else name + "s "
+  def getString(x: Double): String = if (x == 1.0) name else name + "s"
 }

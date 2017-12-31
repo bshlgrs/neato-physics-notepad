@@ -48,5 +48,10 @@ class DimensionTests extends FunSpec {
       assert(PhysicalNumber.parsePhysicalNumber("5 sdf").isFailure)
       assert(PhysicalNumber.parsePhysicalNumber("5 sd+f").isFailure)
     }
+
+    it("gets km/hour right") {
+      val n = PhysicalNumber.parsePhysicalNumber("5 km/hour").get
+      println(n.toBuckTex)
+    }
   }
 }
