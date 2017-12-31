@@ -85,6 +85,18 @@ object EquationLibrary {
     "universal_gravitation" -> Equation.buildFaster("Universal gravitation",
       "F = G * m_A * m_B / r**2",
       Map("F" -> ("Gravitational force", SiNewton), "m_A" -> ("First mass", Kilogram), "m_B" -> ("Second mass", Kilogram), "r" -> ("Distance between masses", Meter)),
+      "newton law gravity",
+      Set(PhysicalConstant.G)
+    ),
+    "gravitational_field_strength" -> Equation.buildFaster("Gravity field strength",
+      "F = G * m / r**2",
+      Map("F" -> ("Gravitational field strength", SiNewton / Kilogram), "m" -> ("Mass", Kilogram), "r" -> ("Distance from mass", Meter)),
+      "",
+      Set(PhysicalConstant.G)
+    ),
+    "gravitational_potential_energy" -> Equation.buildFaster("Gravitational potential energy",
+      "E_P = G * m * M / r",
+      Map("E_P" -> ("Gravitational potential energy", SiJoule), "m" -> ("First mass", Kilogram), "M" -> ("Second mass", Kilogram), "r" -> ("Distance between masses", Meter)),
       "",
       Set(PhysicalConstant.G)
     ),

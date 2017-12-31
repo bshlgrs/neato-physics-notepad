@@ -191,5 +191,30 @@ class WorkspaceTests extends FunSpec {
       val ws2 = ws.attachNumber(1, VarId(0, "m")).get
       assert(ws2.getNumber(VarId(0, "m")).contains(num2))
     }
+
+    it("does an eighth thing") {
+      val ws = Workspace.empty
+        .addEquation(EquationLibrary.getByEqId("gravitational_potential_energy"))
+        .addEquation(EquationLibrary.getByEqId("ke_def"))
+        .addEquality(VarId(0, "E_P"), VarId(1, "E_K"))
+
+      assert(ws.getDimension(VarId(0, "E_P")).contains(SiDimension.SiJoule))
+      ws.allVarIds.map(ws.getDimension)
+      ws.allVarIds.map(varId => ws.addExpression(varId).getExpressionBuckTex(varId))
+    }
+
+    it("does a ninth thing") {
+      val ws = Workspace.empty
+        .addEquation(EquationLibrary.getByEqId("gravitational_potential_energy"))
+        .addEquation(EquationLibrary.getByEqId("ke_def"))
+        .addEquation(EquationParser.parseEquation("E_A = E_B + E_C").get)
+        .addEquality(VarId(0, "E_P"), VarId(2, "E_A"))
+        .addEquality(VarId(1, "E_K"), VarId(2, "E_B"))
+
+      ws.getDimension(VarId(2, "E_B"))
+//        ws.allVarIds.map(ws.getDimension)
+//      ws.allVarIds.map(varId => ws.addExpression(varId).getExpressionBuckTex(varId))
+      println(ws)
+    }
   }
 }

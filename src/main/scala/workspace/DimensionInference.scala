@@ -9,19 +9,27 @@ sealed trait DimensionInference {
   def flatCombine(other: DimensionInference, f: (SiDimension, SiDimension) => DimensionInference): DimensionInference = (this, other) match {
     case (BottomDimensionInference, _) => BottomDimensionInference
     case (_, BottomDimensionInference) => BottomDimensionInference
-    case (TopDimensionInference, x) => x
-    case (x, TopDimensionInference) => x
+    case (TopDimensionInference, x) => TopDimensionInference
+    case (x, TopDimensionInference) => TopDimensionInference
     case (ConcreteDimensionInference(dim1), ConcreteDimensionInference(dim2)) => f(dim1, dim2)
   }
 
-  def combineWithEquals(other: DimensionInference): DimensionInference = {
-    this.flatCombine(other,
-      { case (dim1, dim2) => if (dim1 == dim2) ConcreteDimensionInference(dim1) else BottomDimensionInference })
+  def combineWithEquals(other: DimensionInference): DimensionInference = (this, other) match {
+    case (BottomDimensionInference, _) => BottomDimensionInference
+    case (_, BottomDimensionInference) => BottomDimensionInference
+    case (TopDimensionInference, x) => TopDimensionInference
+    case (x, TopDimensionInference) => TopDimensionInference
+    case (ConcreteDimensionInference(dim1), ConcreteDimensionInference(dim2)) => {
+      if (dim1 == dim2) ConcreteDimensionInference(dim1)
+      else BottomDimensionInference
+    }
   }
 
   def asTopOption: Option[SiDimension] = this match {
     case TopDimensionInference => None
-    case BottomDimensionInference => { throw new RuntimeException("934587234") }
+    case BottomDimensionInference => {
+      throw new RuntimeException("inconsistent dimensions 934587234")
+    }
     case ConcreteDimensionInference(dim) => Some(dim)
   }
 }

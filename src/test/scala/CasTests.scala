@@ -1,6 +1,6 @@
 import org.scalatest.FunSpec
 import cas._
-import workspace.{CompileToBuckTex, EquationLibrary, Text}
+import workspace._
 
 class CasTests extends FunSpec {
   val ke = Variable("ke")
@@ -199,9 +199,14 @@ class CasTests extends FunSpec {
     }
   }
 
-  describe("printing") {
-    it("fsd") {
-      println(EquationLibrary.getByEqId("universal_gravitation").showNaked)
+  describe("getting types") {
+    it("handles NamedNumbers correctly") {
+      println(PhysicalConstant.G.namedNumber.dimension)
+      println((PhysicalConstant.G.namedNumber * Variable("m1") * Variable("m2") / (Variable("r") ** 2)).calculateDimension({
+        case "m1" => ConcreteDimensionInference(Kilogram)
+        case "m2" => ConcreteDimensionInference(Kilogram)
+        case "r" => ConcreteDimensionInference(Meter)
+      }))
     }
   }
 }

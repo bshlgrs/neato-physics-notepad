@@ -295,14 +295,14 @@ sealed trait Expression[A] {
   // None means "inconsistency", Some(None) means "any"
   def calculateDimension(getDimensionDirectly: A => DimensionInference): DimensionInference = this match {
     case Sum(terms) => {
-      val calculatedDimensions: Set[DimensionInference] = terms.map(_.calculateDimension(getDimensionDirectly))
+      val calculatedDimensions: List[DimensionInference] = terms.toList.map(_.calculateDimension(getDimensionDirectly))
 
       calculatedDimensions.reduce((x: DimensionInference, y: DimensionInference) => {
         x.combineWithEquals(y)
       })
     }
     case Product(factors) => {
-      val calculatedDimensions: Set[DimensionInference] = factors.map(_.calculateDimension(getDimensionDirectly))
+      val calculatedDimensions: List[DimensionInference] = factors.toList.map(_.calculateDimension(getDimensionDirectly))
       calculatedDimensions.reduce((x: DimensionInference, y: DimensionInference) => x.combine(y, _ * _))
     }
     case Power(base, exponent) => exponent.calculateDimension(getDimensionDirectly) match {

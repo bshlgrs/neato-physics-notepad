@@ -96,11 +96,14 @@ Also:
 - [x] dragging from expr var to number should attach it
 - Visual feedback for when you've successfully dragged onto something
   - just make it easier to drag on
+    - THIS IS VERY IMPORTANT
 - Maybe I should build an automated test suite using that "PossibleActions" code that I had but deleted
 - If equations have a value, they should display it.
 - Be smarter about calculating numerical values--search harder for answers.
 - key shortcuts
 - Refuse to let you drag equations out of the equation arena.
+- Nicer number printing
+    - If the value has no more precision, stop printing zeros
 
 ## Build notes
 
@@ -110,3 +113,10 @@ Also:
 
 - Conversion between frequency and wavelength for light
 - areas, volumes
+- escape velocity
+
+
+## Mistakes I've made
+
+- Forgetting to turn a Set into a List before mapping over it with a non-one-to-one function
+- Forgetting to add new things to the front of the * definition for Expression, leading to stack overflows 

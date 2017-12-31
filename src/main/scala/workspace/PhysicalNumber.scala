@@ -8,11 +8,11 @@ case class PhysicalNumber(value: Double, siDimension: SiDimension, originalInput
   @JSExport
   lazy val toBuckTex: BuckTex = originalInput match {
     case None => siUnitToBuckTex
-    case Some((originalValue, originalDimension)) => CompileToBuckTex.horizontalBox(List(Text(originalValue.toString.take(8) + " "), originalDimension.toBuckTex(originalValue)))
+    case Some((originalValue, originalDimension)) => CompileToBuckTex.horizontalBox(List(Text("%.4g".format(originalValue) + " "), originalDimension.toBuckTex(originalValue)))
   }
 
   @JSExport
-  lazy val siUnitToBuckTex: BuckTex = CompileToBuckTex.horizontalBox(List(Text(value.toString.take(8) + " "), siDimension.toBuckTex))
+  lazy val siUnitToBuckTex: BuckTex = CompileToBuckTex.horizontalBox(List(Text("%.4g".format(value) + " "), siDimension.toBuckTex))
 
   // TODO: some method that outputs it in its original units
 }

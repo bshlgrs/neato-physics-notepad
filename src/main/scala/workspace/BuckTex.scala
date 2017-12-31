@@ -133,7 +133,7 @@ object CompileToBuckTex {
     val numericValueDisplay = mbNumericValue match {
       case None => List()
       case Some(PhysicalNumber(numericValue, dimension, _)) =>
-        List(Text(s" = ${numericValue.toString.take(5)}"), dimension.toBuckTex)
+        List(Text(s" = ${"%.4g".format(numericValue)}"), dimension.toBuckTex)
     }
 
     val rhs = expression.mapVariables(varId => makeVariableSpan(varId, varSubscripts.get(varId)))
