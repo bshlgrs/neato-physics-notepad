@@ -9,3 +9,13 @@ project/target
 /web/gem-frontend/build
 /web/gem-frontend/public/scala-gem-fastopt.js
 /web/gem-frontend/public/scala-gem-fastopt.js.map
+
+*.rbc
+.rspec
+/web/rails-backend/log
+/web/rails-backend/tmp
+/web/rails-backend/.idea
+/db/*.sqlite3
+/db/*.sqlite3-journal
+*.orig
+

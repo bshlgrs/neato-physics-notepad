@@ -107,6 +107,9 @@ object Dimension {
   val minute = Unit(60, Second, PluralizingUnitName("minute"))
   val hour = Unit(60 * 60, Second, PluralizingUnitName("hour"))
   val day = Unit(60 * 60 * 24, Second, PluralizingUnitName("day"))
+  val week = Unit(60 * 60 * 24 * 7, Second, PluralizingUnitName("week"))
+  val month = Unit(60 * 60 * 24 * 30, Second, PluralizingUnitName("month"))
+  val year = Unit(60 * 60 * 24 * 365.25, Second, PluralizingUnitName("year"))
   val kilometer = Unit(1000, Meter, SymbolUnitName("km"))
   val centimeter = Unit(0.01, Meter, SymbolUnitName("cm"))
   val millimeter = Unit(0.001, Meter, SymbolUnitName("mm"))
@@ -119,6 +122,7 @@ object Dimension {
   val degreeKelvin = Unit(1, Kelvin, SymbolUnitName("°K"))
   val ampere = Unit(1, Ampere, SymbolUnitName("A"))
   val joule = Unit(1, SiJoule, SymbolUnitName("J"))
+  val watt = Unit(1, SiWatt, SymbolUnitName("W"))
   val electronVolt = Unit(1.60217662e-19, SiJoule, SymbolUnitName("eV"))
   val newton = Unit(1, SiNewton, SymbolUnitName("N"))
   val hertz = Unit(1, Second ** -1, SymbolUnitName("Hz"))
@@ -126,29 +130,50 @@ object Dimension {
   val coulomb = Unit(1, SiCoulomb, SymbolUnitName("C"))
   val volt = Unit(1, SiVolt, SymbolUnitName("V"))
 
-  val units: Set[(Set[String], Unit)] = Set(
+  lazy val units: Set[(Set[String], Unit)] = Set(
     Set("min", "mins", "minute", "minutes") -> minute,
     Set("hour", "hours") -> hour,
     Set("day") -> day,
-    Set("km") -> kilometer,
-    Set("cm") -> centimeter,
-    Set("mm") -> millimeter,
-    Set("nm") -> nanometer,
+    Set("week") -> week,
+    Set("month") -> month,
+    Set("year") -> year,
     Set("lightyear", "lightyears") -> lightYear,
     Set("parsec") -> parsec,
-    Set("m") -> meter,
-    Set("kg") -> kilogram,
-    Set("g") -> Unit(0.001, Kilogram, SymbolUnitName("g")),
-    Set("s") -> second,
-    Set("K") -> degreeKelvin,
-    Set("A") -> ampere,
-    Set("J") -> joule,
-    Set("eV") -> electronVolt,
-    Set("N") -> newton,
-    Set("Hz") -> hertz,
     Set("ohm") -> ohm,
-    Set("C") -> coulomb,
-    Set("V", "volt") -> Unit(1, SiVolt, SymbolUnitName("V"))
+  ) ++ (for {
+    (name: String, unit: Unit) <- unitsWhichCanHaveSiPrefixes
+    (siPrefix: String, multiplier: Double) <- siPrefixes
+  } yield (Set(siPrefix + name), Unit(unit.value * multiplier, unit.dimension, SymbolUnitName(siPrefix + name))))
+
+  val unitsWhichCanHaveSiPrefixes: Set[(String, Unit)] = Set(
+    "m" -> meter,
+    "g" -> Unit(0.001, Kilogram, SymbolUnitName("g")),
+    "s" -> second,
+    "K" -> degreeKelvin,
+    "A" -> ampere,
+    "J" -> joule,
+    "W" -> watt,
+    "eV" -> electronVolt,
+    "N" -> newton,
+    "Hz" -> hertz,
+    "C" -> coulomb,
+    "V" -> Unit(1, SiVolt, SymbolUnitName("V"))
+  )
+
+  val siPrefixes: Set[(String, Double)] = Set(
+    "a" -> 1e-18,
+    "f" -> 1e-15,
+    "p" -> 1e-12,
+    "n" -> 1e-9,
+    "μ" -> 1e-6,
+    "m" -> 1e-3,
+    "c" -> 0.01,
+    "k" -> 1e3,
+    "M" -> 1e6,
+    "G" -> 1e9,
+    "T" -> 1e12,
+    "P" -> 1e15,
+    "E" -> 1e18,
   )
 
   def parse(str: String): Try[Dimension] = Try({

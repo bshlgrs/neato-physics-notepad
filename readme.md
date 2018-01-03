@@ -57,7 +57,7 @@ This time, I wrote it using ScalaJS for the business logic and React for the UI.
 
 ## Usage notes
 
-You should try to pick up the usage by looking at the GIF above. A few things to note:
+You should try to pick up the usage by looking at the GIF or video linked above. A few things to note:
 
 - Currently I don't have that many physics equations in my library.
 - You can only drag equations and expressions by their text--for example, you can't click and drag on the bar of a 

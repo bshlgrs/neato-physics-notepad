@@ -1,13 +1,20 @@
 .header {
   text-align: center;
   border-bottom: solid;
+  border-width: thin;
   display: flex;
-  justify-content: space-evenly;
+  justify-content: space-between;
   align-items: center;
-
+  padding-left: 15px;
+  padding-right: 15px;
+  padding-bottom: 7px;
+  padding-top: 7px;
 }
 
-.container {
+.logo {
+}
+
+.gem-container {
   position: absolute;
   top: 0;
   bottom: 0;
@@ -33,9 +40,10 @@
 .sidebar {
   flex: 1;
   border-left: solid;
+  border-width: thin;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: stretch;
 }
 
 
@@ -73,13 +81,9 @@
   cursor: crosshair;
 }
 
-.sidebar button {
-  font-size: 20px;
-  width: 100%;
-}
-
 .search-div {
   padding: 20px;
+  flex-grow: 1;
 }
 
 .search-bar {
@@ -89,6 +93,7 @@
 
 .info-box {
   border-top: solid;
+  border-width: thin;
   padding: 20px;
   font-size: 18px;
 }
@@ -117,3 +122,46 @@
 
 }
 
+.reset-button {
+  font-size: 20px;
+}
+
+.reset-button-div {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+}
+
+.nonideal-state-note {
+  color: grey;
+  font-style: italic;
+}
+
+.description-div {
+  /*padding: 10px;*/
+  border-bottom: solid;
+  border-width: thin;
+}
+
+.title-input {
+  font-size: 20px;
+}
+
+textarea {
+  resize: vertical;
+  padding: 8px;
+}
+
+.mymodal {
+  position: absolute;
+  top: 100px;
+  left: 100px;
+  right: 100px;
+  bottom: 100px;
+  border: 1px solid rgb(204, 204, 204);
+  background: rgb(255, 255, 255);
+  overflow: auto;
+  border-radius: 4px;
+  outline: none;
+  padding: 20px;
+}

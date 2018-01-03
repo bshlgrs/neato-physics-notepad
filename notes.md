@@ -1,77 +1,5 @@
 # Development notes
 
-Features to add:
-
-## [x] Phase 1: build out more backend
-
-- Add numbers to the workspace
-  - each has an optional variable it's connected to; these must be unique
-- Workspace should expose a list of possible actions:
-  - equality-declaration
-  - expression-creation
-  - expression-rewriting
-  - number-creating
-  - number-connecting
-  - all deletions
-- Equations should know more information about themselves, such as
-  - name of equation
-  - name for every variable
-  - dimensions of every variable
-- Logic to assign subscripts to every variable to remove ambiguity
-- Logic to represent:
-  - Equations as strings. This involves giving them a new field
-  - Expressions as strings
-- Computer algebra system
-
-## [x] Phase 2: build shitty frontend
-
-Just make logic for displaying everything and also a button for every allowed action
-
-
-## [x] Phase 3: make it less shitty
-
-- less shitty GUI
-  - similar to last time should work
-    - I think I should just give up on using KaTeX
-- let you search for equations
-
-## Current stuff
-
-- render more prettily
-  - this could involve fractions and surds
-  - I am pretty sure I could build surds out of SVG
-- parse equations more nicely?
-
-Then try to do a bunch of the problems I claim I'm able to do, which involves adding a bunch of equations, and reassess.
-
-Then, in this order:
-
-- Creating equations
-  - requires a parser. FastParse?
-  - requires specifying units, maybe
-    - I could just have equations be dynamically typed: they object if you try something unreasonable but are otherwise chill.
-      - I think this is probably the way to go.
-- Nonstandard units
-  - I think this is just a small change to dimension parsing: let dimensions be `PhysicalNumber`s instead of `Dimension`s.
-  - Numbers are displayed according to how they were input. Perhaps there's a toggle in the number menu to convert to different units.
-- Triangle diagrams
-- Differentiation
-  - just differentiate F=ma to dF/dM = dM a or whatever.
-  - This is an operation you can do on expressions
-    - I think that these should not be rewritten
-
-Also:
-
-- Make my own rendering for equations.
-  - Use the square root character for roots
-  - Display fractions properly
-- make a web backend
-
-## later
-
-- magic triangle GUI element
-- another UI feature: a "sum" object
-
 ## bugs
 
 - You can get a variable on the rhs of its expression
@@ -110,4 +38,19 @@ Also:
 ## Mistakes I've made
 
 - Forgetting to turn a Set into a List before mapping over it with a non-one-to-one function
-- Forgetting to add new things to the front of the * definition for Expression, leading to stack overflows 
+- Forgetting to add new things to the front of the * definition for Expression, leading to stack overflows
+
+## Features to add
+
+- Most important: letting you make and share notepads. This requires:
+  - JSON serialization
+  - Setting title and adding comment text to the notepad
+  - Web backend
+- Vector semantics
+- Diagrams
+- Smarter expression calculations
+  - smarter numerical expression calculations
+- Differentiation
+- Building differences/sums
+- Crowdsourced equations
+
