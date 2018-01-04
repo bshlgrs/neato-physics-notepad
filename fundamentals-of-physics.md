@@ -32,8 +32,6 @@ Interesting ones:
   - A current of 5.0 A exists in a 10 Ohm resister for 4 minutes. How many coulombs and electrons pass through any cross section of the resistor in this time?
 
 
-
-
 Different features these depend on:
 
 - Creating equations

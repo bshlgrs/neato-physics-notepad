@@ -14,9 +14,9 @@ const BuckTex = (props) => {
       flexDirection: el.flexDirection.dir,
       alignItems: el.alignItems.dir
     }
-    return <div // TODO: add this back in: onMouseDown={props.onSpanMouseDown && ((e) => props.onSpanMouseDown(e))}
+    return <div onMouseDown={props.onSpanMouseDown && ((e) => props.onSpanMouseDown(e))}
                 style={style}
-                onMouseDown={(e) => { e.preventDefault() }}
+                // onMouseDown={(e) => { e.preventDefault() }}
                 className='bucktex'>
       {makeChildren(el.jsItems)}
     </div>
@@ -38,11 +38,11 @@ const BuckTex = (props) => {
       √<div className='surd-contents'>{makeChildren(el.jsItems)}</div>
     </div>;
   } else if (type === "Text") {
-    return <span className='bucktex' onMouseDown={props.onSpanMouseDown && ((e) => props.onSpanMouseDown(e))}>
+    return <span className='bucktex math-span' onMouseDown={props.onSpanMouseDown && ((e) => props.onSpanMouseDown(e))}>
       {el.text}
     </span>;
   } else if (type === "VariableWrapper") {
-    return <BuckTexVariable className='bucktex' {...other} el={el} />;
+    return <BuckTexVariable className='bucktex variable' {...other} el={el} />;
   } else {
     debugger;
   }
@@ -73,7 +73,8 @@ const BuckTexVariable = (props) => {
     className="equation-var"
     style={{color: color}}
     id={props.idPrefix ? props.idPrefix + varId.toString() : null}
-    onMouseDown={props.onVarMouseDown && ((e) => props.onVarMouseDown(e, varId))}
+    onMouseDown={props.onVarMouseDown &&
+      ((e) => {props.onVarMouseDown(e, varId); e.stopPropagation(); })}
     onDoubleClick={props.onDoubleClick && ((e) => props.onDoubleClick(varId))}
     ref={props.varRef && ((ref) => { props.varRef(ref, varId)})}
     >

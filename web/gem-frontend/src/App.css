@@ -49,11 +49,11 @@
 
 .expression {
   font-size: 32px;
-  cursor: grab;
   position: absolute;
   display: flex;
   align-items: center;
   justify-content: center;
+  cursor: grab;
 }
 
 .equation {
@@ -80,6 +80,7 @@
   color: purple;
   cursor: crosshair;
 }
+
 
 .search-div {
   padding: 20px;
