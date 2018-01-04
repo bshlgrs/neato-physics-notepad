@@ -13,9 +13,6 @@
 
 - allow dimensionless numbers
 - [x] dragging from expr var to number should attach it
-- Visual feedback for when you've successfully dragged onto something
-  - just make it easier to drag on
-    - THIS IS VERY IMPORTANT
 - Maybe I should build an automated test suite using that "PossibleActions" code that I had but deleted
 - If equations have a value, they should display it.
 - Be smarter about calculating numerical values--search harder for answers.

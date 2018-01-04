@@ -70,7 +70,7 @@ class App extends Component {
       </div>
     } else {
       return <h3 style={{margin: 0}} onClick={() => this.setState({currentAction: 'editing-title'})}>
-        {this.state.title || "Untitled page"} <i className='fa fa-edit' />
+        {this.state.title || "Untitled notepad"} <i className='fa fa-edit' />
       </h3>;
     }
   }

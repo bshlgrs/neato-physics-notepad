@@ -100,6 +100,7 @@ case class Dimension(units: Map[Unit, RationalNumber[String]]) {
 
 }
 
+@JSExportTopLevel("Gem.Dimension")
 object Dimension {
   val Dimensionless: Dimension = Dimension(Map())
   import SiDimension._
@@ -115,6 +116,7 @@ object Dimension {
   val millimeter = Unit(0.001, Meter, SymbolUnitName("mm"))
   val nanometer = Unit(1e-9, Meter, SymbolUnitName("nm"))
   val lightYear = Unit(9.4607e15, Meter, PluralizingUnitName("light year"))
+  val tonne = Unit(1e3, Kilogram, PluralizingUnitName("tonne"))
   val parsec = Unit(3.08567758e16, Meter, PluralizingUnitName("parsec"))
   val meter = Unit(1, Meter, SymbolUnitName("m"))
   val kilogram = Unit(1, Kilogram, SymbolUnitName("kg"))
@@ -138,11 +140,12 @@ object Dimension {
     Set("month") -> month,
     Set("year") -> year,
     Set("lightyear", "lightyears") -> lightYear,
+    Set("tonne", "tonnes") -> tonne,
     Set("parsec") -> parsec,
     Set("ohm") -> ohm,
   ) ++ (for {
     (name: String, unit: Unit) <- unitsWhichCanHaveSiPrefixes
-    (siPrefix: String, multiplier: Double) <- siPrefixes
+    (siPrefix: String, multiplier: Double) <- siPrefixes ++ Set("" -> 1)
   } yield (Set(siPrefix + name), Unit(unit.value * multiplier, unit.dimension, SymbolUnitName(siPrefix + name))))
 
   val unitsWhichCanHaveSiPrefixes: Set[(String, Unit)] = Set(
@@ -175,6 +178,8 @@ object Dimension {
     "P" -> 1e15,
     "E" -> 1e18,
   )
+
+  def parseJs(str: String): Dimension = parse(str).getOrElse(null)
 
   def parse(str: String): Try[Dimension] = Try({
     val unitRegex = raw"(/)?(\w+)(\^([-\d]+))?".r("divisionSign", "unitString", "unimportantGroup", "exponent")

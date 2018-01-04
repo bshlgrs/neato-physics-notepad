@@ -108,7 +108,11 @@ object EquationLibrary {
       Map("F" -> ("Force", SiNewton), "q_A" -> ("First charge", SiCoulomb), "q_B" -> ("Second charge", SiCoulomb), "r" -> ("Distance between charges", Meter)),
       "electric field",
       Set(PhysicalConstant.k_E)
-    )
+    ),
+    "density_definition" -> Equation.buildFaster("Definition of density", "ρ = m/V",
+      Map("ρ" -> ("Density", Kilogram / (Meter ** 3)), "m" -> ("Mass", Kilogram), "V" -> ("Volume", Meter ** 3))),
+    "area_of_circle" -> Equation.buildFaster("Area of circle", "A = π * r**2",
+      Map("A" -> ("Area", Meter ** 2), "r" -> ("Radius", Meter)), "", Set(PhysicalConstant.pi))
   )
 
   // unsafe
