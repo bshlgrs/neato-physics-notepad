@@ -18,7 +18,45 @@ class App extends Component {
       description: "",
       workspace: Gem.Workspace(),
       positions: Immutable.Map(),
-      currentAction: null
+      currentAction: null,
+      creatorToken: null,
+      notepadId: null,
+      saving: false
+    }
+  }
+  componentWillMount () {
+    let token = localStorage.getItem("currentUserToken");
+    if (!token) {
+      token = "gem-user-token-" + Math.random();
+      localStorage.setItem("currentUserToken", token);
+    }
+    this.setState({
+      currentUserToken: token
+    });
+
+    const pathname = window.location.pathname;
+    if (pathname === "" || pathname === "/") {
+      // we're making a new one
+      this.setState({ creatorToken: token });
+    } else {
+      // todo: I think this breaks in some browsers
+      const parts = pathname.split("/");
+      console.log(parts);
+      if (parts[1] === "notepads") {
+        const notepadId = parts[2];
+
+        fetch("/api/notepads/" + notepadId, { headers: { 'Content-Type': 'application/json' } })
+          .then((resp) => resp.json())
+          .then((data) => {
+            const notepad = data.notepad;
+            this.setState({
+              title: notepad.title,
+              description: notepad.description,
+              creatorToken: notepad.creator_token,
+              notepadId: notepadId
+            });
+          });
+      }
     }
   }
   changeTitle(newTitle) {
@@ -32,11 +70,63 @@ class App extends Component {
       </div>
     } else {
       return <h3 style={{margin: 0}} onClick={() => this.setState({currentAction: 'editing-title'})}>
-        {this.state.title || "Untitled page"} <i className='fa fa-edit' /> by Buck
+        {this.state.title || "Untitled page"} <i className='fa fa-edit' />
       </h3>;
     }
   }
+  save () {
+    this.setState({ saving: true });
+    if (this.state.notepadId) {
+      fetch("/api/notepads/" + this.state.notepadId,
+        { headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+          method: "PUT",
+          body: JSON.stringify({
+            title: this.state.title,
+            description: this.state.description,
+            creator_token: this.state.currentUserToken,
+            contents: null
+          })
+        })
+        .then((resp) => resp.json())
+        .then((data) => {
+          // nothing
+          this.setState({saving: false});
+        });
+    } else {
+      this.sendCreateRequest();
+    }
+  }
+  sendCreateRequest () {
+    fetch("/api/notepads",
+      { headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        method: "POST",
+        body: JSON.stringify({
+          title: this.state.title,
+          description: this.state.description,
+          creator_token: this.state.currentUserToken,
+          contents: null
+        })
+      })
+      .then((resp) => resp.json())
+      .then((data) => {
+        // this.setState({
+        //   creatorToken: this.state.currentUserToken,
+        //   notepadId: data.id
+        // });
+        window.location.href = "/notepads/" + data.id;
+      });
+  }
+  saveAsCopy () {
+    this.sendCreateRequest();
+  }
   render () {
+    const state = this.state;
     return <div className="gem-container">
       <ReactModal
            isOpen={this.state.currentAction === "showing-help"}
@@ -54,23 +144,42 @@ class App extends Component {
         {this.renderTitle()}
 
         <div className="pull-right">
-          <button className="btn btn-default btn-large" style={{marginRight: "10px"}}>
-            <i className='fa fa-save' style={{paddingRight: "10px"}} />
-            Save
+          <button
+            className="btn btn-default btn-large"
+            onClick={() => { window.location.href = "/"; }}
+            style={{marginRight: "10px"}}>
+            <i className='fa fa-plus' style={{paddingRight: "10px"}} />
+            New
           </button>
+          {state.creatorToken === state.currentUserToken &&
+            <button
+              className="btn btn-default btn-large"
+              onClick={() => this.save()}
+              style={{marginRight: "10px"}}>
+            {state.saving ?
+              <i className='fa fa-spinner fa-pulse fa-fw'
+                 style={{paddingRight: "10px"}} /> :
+              <i className='fa fa-save' style={{paddingRight: "10px"}} />}
 
-          <button className="btn btn-default btn-large" style={{marginRight: "10px"}}>
+            Save
+          </button>}
+
+          {state.notepadId &&
+            <button
+              className="btn btn-default btn-large"
+              style={{marginRight: "10px"}}
+              onClick={() => this.saveAsCopy()}>
             <i className="fa fa-code-fork" style={{paddingRight: "10px"}}  />
-            Fork
-          </button>
+            Save as copy
+          </button>}
           <button className='btn btn-info btn-large' style={{marginRight: "10px"}}
              onClick={() => this.setState({currentAction: 'showing-help'})}>
             <i className="fa fa-question" style={{paddingRight: "10px"}}  />
             Help
           </button>
-          <button className="btn btn-primary btn-large" style={{marginRight: "10px"}}>
+          {false && <button className="btn btn-primary btn-large" style={{marginRight: "10px"}}>
             Sign up/log in
-          </button>
+          </button>}
         </div>
       </nav>
      <Notepad
