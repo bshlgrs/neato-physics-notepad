@@ -217,4 +217,14 @@ class WorkspaceTests extends FunSpec {
       println(ws)
     }
   }
+
+  describe("changing number dimensions") {
+    it("can do it") {
+      val ws = Workspace.empty.addNumber(PhysicalNumber.parsePhysicalNumber("5cm").get)
+
+      println(ws.numbers(0)._1.toBuckTex)
+
+      println(ws.changeDimension(0, Dimension.parse("mm").get).numbers(0)._1.toBuckTex)
+    }
+  }
 }

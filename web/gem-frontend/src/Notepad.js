@@ -550,6 +550,10 @@ class Notepad extends Component {
             <InfoBox selectedType={this.state.currentlySelected.type}
                      selectedId={this.state.currentlySelected.id}
                      ws={this.props.workspace}
+                     deleteExpression={(id) => this.deleteExpression(id)}
+                     deleteEquation={(id) => this.deleteEquation(id)}
+                     deleteNumber={(id) => this.deleteNumber(id)}
+                     changeDimension={(id, dim) => this.props.setWorkspace(ws.changeDimension(id, dim))}
             />}
         </div>
       </div>

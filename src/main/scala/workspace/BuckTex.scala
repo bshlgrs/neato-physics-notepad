@@ -132,7 +132,7 @@ object CompileToBuckTex {
                      mbNumericValue: Option[PhysicalNumber]): BuckTex = {
     val numericValueDisplay = mbNumericValue match {
       case None => List()
-      case Some(PhysicalNumber(numericValue, dimension, _)) =>
+      case Some(PhysicalNumber(numericValue, dimension, _, _)) =>
         List(Text(s" = ${"%.4g".format(numericValue)}"), dimension.toBuckTex)
     }
 

@@ -19,7 +19,7 @@
 - key shortcuts
 - Refuse to let you drag equations out of the equation arena.
 - Nicer number printing
-    - If the value has no more precision, stop printing zeros
+  - If the value has no more precision, stop printing zeros
 
 ## Build notes
 
@@ -31,7 +31,6 @@
 - areas, volumes
 - escape velocity
 
-
 ## Mistakes I've made
 
 - Forgetting to turn a Set into a List before mapping over it with a non-one-to-one function
@@ -41,10 +40,10 @@
 
 - Most important: letting you make and share notepads. This requires:
   - JSON serialization
-  - Setting title and adding comment text to the notepad
-  - Web backend
+  - the rest of a web backend
 - Vector semantics
 - Diagrams
+  - eg free body diagrams
 - Smarter expression calculations
   - smarter numerical expression calculations
 - Differentiation

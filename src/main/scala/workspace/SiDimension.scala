@@ -57,14 +57,16 @@ object SiDimension {
   def fromInts(units: Map[SiUnit, Int]): SiDimension = ConcreteSiDimension(units.mapValues(int => RationalNumber[String](int)))
 }
 
-case class Unit(value: Double, dimension: SiDimension, name: UnitName) {
+case class GeneralUnit(value: Double, dimension: SiDimension, name: UnitName) {
   def toDim: Dimension = Dimension(Map(this -> RationalNumber(1)))
 }
 
-case class Dimension(units: Map[Unit, RationalNumber[String]]) {
-  def totalConstant: Double = units.map({ case (unit: Unit, power: RationalNumber[String]) => math.pow(unit.value, power.toDouble) }).product
+case class Dimension(units: Map[GeneralUnit, RationalNumber[String]]) {
+  @JSExport
+  def totalConstant: Double = units.map({ case (unit: GeneralUnit, power: RationalNumber[String]) => math.pow(unit.value, power.toDouble) }).product
 
-  def siDimension: SiDimension = units.map({ case (unit: Unit, power: RationalNumber[String]) => unit.dimension ** power })
+  @JSExport
+  def siDimension: SiDimension = units.map({ case (unit: GeneralUnit, power: RationalNumber[String]) => unit.dimension ** power })
     .reduceOption(_ * _)
     .getOrElse(SiDimension.Dimensionless)
 
@@ -82,12 +84,13 @@ case class Dimension(units: Map[Unit, RationalNumber[String]]) {
   def **(other: RationalNumber[String]): Dimension = Dimension(this.units.mapValues(n => (n * other).asInstanceOf[RationalNumber[String]]))
   def **(other: Int): Dimension = Dimension(this.units.mapValues(n => (n * RationalNumber[String](other)).asInstanceOf[RationalNumber[String]]))
 
+  @JSExport
   def toBuckTex(value: Double): BuckTex = if (this.units.isEmpty) Text("") else {
     def makeSubscript(num: RationalNumber[String]): Option[BuckTex] = {
       if (num == RationalNumber(1)) None else Some(Sup(List(Text(num.toString))))
     }
 
-    val initialUnitsTex = units.dropRight(1).flatMap({ case (unit: Unit, num: RationalNumber[String]) =>
+    val initialUnitsTex = units.dropRight(1).flatMap({ case (unit: GeneralUnit, num: RationalNumber[String]) =>
       List(Text("·"), Text(unit.name.getString(1))) ++ makeSubscript(num).toList
     })
 
@@ -105,34 +108,34 @@ object Dimension {
   val Dimensionless: Dimension = Dimension(Map())
   import SiDimension._
 
-  val minute = Unit(60, Second, PluralizingUnitName("minute"))
-  val hour = Unit(60 * 60, Second, PluralizingUnitName("hour"))
-  val day = Unit(60 * 60 * 24, Second, PluralizingUnitName("day"))
-  val week = Unit(60 * 60 * 24 * 7, Second, PluralizingUnitName("week"))
-  val month = Unit(60 * 60 * 24 * 30, Second, PluralizingUnitName("month"))
-  val year = Unit(60 * 60 * 24 * 365.25, Second, PluralizingUnitName("year"))
-  val kilometer = Unit(1000, Meter, SymbolUnitName("km"))
-  val centimeter = Unit(0.01, Meter, SymbolUnitName("cm"))
-  val millimeter = Unit(0.001, Meter, SymbolUnitName("mm"))
-  val nanometer = Unit(1e-9, Meter, SymbolUnitName("nm"))
-  val lightYear = Unit(9.4607e15, Meter, PluralizingUnitName("light year"))
-  val tonne = Unit(1e3, Kilogram, PluralizingUnitName("tonne"))
-  val parsec = Unit(3.08567758e16, Meter, PluralizingUnitName("parsec"))
-  val meter = Unit(1, Meter, SymbolUnitName("m"))
-  val kilogram = Unit(1, Kilogram, SymbolUnitName("kg"))
-  val second = Unit(1, Second, SymbolUnitName("s"))
-  val degreeKelvin = Unit(1, Kelvin, SymbolUnitName("°K"))
-  val ampere = Unit(1, Ampere, SymbolUnitName("A"))
-  val joule = Unit(1, SiJoule, SymbolUnitName("J"))
-  val watt = Unit(1, SiWatt, SymbolUnitName("W"))
-  val electronVolt = Unit(1.60217662e-19, SiJoule, SymbolUnitName("eV"))
-  val newton = Unit(1, SiNewton, SymbolUnitName("N"))
-  val hertz = Unit(1, Second ** -1, SymbolUnitName("Hz"))
-  val ohm = Unit(1, SiOhm, SymbolUnitName("Ω"))
-  val coulomb = Unit(1, SiCoulomb, SymbolUnitName("C"))
-  val volt = Unit(1, SiVolt, SymbolUnitName("V"))
+  val minute = GeneralUnit(60, Second, PluralizingUnitName("minute"))
+  val hour = GeneralUnit(60 * 60, Second, PluralizingUnitName("hour"))
+  val day = GeneralUnit(60 * 60 * 24, Second, PluralizingUnitName("day"))
+  val week = GeneralUnit(60 * 60 * 24 * 7, Second, PluralizingUnitName("week"))
+  val month = GeneralUnit(60 * 60 * 24 * 30, Second, PluralizingUnitName("month"))
+  val year = GeneralUnit(60 * 60 * 24 * 365.25, Second, PluralizingUnitName("year"))
+  val kilometer = GeneralUnit(1000, Meter, SymbolUnitName("km"))
+  val centimeter = GeneralUnit(0.01, Meter, SymbolUnitName("cm"))
+  val millimeter = GeneralUnit(0.001, Meter, SymbolUnitName("mm"))
+  val nanometer = GeneralUnit(1e-9, Meter, SymbolUnitName("nm"))
+  val lightYear = GeneralUnit(9.4607e15, Meter, PluralizingUnitName("light year"))
+  val tonne = GeneralUnit(1e3, Kilogram, PluralizingUnitName("tonne"))
+  val parsec = GeneralUnit(3.08567758e16, Meter, PluralizingUnitName("parsec"))
+  val meter = GeneralUnit(1, Meter, SymbolUnitName("m"))
+  val kilogram = GeneralUnit(1, Kilogram, SymbolUnitName("kg"))
+  val second = GeneralUnit(1, Second, SymbolUnitName("s"))
+  val degreeKelvin = GeneralUnit(1, Kelvin, SymbolUnitName("°K"))
+  val ampere = GeneralUnit(1, Ampere, SymbolUnitName("A"))
+  val joule = GeneralUnit(1, SiJoule, SymbolUnitName("J"))
+  val watt = GeneralUnit(1, SiWatt, SymbolUnitName("W"))
+  val electronVolt = GeneralUnit(1.60217662e-19, SiJoule, SymbolUnitName("eV"))
+  val newton = GeneralUnit(1, SiNewton, SymbolUnitName("N"))
+  val hertz = GeneralUnit(1, Second ** -1, SymbolUnitName("Hz"))
+  val ohm = GeneralUnit(1, SiOhm, SymbolUnitName("Ω"))
+  val coulomb = GeneralUnit(1, SiCoulomb, SymbolUnitName("C"))
+  val volt = GeneralUnit(1, SiVolt, SymbolUnitName("V"))
 
-  lazy val units: Set[(Set[String], Unit)] = Set(
+  lazy val units: Set[(Set[String], GeneralUnit)] = Set(
     Set("min", "mins", "minute", "minutes") -> minute,
     Set("hour", "hours") -> hour,
     Set("day") -> day,
@@ -144,13 +147,13 @@ object Dimension {
     Set("parsec") -> parsec,
     Set("ohm") -> ohm,
   ) ++ (for {
-    (name: String, unit: Unit) <- unitsWhichCanHaveSiPrefixes
-    (siPrefix: String, multiplier: Double) <- siPrefixes ++ Set("" -> 1)
-  } yield (Set(siPrefix + name), Unit(unit.value * multiplier, unit.dimension, SymbolUnitName(siPrefix + name))))
+    (name: String, unit: GeneralUnit) <- unitsWhichCanHaveSiPrefixes
+    (siPrefix: String, multiplier: Double) <- siPrefixes
+  } yield (Set(siPrefix + name), GeneralUnit(unit.value * multiplier, unit.dimension, SymbolUnitName(siPrefix + name))))
 
-  val unitsWhichCanHaveSiPrefixes: Set[(String, Unit)] = Set(
+  val unitsWhichCanHaveSiPrefixes: Set[(String, GeneralUnit)] = Set(
     "m" -> meter,
-    "g" -> Unit(0.001, Kilogram, SymbolUnitName("g")),
+    "g" -> GeneralUnit(0.001, Kilogram, SymbolUnitName("g")),
     "s" -> second,
     "K" -> degreeKelvin,
     "A" -> ampere,
@@ -160,7 +163,7 @@ object Dimension {
     "N" -> newton,
     "Hz" -> hertz,
     "C" -> coulomb,
-    "V" -> Unit(1, SiVolt, SymbolUnitName("V"))
+    "V" -> GeneralUnit(1, SiVolt, SymbolUnitName("V"))
   )
 
   val siPrefixes: Set[(String, Double)] = Set(
@@ -171,6 +174,7 @@ object Dimension {
     "μ" -> 1e-6,
     "m" -> 1e-3,
     "c" -> 0.01,
+    "" -> 1.0,
     "k" -> 1e3,
     "M" -> 1e6,
     "G" -> 1e9,
@@ -179,11 +183,12 @@ object Dimension {
     "E" -> 1e18,
   )
 
+  @JSExport
   def parseJs(str: String): Dimension = parse(str).getOrElse(null)
 
   def parse(str: String): Try[Dimension] = Try({
     val unitRegex = raw"(/)?(\w+)(\^([-\d]+))?".r("divisionSign", "unitString", "unimportantGroup", "exponent")
-    unitRegex.findAllMatchIn(str).map({
+    val matches = unitRegex.findAllMatchIn(str).map({
       case unitRegex(divisionSignOrNull, unitString, _, exponentOrNull) =>
         val exponent = Option(exponentOrNull)
         val divisionSign = Option(divisionSignOrNull)
@@ -192,7 +197,9 @@ object Dimension {
         }).toDim ** (
           exponent.map((x) => RationalNumber[String](x.toInt)).getOrElse(RationalNumber[String](1))
           * (if (divisionSign.isDefined) RationalNumber[String](-1) else RationalNumber[String](1))).asInstanceOf[RationalNumber[String]]
-    }).reduce(_ * _)
+    })
+
+    matches.reduceOption(_ * _).getOrElse(Dimension.Dimensionless)
   })
 }
 

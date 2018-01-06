@@ -8,6 +8,15 @@ object Util {
     println(a)
     a
   }
+
+  def showNumber(value: Double): String = {
+    ???
+    /*
+    * Cases:
+    *
+    *
+    * */
+  }
 }
 
 case class MapWithIds[A](map: Map[Int, A], nextId: Int = 0) {

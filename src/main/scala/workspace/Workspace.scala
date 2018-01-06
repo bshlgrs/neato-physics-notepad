@@ -251,6 +251,15 @@ case class Workspace(equations: MapWithIds[Equation] = MapWithIds.empty[Equation
     case Some(var1Dimension) => var1Dimension.equalUnits(dimension)
     case _ => true
   }
+
+  def changeDimension(id: Integer, dimension: Dimension): Workspace = {
+    val (oldNumber, mbAttachment) = numbers(id)
+    val newNumber = oldNumber.changeDimension(dimension)
+//    println(newNumber)
+    val newNumbers = numbers.set(id, (newNumber, mbAttachment))
+//    println()
+    this.copy(numbers = newNumbers)
+  }
 }
 
 case class InvalidActionException(comment: String) extends RuntimeException

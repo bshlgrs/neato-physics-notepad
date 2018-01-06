@@ -2,8 +2,9 @@ import React from 'react';
 import Gem from './Gem';
 import BuckTex from './BuckTex';
 
-const InfoBox = ({selectedType, selectedId, ws}) => {
-  if (selectedType === "equation") {
+class InfoBox extends React.Component {
+  renderEquation () {
+    const {selectedId, ws} = this.props;
     const equation = ws.getEquation(selectedId);
 
     return <div className='info-box'>
@@ -21,42 +22,107 @@ const InfoBox = ({selectedType, selectedId, ws}) => {
           {dimension && [" :: ", <BuckTex key={2} inline el={dimension.toBuckTex} />]}
         </div>
       })}
-      <button className="btn btn-danger" onClick={() => this.deleteEquation(selectedId)}>
+      <button className="btn btn-danger" onClick={() => this.props.deleteEquation(selectedId)}>
         <i className="fa fa-trash" style={{marginRight: "10px"}}/>
         Delete equation
       </button>
     </div>
-  } else if (selectedType === "expression") {
-    return <div className='info-box expression-info-box'>
-      <BuckTex el={ws.getExpressionBuckTex(selectedId)} />
-      <div>TODO: display the dimensions of the quantity, as well as its name</div>
-      <button className="btn btn-danger" onClick={() => this.deleteExpression(selectedId)}>
-        <i className="fa fa-trash" style={{marginRight: "10px"}}/>
-        Delete expression
-      </button>
-    </div>
-  } else if (selectedType === "number") {
-    const number = ws.getNumber(selectedId);
+  }
+
+  render () {
+    const {selectedType, selectedId, ws} = this.props;
+    if (selectedType === "equation") {
+      return this.renderEquation();
+    } else if (selectedType === "expression") {
+      return <div className='info-box expression-info-box'>
+        <BuckTex el={ws.getExpressionBuckTex(selectedId)} />
+        <div>TODO: display the dimensions of the quantity, as well as its name</div>
+        <button className="btn btn-danger" onClick={() => this.props.deleteExpression(selectedId)}>
+          <i className="fa fa-trash" style={{marginRight: "10px"}}/>
+          Delete expression
+        </button>
+      </div>
+    } else if (selectedType === "number") {
+      return <NumberInfoBox ws={ws}
+                            numberId={selectedId}
+                            deleteNumber={this.props.deleteNumber}
+                            detachNumber={this.props.detachNumber}
+                            changeDimension={this.props.changeDimension}
+                          />
+    }
+    return null;
+  };
+}
+
+class NumberInfoBox extends React.Component {
+  constructor () {
+    super();
+    this.state = {
+      currentAction: null,
+      dimensionInputBoxContents: ""
+    };
+  }
+  componentWillReceiveProps () {
+    this.setState({
+      currentAction: null,
+      dimensionInputBoxContents: ""
+    });
+  }
+  render () {
+    const {ws, numberId} = this.props;
+    const number = ws.getNumber(numberId);
+    const dimensionInputBoxContents = this.state.dimensionInputBoxContents;
+    const newDimension = Gem.Dimension.parseJs(dimensionInputBoxContents);
+    const newNumberValue = newDimension ? number.value / newDimension.totalConstant : null;
+
+    if (newDimension) {
+      console.log(number.value / newDimension.totalConstant);
+    }
+
     return <div className='info-box expression-info-box'>
       <BuckTex el={number.toBuckTex} />
 
       {number.toBuckTex.toString() !== number.siUnitToBuckTex.toString() && <div>
         SI units: <BuckTex inline el={number.siUnitToBuckTex} /></div>}
-      <div>TODO: allow you to change the units the number is displayed in</div>
+
+        {this.state.currentAction === null &&
+          <button className='btn btn-default' onClick={() => this.setState({currentAction: 'change-units'})}>
+            Change units
+          </button>}
+        {this.state.currentAction === 'change-units' &&
+        <div>
+          <input value={dimensionInputBoxContents}
+                 onChange={(e) => this.setState({dimensionInputBoxContents: e.target.value})}/>
+          {!newDimension && "not a dimension"}
+          {newDimension && (newDimension.siDimension.equalUnits(number.siDimension) ?
+            <BuckTex el={Gem.PhysicalNumber.applyWithDimension(newNumberValue, newDimension).toBuckTex} /> :
+            "Units do not match"
+          )}
+
+          <div className="btn-group" role="group">
+            <button className='btn btn-default'
+                    onClick={() => this.props.changeDimension(numberId, newDimension)}>
+              Change units to that
+            </button>
+            <button className='btn btn-default' onClick={() => this.setState({currentAction: null})}>
+              Cancel
+            </button>
+          </div>
+        </div>}
+
       <div>TODO: show some quantities with the same dimension with comparable sizes</div>
-      <div class="btn-group" role="group">
-        <button className="btn btn-danger" onClick={() => this.deleteNumber(selectedId)}>
+      <div className="btn-group" role="group">
+        <button className="btn btn-danger" onClick={() => this.props.deleteNumber(numberId)}>
           <i className="fa fa-trash" style={{marginRight: "10px"}}/>
           Delete number</button>
-        {ws.getVarIdOfNumber(selectedId) &&
-          <button className="btn btn-warning" onClick={() => this.detachNumber(selectedId)}>
+        {ws.getVarIdOfNumber(numberId) &&
+          <button className="btn btn-warning" onClick={() => this.props.detachNumber(numberId)}>
             <i className="fa fa-eraser" style={{marginRight: "10px"}}/>
             Detach number
           </button>}
       </div>
-    </div>
+    </div>;
   }
-  return null;
 }
 
 export default InfoBox;

@@ -18,7 +18,12 @@ class DimensionTests extends FunSpec {
     }
   }
 
+
   describe("parsing") {
+    it("can parse dimensions on their own") {
+      assert(Dimension.parse("m").isSuccess)
+    }
+
     it("can parse") {
       val tenMeters = PhysicalNumber(10, SiDimension.fromInts(Map(Meter -> 1)), Some((10, Dimension.meter.toDim)))
       assert(PhysicalNumber.parsePhysicalNumber("10m").toOption.contains(tenMeters))
@@ -52,6 +57,11 @@ class DimensionTests extends FunSpec {
     it("gets km/hour right") {
       val n = PhysicalNumber.parsePhysicalNumber("5 km/hour").get
       println(n.toBuckTex)
+    }
+
+    it("can parse dimensionless units") {
+      val nakedFour = PhysicalNumber(4, SiDimension.Dimensionless)
+      assert(PhysicalNumber.parsePhysicalNumber("4.0").toOption.isDefined)
     }
   }
 }
