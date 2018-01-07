@@ -10,7 +10,23 @@ object Util {
   }
 
   def showNumber(value: Double): String = {
+//    if (value == 0) {
+//      "0"
+//    } else {
+//      val exponent = math.log10(value).floor
+//      if (exponent > 4) {
+//        val significand = value / math.pow(10, exponent)
+//        val significandDigits = (significand * math.pow(10, exponent)).round.toString.toList
+//
+//        "%.4g".format(value)
+//        // Scientific notation. Round to 4 sig figs, eliding trailing zeros.
+//      } else if (exponent > 0) {
+//
+//      }
+//    }
+
     ???
+
     /*
     * Cases:
     *

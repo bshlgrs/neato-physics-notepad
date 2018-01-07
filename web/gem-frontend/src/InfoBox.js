@@ -75,10 +75,6 @@ class NumberInfoBox extends React.Component {
     const newDimension = Gem.Dimension.parseJs(dimensionInputBoxContents);
     const newNumberValue = newDimension ? number.value / newDimension.totalConstant : null;
 
-    if (newDimension) {
-      console.log(number.value / newDimension.totalConstant);
-    }
-
     return <div className='info-box expression-info-box'>
       <BuckTex el={number.toBuckTex} />
 
