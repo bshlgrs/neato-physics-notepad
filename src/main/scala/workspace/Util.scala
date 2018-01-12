@@ -1,6 +1,8 @@
 package workspace
 import scala.annotation._
 import scala.collection.immutable
+import scala.scalajs.js
+import scala.scalajs.js.annotation.{JSExport, JSExportTopLevel, ScalaJSDefined}
 
 
 object Util {
@@ -8,6 +10,8 @@ object Util {
     println(a)
     a
   }
+
+  def err[A](s: String): A = throw new RuntimeException(s)
 
   def showNumber(value: Double): String = {
 //    if (value == 0) {
@@ -54,3 +58,27 @@ case class MapWithIds[A](map: Map[Int, A], nextId: Int = 0) {
 object MapWithIds {
   def empty[A]: MapWithIds[A] = MapWithIds[A](Map(), 0)
 }
+
+
+case class TestClass(foo: Int, bar: Option[String]) {
+  def thing: String = s"$foo $bar"
+}
+
+@ScalaJSDefined
+trait TestClassJs extends js.Object {
+  val foo: Int
+  val bar: js.UndefOr[String]
+}
+
+@JSExportTopLevel("Gem.Test")
+object TestClassJs {
+  implicit class TestClassOps(val self: TestClassJs) extends AnyVal {
+    def toTestClass: TestClass = {
+      TestClass(self.foo, self.bar.toOption)
+    }
+  }
+  @JSExport("foo")
+  def foo(x: TestClassJs): String = x.toTestClass.thing
+}
+
+

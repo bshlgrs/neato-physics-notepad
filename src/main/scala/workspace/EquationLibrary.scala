@@ -1,12 +1,13 @@
 package workspace
 import cas.{Expression, RationalNumber}
+import workspace.dimensions._
 
 import scala.scalajs.js
 import scala.scalajs.js.annotation.{JSExport, JSExportTopLevel}
 
 @JSExportTopLevel("Gem.EquationLibrary")
 object EquationLibrary {
-  import SiDimension._
+  import workspace.dimensions.SiDimension._
 
   val library: Map[String, LibraryEquation] = Map(
     "ke_def" -> LibraryEquation("Definition of kinetic energy",

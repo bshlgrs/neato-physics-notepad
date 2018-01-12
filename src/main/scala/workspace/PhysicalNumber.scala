@@ -1,5 +1,8 @@
 package workspace
 
+import workspace.dimensions.{Dimension, SiDimension}
+
+import scala.scalajs.js
 import scala.scalajs.js.annotation.{JSExport, JSExportAll, JSExportTopLevel}
 import scala.util.Try
 
@@ -20,6 +23,16 @@ case class PhysicalNumber(value: Double, siDimension: SiDimension, originalInput
   def changeDimension(dim: Dimension): PhysicalNumber = {
     this.copy(originalInput = Some(value / dim.totalConstant, dim))
   }
+
+  def toJsObject: js.Object = js.Dynamic.literal(
+    "className" -> "PhysicalNumber",
+    "value" -> value,
+    "siDimension" -> siDimension.toJsObject,
+    "originalInput" -> (originalInput match {
+      case Some((numValue, dim)) => js.Dynamic.literal("value" -> numValue, "dim" -> dim.toJsObject)
+      case None => null
+    })
+  )
 }
 
 @JSExportTopLevel("Gem.PhysicalNumber")

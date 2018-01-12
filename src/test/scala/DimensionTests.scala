@@ -1,5 +1,6 @@
 import org.scalatest.FunSpec
 import workspace._
+import workspace.dimensions._
 
 class DimensionTests extends FunSpec {
   describe("dimensions") {

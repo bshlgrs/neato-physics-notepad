@@ -1,5 +1,4 @@
-package workspace
-
+package workspace.dimensions
 
 sealed trait DimensionInference {
   def combine(other: DimensionInference, f: (SiDimension, SiDimension) => SiDimension): DimensionInference = {

@@ -2,6 +2,10 @@ package cas
 
 import workspace._
 import workspace.SetOfSets
+import workspace.dimensions._
+
+import scala.scalajs.js
+import scala.scalajs.js.annotation.{JSExport, JSExportTopLevel, ScalaJSDefined}
 
 sealed trait Expression[A] {
   import ExpressionDisplay.wrap
@@ -97,7 +101,7 @@ sealed trait Expression[A] {
 
   def sqrt: Expression[A] = this ** RationalNumber[A](1, 2)
 
-  def solve(x: Variable[A]): Set[Expression[A]] = this.solve(x.thing)
+  def solve(x: Variable[A]): Set[Expression[A]] = this.solve(x.name)
 
   def subs(x: A): Expression[A] = ???
 
@@ -336,7 +340,7 @@ sealed trait Expression[A] {
   }
 
   def differentiate(wrt: A): Expression[A] = this match {
-    case Sum(factors) => factors.toList.map(_.differentiate(wrt)).reduce(_ + _)
+    case Sum(terms) => terms.toList.map(_.differentiate(wrt)).reduce(_ + _)
     case Product(factors) => {
       val factorList = factors.toList
       factorList.zipWithIndex.map({ case (factor: Expression[A], idx: Int) =>
@@ -353,6 +357,54 @@ sealed trait Expression[A] {
       }
     }
   }
+
+  def toJsObject: js.Object = this match {
+    case Sum(terms) => js.Dynamic.literal("className" -> "Sum", "terms" -> js.Array(terms.toSeq.map(_.toJsObject) :_*))
+    case Product(factors) => js.Dynamic.literal("className" -> "Product", "factors" -> js.Array(factors.toSeq.map(_.toJsObject) :_*))
+    case RationalNumber(n, d) => js.Dynamic.literal("className" -> "RationalNumber", "numerator" -> n, "denominator" -> d)
+    case RealNumber(r) => js.Dynamic.literal("className" -> "RealNumber", "value" -> r)
+    case NamedNumber(value, name, dimension) => js.Dynamic.literal("className" -> "NamedNumber", "value" -> value, "name" -> name, "dimension" -> dimension.toJsObject)
+    case Variable(x) => x match {
+      case str: String => js.Dynamic.literal("className" -> "Variable", "name" -> str)
+      case varId: VarId => js.Dynamic.literal("className" -> "Variable", "varId" -> varId.toJsObject)
+      case _ => throw new RuntimeException(s"Tried to turn $this into JS object but cannot serialize")
+    }
+    case Power(base: Expression[A], exponent: Expression[A]) =>
+      js.Dynamic.literal("className" -> "Power", "base" -> base.toJsObject, "exponent" -> exponent.toJsObject)
+  }
+}
+
+//trait ExpressionJs extends
+
+
+@ScalaJSDefined
+trait ExpressionJs extends js.Object {
+  val className: String
+  val terms: js.UndefOr[js.Array[ExpressionJs]]
+  val factors: js.UndefOr[js.Array[ExpressionJs]]
+  val numerator: js.UndefOr[Int]
+  val denominator: js.UndefOr[Int]
+  val value: js.UndefOr[Double]
+  val name: js.UndefOr[String]
+  val dimension: js.UndefOr[ConcreteSiDimensionJs]
+  val varId: js.UndefOr[VarIdJs]
+  val base: js.UndefOr[ExpressionJs]
+  val exponent: js.UndefOr[ExpressionJs]
+}
+
+object ExpressionJs {
+  def parseToType[A](expr: ExpressionJs, f: ExpressionJs => A): Expression[A] = expr.className match {
+    case "Sum" => Sum(expr.terms.get.map(term => parseToType(term, f)).toSet)
+    case "Product" => Product(expr.factors.get.map(factor => parseToType(factor, f)).toSet)
+    case "RationalNumber" => RationalNumber(expr.numerator.get, expr.denominator.get)
+    case "RealNumber" => RealNumber(expr.value.get)
+    case "NamedNumber" => NamedNumber(expr.value.get, expr.name.get, ConcreteSiDimensionJs.parse(expr.dimension.get))
+    case "Variable" => Variable(f(expr))
+    case "Power" => Power(parseToType(expr.base.get, f), parseToType(expr.exponent.get, f))
+  }
+
+  def parseToStringExpr(expr: ExpressionJs): Expression[String] = parseToType(expr, _.name.get)
+  def parseToVarIdExpr(expr: ExpressionJs): Expression[VarId] = parseToType(expr, varExprJs => VarIdJs.parse(varExprJs.varId.get))
 }
 
 case class Sum[A](terms: Set[Expression[A]]) extends Expression[A]
@@ -360,7 +412,7 @@ case class Product[A](factors: Set[Expression[A]]) extends Expression[A]
 case class Power[A](base: Expression[A], power: Expression[A]) extends Expression[A] {
   assert(power != RationalNumber(1), "power must not be 1")
 }
-case class Variable[A](thing: A) extends Expression[A]
+case class Variable[A](name: A) extends Expression[A]
 
 sealed trait Constant[A] extends Expression[A]
 
@@ -370,6 +422,12 @@ case class RationalNumber[A](numerator: Int, denominator: Int = 1) extends Const
 
   def toDouble: Double = numerator.toDouble / denominator
 }
+
+trait RationalNumberJs extends js.Object {
+  val numerator: Int
+  val denominator: Int
+}
+
 case class NamedNumber[A](value: Double, name: String, dimension: SiDimension) extends Expression[A]
 
 object RationalNumber {

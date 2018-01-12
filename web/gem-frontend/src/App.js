@@ -127,6 +127,7 @@ class App extends Component {
   }
   render () {
     const state = this.state;
+    console.log(JSON.stringify(this.state.workspace.toJsObject));
     return <div className="gem-container">
       <ReactModal
            isOpen={this.state.currentAction === "showing-help"}
@@ -144,14 +145,14 @@ class App extends Component {
         {this.renderTitle()}
 
         <div className="pull-right">
-          <button
+          {false && <button
             className="btn btn-default btn-large"
             onClick={() => { window.location.href = "/"; }}
             style={{marginRight: "10px"}}>
             <i className='fa fa-plus' style={{paddingRight: "10px"}} />
             New
-          </button>
-          {state.creatorToken === state.currentUserToken &&
+          </button>}
+          {false && state.creatorToken === state.currentUserToken &&
             <button
               className="btn btn-default btn-large"
               onClick={() => this.save()}
@@ -164,7 +165,7 @@ class App extends Component {
             Save
           </button>}
 
-          {state.notepadId &&
+          {false && state.notepadId &&
             <button
               className="btn btn-default btn-large"
               style={{marginRight: "10px"}}

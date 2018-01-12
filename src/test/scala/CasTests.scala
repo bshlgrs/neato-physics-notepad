@@ -1,6 +1,7 @@
 import org.scalatest.FunSpec
 import cas._
 import workspace._
+import workspace.dimensions.{ConcreteDimensionInference, Kilogram, Meter}
 
 class CasTests extends FunSpec {
   val ke = Variable("ke")

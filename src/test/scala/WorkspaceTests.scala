@@ -1,6 +1,7 @@
 import cas.{EquationParser, Expression, RationalNumber, Variable}
 import org.scalatest.FunSpec
 import workspace._
+import workspace.dimensions._
 
 class WorkspaceTests extends FunSpec {
   import RationalNumber._

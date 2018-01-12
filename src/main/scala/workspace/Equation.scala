@@ -1,12 +1,13 @@
 package workspace
 
 import cas._
+import workspace.dimensions.SiDimension
 
 import scala.scalajs.js
 import scala.scalajs.js.annotation.{JSExport, JSExportAll}
 
 @JSExportAll
-trait Equation {
+sealed trait Equation {
   def expr: Expression[String]
   def display(f: String => BuckTex): BuckTex
   def staticDimensions: Map[String, SiDimension]
@@ -24,6 +25,8 @@ trait Equation {
     expr.solve(varName).map(_.mapVariables((name) => VarId(selfEqId, name)))
   }
   def exprWithEquationId(id: Int): Expression[VarId] = expr.mapVariables((name) => VarId(id, name))
+
+  def toJsObject: js.Object
 }
 
 @JSExportAll
@@ -41,6 +44,11 @@ case class LibraryEquation(name: String,
   def staticDimensionsJs: js.Dictionary[SiDimension] = js.Dictionary(staticDimensions.toSeq :_*)
   def display(f: String => BuckTex): BuckTex = displayF(f)
   def tags: Set[String] = (extraTags ++ varNamesMap.values ++ name.split(' ').toSet).map(_.toLowerCase)
+
+  def toJsObject: js.Object = js.Dynamic.literal(
+    "className" -> "LibraryEquation",
+    "name" -> name
+  )
 }
 
 @JSExportAll
@@ -55,6 +63,12 @@ case class CustomEquation(lhs: Expression[String], rhs: Expression[String]) exte
                                      CompileToBuckTex.compileExpression(rhs.mapVariables(f))))
 
   def staticDimensions = Map()
+
+  def toJsObject: js.Object = js.Dynamic.literal(
+    "className" -> "CustomEquation",
+    "lhs" -> lhs.toJsObject,
+    "rhs" -> rhs.toJsObject
+  )
 }
 
 object Equation {
