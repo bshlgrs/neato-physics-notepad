@@ -24,6 +24,17 @@ class App extends Component {
       saving: false
     }
   }
+  makeJson () {
+    return {
+      title: this.state.title,
+      description: this.state.description,
+      creator_token: this.state.currentUserToken,
+      contents: {
+        workspace: this.state.workspace.toJsObject,
+        positions: this.state.positions.toJS()
+      }
+    }
+  }
   componentWillMount () {
     let token = localStorage.getItem("currentUserToken");
     if (!token) {
@@ -53,7 +64,9 @@ class App extends Component {
               title: notepad.title,
               description: notepad.description,
               creatorToken: notepad.creator_token,
-              notepadId: notepadId
+              notepadId: notepadId,
+              positions: (notepad.contents && notepad.contents.positions) || Immutable.Map(),
+              workspace: (notepad.contents && notepad.contents.workspace) || Gem.Workspace()
             });
           });
       }
@@ -83,12 +96,7 @@ class App extends Component {
             'Content-Type': 'application/json'
           },
           method: "PUT",
-          body: JSON.stringify({
-            title: this.state.title,
-            description: this.state.description,
-            creator_token: this.state.currentUserToken,
-            contents: null
-          })
+          body: JSON.stringify(this.makeJson())
         })
         .then((resp) => resp.json())
         .then((data) => {
@@ -106,12 +114,7 @@ class App extends Component {
           'Content-Type': 'application/json'
         },
         method: "POST",
-        body: JSON.stringify({
-          title: this.state.title,
-          description: this.state.description,
-          creator_token: this.state.currentUserToken,
-          contents: null
-        })
+        body: JSON.stringify(this.makeJson())
       })
       .then((resp) => resp.json())
       .then((data) => {
@@ -145,14 +148,14 @@ class App extends Component {
         {this.renderTitle()}
 
         <div className="pull-right">
-          {false && <button
+          <button
             className="btn btn-default btn-large"
             onClick={() => { window.location.href = "/"; }}
             style={{marginRight: "10px"}}>
             <i className='fa fa-plus' style={{paddingRight: "10px"}} />
             New
-          </button>}
-          {false && state.creatorToken === state.currentUserToken &&
+          </button>
+          {state.creatorToken === state.currentUserToken &&
             <button
               className="btn btn-default btn-large"
               onClick={() => this.save()}
@@ -165,7 +168,7 @@ class App extends Component {
             Save
           </button>}
 
-          {false && state.notepadId &&
+          {state.notepadId &&
             <button
               className="btn btn-default btn-large"
               style={{marginRight: "10px"}}

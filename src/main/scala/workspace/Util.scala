@@ -57,6 +57,7 @@ case class MapWithIds[A](map: Map[Int, A], nextId: Int = 0) {
 
 object MapWithIds {
   def empty[A]: MapWithIds[A] = MapWithIds[A](Map(), 0)
+  def fromMap[A](map: Map[Int, A]): MapWithIds[A] = MapWithIds(map, if (map.isEmpty) 0 else map.keys.max + 1)
 }
 
 
@@ -64,7 +65,7 @@ case class TestClass(foo: Int, bar: Option[String]) {
   def thing: String = s"$foo $bar"
 }
 
-@ScalaJSDefined
+
 trait TestClassJs extends js.Object {
   val foo: Int
   val bar: js.UndefOr[String]

@@ -16,3 +16,5 @@ libraryDependencies ++= Seq(
   "com.lihaoyi" %%% "fastparse" % "1.0.0",
   "com.lihaoyi" %%% "upickle" % "0.5.1"
 )
+
+scalacOptions ++= Seq("scalajs:sjsDefinedByDefault")

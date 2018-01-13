@@ -1,11 +1,11 @@
 package workspace.dimensions
 
-import cas.RationalNumber
+import cas.{Expression, ExpressionJs, RationalNumber, RationalNumberJs}
 import workspace._
 
 import scala.util.Try
 import scala.scalajs.js
-import scala.scalajs.js.annotation.{JSExport, JSExportTopLevel}
+import scala.scalajs.js.annotation.{JSExport, JSExportTopLevel, ScalaJSDefined}
 
 case class Dimension(units: Map[GeneralUnit, RationalNumber[String]]) {
   @JSExport
@@ -47,8 +47,20 @@ case class Dimension(units: Map[GeneralUnit, RationalNumber[String]]) {
     CompileToBuckTex.horizontalBox((initialUnitsTex ++ lastUnitsTex).tail.toList)
   }
 
-  def toJsObject: js.Object = js.Dynamic.literal("className" -> "Dimension", "units" -> units.map({
-    case (u: GeneralUnit, r: RationalNumber[String]) => u.toJsObject -> r.toJsObject
+  def toJsObject: js.Object = js.Dynamic.literal("className" -> "Dimension", "units" -> js.Dictionary(units.map({
+    case (u: GeneralUnit, r: RationalNumber[String]) => u.name.string -> r.toJsObject
+  }).toSeq :_*))
+}
+
+
+
+trait DimensionJs extends js.Object {
+  val units: js.Dictionary[RationalNumberJs]
+}
+
+object DimensionJs {
+  def parse(dimensionJs: DimensionJs): Dimension = Dimension(dimensionJs.units.toMap.map({
+    case (unitName: String, power: RationalNumberJs) => Dimension.getBySymbol(unitName).get -> RationalNumber[String](power.numerator, power.denominator)
   }))
 }
 
@@ -132,6 +144,8 @@ object Dimension {
     "E" -> 1e18,
   )
 
+  def getBySymbol(symbol: String): Option[GeneralUnit] = Dimension.units.find(_._1.contains(symbol)).map(_._2)
+
   @JSExport
   def parseJs(str: String): Dimension = parse(str).getOrElse(null)
 
@@ -141,7 +155,7 @@ object Dimension {
       case unitRegex(divisionSignOrNull, unitString, _, exponentOrNull) =>
         val exponent = Option(exponentOrNull)
         val divisionSign = Option(divisionSignOrNull)
-        Dimension.units.find(_._1.contains(unitString)).map(_._2).getOrElse({
+        getBySymbol(unitString).getOrElse({
           throw new RuntimeException(s"unknown unit $unitString")
         }).toDim ** (
           exponent.map((x) => RationalNumber[String](x.toInt)).getOrElse(RationalNumber[String](1))

@@ -377,7 +377,7 @@ sealed trait Expression[A] {
 //trait ExpressionJs extends
 
 
-@ScalaJSDefined
+
 trait ExpressionJs extends js.Object {
   val className: String
   val terms: js.UndefOr[js.Array[ExpressionJs]]

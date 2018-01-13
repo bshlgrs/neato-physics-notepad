@@ -52,7 +52,7 @@ case class ConcreteSiDimension(units: Map[SiUnit, RationalNumber[String]]) exten
   )
 }
 
-@ScalaJSDefined
+
 trait ConcreteSiDimensionJs extends js.Object {
   val className: String
   val units: js.Dictionary[RationalNumberJs]
@@ -68,7 +68,6 @@ object ConcreteSiDimensionJs {
     )
   }
 }
-
 
 object SiDimension {
   val SiNewton: SiDimension = SiDimension.fromInts(Map[SiUnit, Int](Kilogram -> 1, Meter -> 1, Second -> -2))

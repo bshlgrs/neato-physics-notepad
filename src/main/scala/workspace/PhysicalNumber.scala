@@ -1,9 +1,9 @@
 package workspace
 
-import workspace.dimensions.{Dimension, SiDimension}
+import workspace.dimensions.{ConcreteSiDimensionJs, Dimension, DimensionJs, SiDimension}
 
 import scala.scalajs.js
-import scala.scalajs.js.annotation.{JSExport, JSExportAll, JSExportTopLevel}
+import scala.scalajs.js.annotation.{JSExport, JSExportAll, JSExportTopLevel, ScalaJSDefined}
 import scala.util.Try
 
 @JSExportAll
@@ -24,15 +24,30 @@ case class PhysicalNumber(value: Double, siDimension: SiDimension, originalInput
     this.copy(originalInput = Some(value / dim.totalConstant, dim))
   }
 
-  def toJsObject: js.Object = js.Dynamic.literal(
-    "className" -> "PhysicalNumber",
-    "value" -> value,
-    "siDimension" -> siDimension.toJsObject,
-    "originalInput" -> (originalInput match {
-      case Some((numValue, dim)) => js.Dynamic.literal("value" -> numValue, "dim" -> dim.toJsObject)
-      case None => null
+  def toJsObject: js.Object = originalInput match {
+    case Some((numValue, dim)) =>
+      js.Dynamic.literal("value" -> value, "siDimension" -> siDimension.toJsObject,
+        "originalInputValue" -> numValue, "originalInputDim" -> dim.toJsObject)
+    case None => js.Dynamic.literal("value" -> value, "siDimension" -> siDimension.toJsObject)
+  }
+}
+
+
+trait PhysicalNumberJs extends js.Object {
+  val value: Double
+  val siDimension: ConcreteSiDimensionJs
+  val originalInputValue: js.UndefOr[Double]
+  val originalInputDim: js.UndefOr[DimensionJs]
+}
+
+object PhysicalNumberJs {
+  def parse(physicalNumberJs: PhysicalNumberJs): PhysicalNumber = PhysicalNumber(
+    physicalNumberJs.value,
+    ConcreteSiDimensionJs.parse(physicalNumberJs.siDimension),
+    physicalNumberJs.originalInputValue.toOption match {
+      case None => None
+      case Some(value) => Some(value -> DimensionJs.parse(physicalNumberJs.originalInputDim.toOption.get))
     })
-  )
 }
 
 @JSExportTopLevel("Gem.PhysicalNumber")

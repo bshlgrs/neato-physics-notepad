@@ -1,12 +1,11 @@
 package workspace
 
 import scala.util.{Failure, Success, Try}
-import cas.{Expression, RationalNumber, RationalNumberJs, RealNumber}
-import netscape.javascript.JSObject
+import cas.{Expression, ExpressionJs, RationalNumber, RealNumber}
 import workspace.dimensions._
 
 import scala.scalajs.js
-import scala.scalajs.js.annotation.{JSExportAll, JSExportTopLevel, ScalaJSDefined}
+import scala.scalajs.js.annotation.{JSExport, JSExportAll, JSExportTopLevel, ScalaJSDefined}
 
 @JSExportAll
 @JSExportTopLevel("Gem.Workspace")
@@ -16,11 +15,11 @@ case class Workspace(equations: MapWithIds[Equation] = MapWithIds.empty[Equation
                      numbers: MapWithIds[(PhysicalNumber, Option[VarId])] = MapWithIds.empty) {
   def toJsObject: js.Object = js.Dynamic.literal(
     "className" -> "Workspace",
-    "equations" -> js.Array(equations.map.toSeq.map({ case (x: Int, y: Equation) => js.Array(x, y.toJsObject) }) :_*),
+    "equations" -> js.Array(equations.map.toSeq.map({ case (x: Int, y: Equation) => js.Tuple2(x, y.toJsObject) }) :_*),
     "equalities" -> js.Array(equalities.sets.toList.map(set => js.Array(set.toList.map(_.toJsObject) :_*)) :_*),
-    "expressions" -> js.Array(expressions.toSeq.map({ case (x: VarId, y: Expression[VarId]) => js.Array(x.toJsObject, y.toJsObject)}) :_*),
+    "expressions" -> js.Array(expressions.toSeq.map({ case (x: VarId, y: Expression[VarId]) => js.Tuple2(x.toJsObject, y.toJsObject)}) :_*),
     "numbers" -> js.Array(numbers.map.toSeq.map(
-      { case (id: Int, (n: PhysicalNumber, v: Option[VarId])) => js.Array(id, n.toJsObject, v.map(_.toJsObject).orNull)}) :_*)
+      { case (id: Int, (n: PhysicalNumber, v: Option[VarId])) => js.Tuple3(id, n.toJsObject, v.map(_.toJsObject).orNull)}) :_*)
   )
 
   def equationIds: js.Array[Int] = arr(equations.keySet)
@@ -265,39 +264,49 @@ case class Workspace(equations: MapWithIds[Equation] = MapWithIds.empty[Equation
   def changeDimension(id: Integer, dimension: Dimension): Workspace = {
     val (oldNumber, mbAttachment) = numbers(id)
     val newNumber = oldNumber.changeDimension(dimension)
-//    println(newNumber)
     val newNumbers = numbers.set(id, (newNumber, mbAttachment))
-//    println()
     this.copy(numbers = newNumbers)
   }
-
-
 }
 
 case class InvalidActionException(comment: String) extends RuntimeException
 
-@JSExportTopLevel("Gem.VarId")
-@JSExportAll
-case class VarId(eqIdx: Int, varName: String) {
-  def toJsObject: js.Object = js.Dynamic.literal("eqIdx" -> eqIdx, "varName" -> varName)
-}
 
-@ScalaJSDefined
-trait VarIdJs extends js.Object {
-  val eqIdx: Int; val varName: String
-
-}
-object VarIdJs {
-  def parse(varIdJs: VarIdJs): VarId = VarId(varIdJs.eqIdx, varIdJs.varName)
-}
 
 @JSExportTopLevel("Gem.WorkspaceOps")
 @JSExportAll
 object Workspace {
   def empty = Workspace(MapWithIds.empty, SetOfSets[VarId](Set()), Map(), MapWithIds.empty)
-
-//  def fromJsObject(jsObject: js.Object): Try[Workspace] = {
-//    jsObject.valueOf()
-//  }
 }
 
+
+trait WorkspaceJs extends js.Object {
+//  def toJsObject: js.Object = js.Dynamic.literal(
+//    "className" -> "Workspace",
+//    "equations" -> js.Array(equations.map.toSeq.map({ case (x: Int, y: Equation) => js.Tuple2(x, y.toJsObject) }) :_*),
+//    "equalities" -> js.Array(equalities.sets.toList.map(set => js.Array(set.toList.map(_.toJsObject) :_*)) :_*),
+//    "expressions" -> js.Array(expressions.toSeq.map({ case (x: VarId, y: Expression[VarId]) => js.Tuple2(x.toJsObject, y.toJsObject)}) :_*),
+//    "numbers" -> js.Array(numbers.map.toSeq.map(
+//      { case (id: Int, (n: PhysicalNumber, v: Option[VarId])) => js.Tuple3(id, n.toJsObject, v.map(_.toJsObject).orNull)}) :_*)
+//  )
+  val className: String
+  val equations: js.Array[js.Tuple2[Int, EquationJs]]
+  val equalities: js.Array[js.Array[VarIdJs]]
+  val expressions: js.Array[js.Tuple2[VarIdJs, ExpressionJs]]
+  val numbers: js.Array[js.Tuple3[Int, PhysicalNumberJs, js.UndefOr[VarIdJs]]]
+}
+
+@JSExportTopLevel("Gem.WorkspaceJs")
+object WorkspaceJs {
+  @JSExport
+  def parse(ws: WorkspaceJs): Workspace = Workspace(
+    MapWithIds.fromMap(ws.equations.map({ case js.Tuple2(id: Int, eq: EquationJs) => id -> EquationJs.parse(eq) }).toMap),
+    SetOfSets(ws.equalities.map(_.map(VarIdJs.parse).toSet).toSet),
+    ws.expressions.map({
+      case js.Tuple2(varIdJs: VarIdJs, expr: ExpressionJs) => VarIdJs.parse(varIdJs) -> ExpressionJs.parseToVarIdExpr(expr)
+    }).toMap,
+    MapWithIds(ws.numbers.map({ case js.Tuple3(id: Int, num: PhysicalNumberJs, mbVarId: js.UndefOr[VarIdJs]) =>
+      id -> (PhysicalNumberJs.parse(num) -> mbVarId.toOption.map(VarIdJs.parse))
+    }).toMap)
+  )
+}

@@ -29,6 +29,31 @@ sealed trait Equation {
   def toJsObject: js.Object
 }
 
+
+trait EquationJs extends js.Object {
+  val symbol: js.UndefOr[String]
+  val lhs: js.UndefOr[Expression[String]]
+  val rhs: js.UndefOr[Expression[String]]
+}
+
+object EquationJs {
+  def parse(equationJs: EquationJs): Equation = equationJs.symbol.toOption match {
+    case None => CustomEquation(equationJs.lhs.get, equationJs.rhs.get)
+    case Some(symbol) => EquationLibrary.getByEqId(symbol)
+  }
+}
+
+//object PhysicalNumberJs {
+//  def parse(physicalNumberJs: PhysicalNumberJs): PhysicalNumber = PhysicalNumber(
+//    physicalNumberJs.value,
+//    ConcreteSiDimensionJs.parse(physicalNumberJs.siDimension),
+//    physicalNumberJs.originalInputValue.toOption match {
+//      case None => None
+//      case Some(value) => Some(value -> DimensionJs.parse(physicalNumberJs.originalInputDim.toOption.get))
+//    })
+//}
+
+
 @JSExportAll
 case class LibraryEquation(name: String,
                            expr: Expression[String],
@@ -36,7 +61,7 @@ case class LibraryEquation(name: String,
                            staticDimensions: Map[String, SiDimension],
                            varNamesMap: Map[String, String],
                            extraTags: Set[String]
-                   )  extends Equation {
+                   ) extends Equation {
   assert(expr.vars == staticDimensions.keys.toSet, s"assert 234876 $name ${expr.vars} ${staticDimensions.keys}")
   assert(varNamesMap.keys == staticDimensions.keys, "12387340")
 
@@ -47,7 +72,7 @@ case class LibraryEquation(name: String,
 
   def toJsObject: js.Object = js.Dynamic.literal(
     "className" -> "LibraryEquation",
-    "name" -> name
+    "symbol" -> EquationLibrary.library.find(_._2 == this).map(_._1).get
   )
 }
 
