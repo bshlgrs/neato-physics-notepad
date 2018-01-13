@@ -29,7 +29,7 @@ class App extends Component {
       title: this.state.title,
       description: this.state.description,
       creator_token: this.state.currentUserToken,
-      contents: {
+      content: {
         workspace: this.state.workspace.toJsObject,
         positions: this.state.positions.toJS()
       }
@@ -65,8 +65,8 @@ class App extends Component {
               description: notepad.description,
               creatorToken: notepad.creator_token,
               notepadId: notepadId,
-              positions: (notepad.contents && notepad.contents.positions) || Immutable.Map(),
-              workspace: (notepad.contents && notepad.contents.workspace) || Gem.Workspace()
+              positions: (notepad.content && Immutable.fromJS(notepad.content.positions)) || Immutable.Map(),
+              workspace: (notepad.content && Gem.WorkspaceJs.parse(notepad.content.workspace)) || Gem.Workspace()
             });
           });
       }
@@ -96,10 +96,9 @@ class App extends Component {
             'Content-Type': 'application/json'
           },
           method: "PUT",
-          body: JSON.stringify(this.makeJson())
+          body: JSON.stringify({notepad: this.makeJson()})
         })
-        .then((resp) => resp.json())
-        .then((data) => {
+        .then(() => {
           // nothing
           this.setState({saving: false});
         });
@@ -114,7 +113,7 @@ class App extends Component {
           'Content-Type': 'application/json'
         },
         method: "POST",
-        body: JSON.stringify(this.makeJson())
+        body: JSON.stringify({ notepad: this.makeJson() })
       })
       .then((resp) => resp.json())
       .then((data) => {
