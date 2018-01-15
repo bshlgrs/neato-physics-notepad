@@ -45,14 +45,24 @@ object EquationParser {
       case (x, None) => Variable(x)
       case (x, Some(subscript)) => Variable(x + "_" + subscript)
     }))
-  lazy val parens: P[Expression[String]] = P( "(" ~/ addSub ~ ")" )
-  val atom: P[Expression[String]] = P( number | variable | parens )
-
-  val power: P[Expression[String]] = P(atom ~ "**" ~ atom | atom).map({
-    case x: Expression[_] => x.asInstanceOf[Expression[String]]
-    case (x: Expression[_], y: Expression[_]) => Expression.makePower(x.asInstanceOf[Expression[String]], y.asInstanceOf[Expression[String]])
+  lazy val parens: P[Expression[String]] = P( "(" ~/ expr0 ~ ")" )
+//  lazy val functionCall: P[Expression[String]] = P(CharsWhile(_.isLetter).rep(1).! ~ "(" ~ expr.rep(sep=",") ~ ")").map({
+//    case (name: String, args: Seq[Expression[String]]) => SpecialFunction(name, args.toList)
+//  })
+  lazy val functionCall: P[Expression[String]] = P(CharsWhile(_.isLetter).rep(1).! ~ "(" ~ expr0.rep(sep=",") ~ ")").map({
+    case (name: String, args: Seq[Expression[_]]) => SpecialFunction(name, args.toList)
   })
-  val divMul: P[Expression[String]] = P( power ~ (CharIn("*/").! ~/ power).rep ).map(eval)
-  val addSub: P[Expression[String]] = P( divMul ~ (CharIn("+-").! ~/ divMul).rep ).map(eval)
-  val expr: P[Expression[String]]   = P( " ".rep ~ addSub ~ " ".rep ~ End )
+
+  val atom: P[Expression[String]] = P( number | functionCall | variable | parens )
+
+  val expr2: P[Expression[String]] = P("-".!.? ~ (atom ~ "**" ~ atom | atom)).map({
+    case (mbMinus: Option[String], x: Expression[_]) =>
+       x.asInstanceOf[Expression[String]] * (if (mbMinus.isDefined) -1 else 1)
+    case (mbMinus: Option[String], (x: Expression[_], y: Expression[_])) =>
+      (Expression.makePower(x.asInstanceOf[Expression[String]], y.asInstanceOf[Expression[String]])
+        * (if (mbMinus.isDefined) -1 else 1))
+  })
+  val expr1: P[Expression[String]] = P( expr2 ~ (CharIn("*/").! ~/ expr2).rep ).map(eval)
+  val expr0: P[Expression[String]] = P( expr1 ~ (CharIn("+-").! ~/ expr1).rep ).map(eval)
+  val expr: P[Expression[String]]   = P( " ".rep ~ expr0 ~ " ".rep ~ End )
 }

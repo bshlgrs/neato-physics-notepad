@@ -88,7 +88,7 @@ object Dimension {
   val degreeKelvin = GeneralUnit(1, Kelvin, SymbolUnitName("°K"))
   val ampere = GeneralUnit(1, Ampere, SymbolUnitName("A"))
   val radian = GeneralUnit(1, SiDimension.Dimensionless, SymbolUnitName("rad"))
-  val degree = GeneralUnit(180 / 3.14159265, SiDimension.Dimensionless, SymbolUnitName("deg"))
+  val degree = GeneralUnit(3.14159265 / 180, SiDimension.Dimensionless, SymbolUnitName("°"))
   val joule = GeneralUnit(1, SiJoule, SymbolUnitName("J"))
   val watt = GeneralUnit(1, SiWatt, SymbolUnitName("W"))
   val electronVolt = GeneralUnit(1.60217662e-19, SiJoule, SymbolUnitName("eV"))

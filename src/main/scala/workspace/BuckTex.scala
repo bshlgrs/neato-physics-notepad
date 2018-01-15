@@ -82,9 +82,12 @@ object CompileToBuckTex {
       }
       case Product(set) =>
         renderFractionGroup(set)
-      case Power(lhs, rhs) => centeredBox(List(compileExpressionWithBinding(lhs, strongestPullFromOutside),
-        Sup(List(compileExpressionWithBinding(rhs, 0)))
-      ))
+      case Power(lhs, rhs) => rhs match {
+        case RationalNumber(1, 2) => Surd(List(compileExpression(lhs)))
+        case _ => centeredBox(List(compileExpressionWithBinding(lhs, strongestPullFromOutside),
+          Sup(List(compileExpressionWithBinding(rhs, 0)))
+        ))
+      }
       case Variable(buckTex) => buckTex
       case RealNumber(r) => Text(r.toString)
       case NamedNumber(_, n, _) => showVarWithStr(n, "")
@@ -92,6 +95,7 @@ object CompileToBuckTex {
       case RationalNumber(1, 2) => Text("½")
       case RationalNumber(-1, 2) => Text("-½")
       case RationalNumber(n, d) => Fraction(List(Text(n.toString)), List(Text(d.toString)))
+      case SpecialFunction(name, args) => horizontalBox(Text(name + "(") +: args.flatMap(arg => List(Text(","), compileExpression(arg))).tail :+ Text(")"))
     }
   }
 

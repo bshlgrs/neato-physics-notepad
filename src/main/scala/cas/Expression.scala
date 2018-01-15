@@ -23,30 +23,31 @@ sealed trait Expression[A] {
       case RationalNumber(n, 1) => n.toString -> 3
       case RationalNumber(n, d) => s"$n/$d" -> 1
       case NamedNumber(_, name, _) => name -> 3
+      case SpecialFunction(name, args) => s"$name(${args.map(_.toString).mkString(", ")})" -> 3
     }
   }
 
-  def toLatex: String = this.toLatexWithBinding._1
-
-  def toLatexWithBinding: (String, Int) = {
-    this match {
-      case Sum(set) => set.map((x) => wrap(x.toLatexWithBinding, 0)).mkString(" + ") -> 0
-      case Product(set) =>
-        ExpressionDisplay.fractionDisplay(set, " \\cdot ", (x: Expression[A]) => x.toStringWithBinding, (x) => s"\\sqrt{$x}", (n, d) => s"\\frac{$n}{$d}") -> 1
-      case Power(lhs, rhs) => {
-        rhs match {
-          case RationalNumber(1, 2) => s"\\sqrt{${wrap(lhs.toLatexWithBinding, 0)}}" -> 3
-          case RationalNumber(1, n) => s"\\sqrt[$n]{${wrap(lhs.toLatexWithBinding, 0)}}" -> 3
-          case _ => (wrap(lhs.toLatexWithBinding, 2) + "^{" + wrap(rhs.toLatexWithBinding, 2) + "}") -> 2
-        }
-      }
-      case Variable(thing) => thing.toString -> 3
-      case RealNumber(r) => r.toString -> 3
-      case NamedNumber(_, name, _) => name -> 3
-      case RationalNumber(n, 1) => n.toString -> 3
-      case RationalNumber(n, d) => s"\\frac{$n}{$d}" -> 3
-    }
-  }
+//  def toLatex: String = this.toLatexWithBinding._1
+//
+//  def toLatexWithBinding: (String, Int) = {
+//    this match {
+//      case Sum(set) => set.map((x) => wrap(x.toLatexWithBinding, 0)).mkString(" + ") -> 0
+//      case Product(set) =>
+//        ExpressionDisplay.fractionDisplay(set, " \\cdot ", (x: Expression[A]) => x.toStringWithBinding, (x) => s"\\sqrt{$x}", (n, d) => s"\\frac{$n}{$d}") -> 1
+//      case Power(lhs, rhs) => {
+//        rhs match {
+//          case RationalNumber(1, 2) => s"\\sqrt{${wrap(lhs.toLatexWithBinding, 0)}}" -> 3
+//          case RationalNumber(1, n) => s"\\sqrt[$n]{${wrap(lhs.toLatexWithBinding, 0)}}" -> 3
+//          case _ => (wrap(lhs.toLatexWithBinding, 2) + "^{" + wrap(rhs.toLatexWithBinding, 2) + "}") -> 2
+//        }
+//      }
+//      case Variable(thing) => thing.toString -> 3
+//      case RealNumber(r) => r.toString -> 3
+//      case NamedNumber(_, name, _) => name -> 3
+//      case RationalNumber(n, 1) => n.toString -> 3
+//      case RationalNumber(n, d) => s"\\frac{$n}{$d}" -> 3
+//    }
+//  }
 
   def solve(x: A, lhs: Expression[A] = RationalNumber(0)): Set[Expression[A]] = {
     assert(!lhs.vars.contains(x))
@@ -96,6 +97,7 @@ sealed trait Expression[A] {
         case (false, true) => ??? // We should be able to handle this with a logarithm
         case (true, true) => Set() // Transcendental equation, you're hosed
       }
+      case SpecialFunction(_, _) => Set()
     }
   }
 
@@ -112,6 +114,7 @@ sealed trait Expression[A] {
     case Variable(thing) => Set(thing)
     case _: Constant[_] => Set()
     case _: NamedNumber[_] => Set()
+    case SpecialFunction(_, args) => args.flatMap(_.vars).toSet
   }
 
   def +(other: Expression[A]): Expression[A] = (this, other) match {
@@ -227,6 +230,7 @@ sealed trait Expression[A] {
     case RationalNumber(n, d) => RationalNumber(n, d)
     case RealNumber(x) => RealNumber(x)
     case NamedNumber(v, n, d) => NamedNumber(v, n, d)
+    case SpecialFunction(name, args) => SpecialFunction(name, args.map(_.mapVariablesToExpressions(f)))
   }
 
   def mapVariables[B](f: A => B): Expression[B] = this.mapVariablesToExpressions((x) => Variable(f(x)))
@@ -241,7 +245,6 @@ sealed trait Expression[A] {
     equalities.sets.foldLeft(this)({ case (expr: Expression[A], set: Set[A]) => {
       expr.substituteMany(set, set.minBy(_.toString))
     }})
-
 
   protected def asTerm: (Expression[A], Constant[A]) = {
     // 2*x -> (x, 2)
@@ -294,9 +297,14 @@ sealed trait Expression[A] {
     case RealNumber(x) => Some(x)
     case NamedNumber(x, _, _) => Some(x)
     case RationalNumber(n, d) => Some(n.toDouble / d)
+    case SpecialFunction(name, args) => this match {
+      case SpecialFunction("sin", List(x)) => x.evaluate.map(Math.sin)
+      case SpecialFunction("cos", List(x)) => x.evaluate.map(Math.cos)
+      case SpecialFunction("tan", List(x)) => x.evaluate.map(Math.tan)
+      case SpecialFunction("asin", List(x)) => x.evaluate.map(Math.asin)
+    }
   }
 
-  // None means "inconsistency", Some(None) means "any"
   def calculateDimension(getDimensionDirectly: A => DimensionInference): DimensionInference = this match {
     case Sum(terms) => {
       val calculatedDimensions: List[DimensionInference] = terms.toList.map(_.calculateDimension(getDimensionDirectly))
@@ -336,6 +344,12 @@ sealed trait Expression[A] {
     case Variable(name) => getDimensionDirectly(name)
     case _: Constant[_] => ConcreteDimensionInference(SiDimension.Dimensionless)
     case NamedNumber(v, n, dimension) => ConcreteDimensionInference(dimension)
+    case SpecialFunction("sin", List(angle)) => angle.calculateDimension(getDimensionDirectly) match {
+      case BottomDimensionInference => BottomDimensionInference
+      case TopDimensionInference => ConcreteDimensionInference(SiDimension.Dimensionless)
+      case ConcreteDimensionInference(SiDimension.Dimensionless) => ConcreteDimensionInference(SiDimension.Dimensionless)
+      case ConcreteDimensionInference(_) => BottomDimensionInference
+    }
     case _ => throw new RuntimeException("I don't know how to do this asdfyuihk")
   }
 
@@ -429,6 +443,8 @@ trait RationalNumberJs extends js.Object {
 }
 
 case class NamedNumber[A](value: Double, name: String, dimension: SiDimension) extends Expression[A]
+
+case class SpecialFunction[A](name: String, args: List[Expression[A]]) extends Expression[A]
 
 object RationalNumber {
   def zero = RationalNumber(0)
