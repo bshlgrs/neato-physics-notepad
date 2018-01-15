@@ -10,7 +10,9 @@ class NotepadsController < ApplicationController
   end
 
   def create
-    n = Notepad.create!(notepad_params.to_h)
+    n = Notepad.new(notepad_params.to_h)
+    n.content = params[:notepad][:content]
+    n.save!
     render json: { id: n.id }
   end
 

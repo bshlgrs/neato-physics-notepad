@@ -12,10 +12,9 @@ project/target
 
 *.rbc
 .rspec
-/web/rails-backend/log
-/web/rails-backend/tmp
-/web/rails-backend/.idea
+/web/gem-backend/log
+/web/gem-backend/tmp
+/web/gem-backend/.idea
 /db/*.sqlite3
 /db/*.sqlite3-journal
 *.orig
-

@@ -144,8 +144,8 @@ class Notepad extends Component {
     }
 
     // if (state.currentAction === DRAGGING || this.needsPositionRefresh) {
-      this.refreshStoredPositions();
-      this.needsPositionRefresh = false;
+    this.refreshStoredPositions();
+    this.needsPositionRefresh = false;
     // }
   }
   addEquation(equation) {
@@ -335,6 +335,9 @@ class Notepad extends Component {
     return ws.allVarsGroupedByEquality.map((list, idx) => {
       const positionList = list.map((varId) => {
         const pos = this.varPositions[varId];
+        if (!pos) {
+          setTimeout(() => this.forceUpdate(), 10);
+        }
         return pos ? [pos.left, pos.top] : null;
       }).filter((x) => x);
 
@@ -342,7 +345,9 @@ class Notepad extends Component {
 
       if(numberId !== null) {
         const numberPos = this.numberPositions[numberId];
-        positionList.push([numberPos.left, numberPos.top]);
+        if (numberPos) {
+          positionList.push([numberPos.left, numberPos.top]);
+        }
       }
       const minimumSpanningTree = GemUtils.minimumSpanningTree(positionList);
 
@@ -372,9 +377,9 @@ class Notepad extends Component {
       return;
     }
 
-    const relevantEquations = Gem.EquationLibrary.relevantEquationIds(this.state.searchBarText);
+    const relevantEquations = this.props.library.relevantEquationIds(this.state.searchBarText);
     if (relevantEquations[0]) {
-      this.addEquation(Gem.EquationLibrary.getByEqId(relevantEquations[0]));
+      this.addEquation(this.props.library.getByEqId(relevantEquations[0]));
       this.setState({ searchBarText: '' });
       return;
     }
@@ -521,8 +526,8 @@ class Notepad extends Component {
               }}
               ref={(el) => { this.searchBarEl = el; }}
               placeholder="Search for equations or type numbers here"/>
-            {Gem.EquationLibrary.relevantEquationIds(this.state.searchBarText).map((eqId) => {
-              const equation = Gem.EquationLibrary.getByEqId(eqId);
+            {this.props.library.relevantEquationIds(this.state.searchBarText).map((eqId) => {
+              const equation = this.props.library.getByEqId(eqId);
               return <div key={eqId} className='search-result'
                 onClick={() => this.addEquation(equation)}>
                 <BuckTex el={equation.showNaked} />

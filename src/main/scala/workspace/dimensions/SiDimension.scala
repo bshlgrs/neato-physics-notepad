@@ -102,6 +102,7 @@ sealed trait SiUnit extends SiDimension {
     case Second => "s"
     case Kelvin => "K"
     case Ampere => "A"
+    case Radian => "rad"
   }
 
   override def toJsObject: js.Object = js.Dynamic.literal("className" -> "SiUnit", "symbol" -> this.symbol)
@@ -117,3 +118,4 @@ case object Kilogram extends SiUnit
 case object Second extends SiUnit
 case object Kelvin extends SiUnit
 case object Ampere extends SiUnit
+case object Radian extends SiUnit

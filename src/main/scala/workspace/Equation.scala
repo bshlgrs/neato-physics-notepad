@@ -1,7 +1,7 @@
 package workspace
 
 import cas._
-import workspace.dimensions.SiDimension
+import workspace.dimensions.{Dimension, SiDimension}
 
 import scala.scalajs.js
 import scala.scalajs.js.annotation.{JSExport, JSExportAll}
@@ -31,39 +31,29 @@ sealed trait Equation {
 
 
 trait EquationJs extends js.Object {
-  val symbol: js.UndefOr[String]
+  val id: js.UndefOr[Int]
   val lhs: js.UndefOr[Expression[String]]
   val rhs: js.UndefOr[Expression[String]]
 }
 
 object EquationJs {
-  def parse(equationJs: EquationJs): Equation = equationJs.symbol.toOption match {
+  def parse(equationJs: EquationJs, library: EquationLibrary): Equation = equationJs.id.toOption match {
     case None => CustomEquation(equationJs.lhs.get, equationJs.rhs.get)
-    case Some(symbol) => EquationLibrary.getByEqId(symbol)
+    case Some(id) => library.getByEqId(id)
   }
 }
-
-//object PhysicalNumberJs {
-//  def parse(physicalNumberJs: PhysicalNumberJs): PhysicalNumber = PhysicalNumber(
-//    physicalNumberJs.value,
-//    ConcreteSiDimensionJs.parse(physicalNumberJs.siDimension),
-//    physicalNumberJs.originalInputValue.toOption match {
-//      case None => None
-//      case Some(value) => Some(value -> DimensionJs.parse(physicalNumberJs.originalInputDim.toOption.get))
-//    })
-//}
-
 
 @JSExportAll
 case class LibraryEquation(name: String,
                            expr: Expression[String],
+                           id: Int,
                            displayF: (String => BuckTex) => BuckTex,
                            staticDimensions: Map[String, SiDimension],
                            varNamesMap: Map[String, String],
                            extraTags: Set[String]
                    ) extends Equation {
   assert(expr.vars == staticDimensions.keys.toSet, s"assert 234876 $name ${expr.vars} ${staticDimensions.keys}")
-  assert(varNamesMap.keys == staticDimensions.keys, "12387340")
+  assert(varNamesMap.keys == staticDimensions.keys, s"12387340 ${varNamesMap.keys} ${staticDimensions.keys}")
 
   def varName(symbol: String): Option[String] = varNamesMap.get(symbol)
   def staticDimensionsJs: js.Dictionary[SiDimension] = js.Dictionary(staticDimensions.toSeq :_*)
@@ -72,8 +62,48 @@ case class LibraryEquation(name: String,
 
   def toJsObject: js.Object = js.Dynamic.literal(
     "className" -> "LibraryEquation",
-    "symbol" -> EquationLibrary.library.find(_._2 == this).map(_._1).get
+    "id" -> id
   )
+}
+
+trait LibraryEquationJs extends js.Object {
+  val name: String
+  val id: Int
+  val eqString: String
+  val varNames: js.Dictionary[String]
+  val dimensionStrings: js.Dictionary[String]
+}
+
+object LibraryEquationJs {
+  def parse(ljs: LibraryEquationJs): LibraryEquation = {
+    val nakedEquation = EquationParser.parseEquation(ljs.eqString).getOrElse({
+      throw new RuntimeException(s"Error thrown while trying to parse ${ljs.name} ${ljs.eqString}")})
+
+    def removeConstants(expr: Expression[String]): Expression[String] = expr.mapVariablesToExpressions[String]((varName: String) => {
+      PhysicalConstant.constants.find(_.namedNumber.name == varName) match {
+        case None => Variable(varName)
+        case Some(constant) => constant.namedNumber
+      }
+    })
+
+    val exprWithoutConstants = removeConstants(nakedEquation.expr)
+
+    def display(f: (String => BuckTex)): BuckTex = {
+      CompileToBuckTex.centeredBox(List(
+        CompileToBuckTex.compileExpression(removeConstants(nakedEquation.lhs).mapVariables(f)), Text(" = "),
+        CompileToBuckTex.compileExpression(removeConstants(nakedEquation.rhs).mapVariables(f))))
+    }
+
+    LibraryEquation(
+      ljs.name,
+      exprWithoutConstants,
+      ljs.id,
+      display,
+      ljs.dimensionStrings.toMap.mapValues((dimStr: String) => Dimension.parse(dimStr).get.siDimension),
+      ljs.varNames.toMap,
+      Set()
+    )
+  }
 }
 
 @JSExportAll
@@ -97,61 +127,60 @@ case class CustomEquation(lhs: Expression[String], rhs: Expression[String]) exte
 }
 
 object Equation {
-  def buildQuickly(name: String,
-                   lhs: (String, String, SiDimension),
-                   rhsVars: Map[String, (Int, String, SiDimension)],
-                   tags: String,
-                   constant: RationalNumber[String] = RationalNumber[String](1)): LibraryEquation = {
-    val rhs = rhsVars.map({
-      case (symbol, (power, _, _)) => Expression.makePower(Variable(symbol), RationalNumber(power))
-    }).reduce(_ * _)
-    val expr = (constant * rhs) / Variable(lhs._1) - 1
-    def display(f: (String => BuckTex)): BuckTex = {
-      CompileToBuckTex.centeredBox(List(f(lhs._1), Text(" = "),
-        CompileToBuckTex.compileExpression((constant * rhs).mapVariables(f))))
-    }
+//  def buildQuickly(name: String,
+//                   lhs: (String, String, SiDimension),
+//                   rhsVars: Map[String, (Int, String, SiDimension)],
+//                   tags: String,
+//                   constant: RationalNumber[String] = RationalNumber[String](1)): LibraryEquation = {
+//    val rhs = rhsVars.map({
+//      case (symbol, (power, _, _)) => Expression.makePower(Variable(symbol), RationalNumber(power))
+//    }).reduce(_ * _)
+//    val expr = (constant * rhs) / Variable(lhs._1) - 1
+//    def display(f: (String => BuckTex)): BuckTex = {
+//      CompileToBuckTex.centeredBox(List(f(lhs._1), Text(" = "),
+//        CompileToBuckTex.compileExpression((constant * rhs).mapVariables(f))))
+//    }
+//
+//    LibraryEquation(name, expr, display,
+//      rhsVars.mapValues(_._3) + (lhs._1 -> lhs._3),
+//      rhsVars.mapValues(_._2) + (lhs._1 -> lhs._2),
+//      tags.split(' ').toSet)
+//  }
 
-    LibraryEquation(name, expr, display,
-      rhsVars.mapValues(_._3) + (lhs._1 -> lhs._3),
-      rhsVars.mapValues(_._2) + (lhs._1 -> lhs._2),
-      tags.split(' ').toSet)
-  }
-
-  def buildFaster(name: String,
-                  equationString: String,
-                  varNamesAndDimensions: Map[String, (String, SiDimension)],
-                  tags: String = "",
-                  constantsUsed: Set[PhysicalConstant] = Set()): LibraryEquation = {
-    val nakedEquation = EquationParser.parseEquation(equationString).getOrElse({
-      throw new RuntimeException(s"Error thrown while trying to parse $name $equationString")})
-
-    def removeConstants(expr: Expression[String]): Expression[String] = expr.mapVariablesToExpressions[String]((varName: String) => {
-      constantsUsed.find(_.namedNumber.name == varName) match {
-        case None => Variable(varName)
-        case Some(constant) => constant.namedNumber
-      }
-    })
-
-    val exprWithoutConstants = removeConstants(nakedEquation.expr)
-
-    def display(f: (String => BuckTex)): BuckTex = {
-//      val wrappedF: String => BuckTex = (varName: String) => constantsUsed.find(_.namedNumber.name == varName) match {
-//        case None => f(varName)
-//        case Some(constant) => Text(constant.namedNumber.name)
+//  def buildFaster(name: String,
+//                  equationString: String,
+//                  varNamesAndDimensions: Map[String, (String, SiDimension)],
+//                  tags: String = ""): LibraryEquation = {
+//    val nakedEquation = EquationParser.parseEquation(equationString).getOrElse({
+//      throw new RuntimeException(s"Error thrown while trying to parse $name $equationString")})
+//
+//    def removeConstants(expr: Expression[String]): Expression[String] = expr.mapVariablesToExpressions[String]((varName: String) => {
+//      PhysicalConstant.constants.find(_.namedNumber.name == varName) match {
+//        case None => Variable(varName)
+//        case Some(constant) => constant.namedNumber
 //      }
-
-      CompileToBuckTex.centeredBox(List(
-        CompileToBuckTex.compileExpression(removeConstants(nakedEquation.lhs).mapVariables(f)), Text(" = "),
-        CompileToBuckTex.compileExpression(removeConstants(nakedEquation.rhs).mapVariables(f))))
-    }
-
-    LibraryEquation(
-      name,
-      exprWithoutConstants,
-      display,
-      varNamesAndDimensions.mapValues(_._2),
-      varNamesAndDimensions.mapValues(_._1),
-      tags.split(' ').toSet
-    )
-  }
+//    })
+//
+//    val exprWithoutConstants = removeConstants(nakedEquation.expr)
+//
+//    def display(f: (String => BuckTex)): BuckTex = {
+////      val wrappedF: String => BuckTex = (varName: String) => constantsUsed.find(_.namedNumber.name == varName) match {
+////        case None => f(varName)
+////        case Some(constant) => Text(constant.namedNumber.name)
+////      }
+//
+//      CompileToBuckTex.centeredBox(List(
+//        CompileToBuckTex.compileExpression(removeConstants(nakedEquation.lhs).mapVariables(f)), Text(" = "),
+//        CompileToBuckTex.compileExpression(removeConstants(nakedEquation.rhs).mapVariables(f))))
+//    }
+//
+//    LibraryEquation(
+//      name,
+//      exprWithoutConstants,
+//      display,
+//      varNamesAndDimensions.mapValues(_._2),
+//      varNamesAndDimensions.mapValues(_._1),
+//      tags.split(' ').toSet
+//    )
+//  }
 }

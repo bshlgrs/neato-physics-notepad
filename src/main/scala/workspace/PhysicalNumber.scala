@@ -32,7 +32,6 @@ case class PhysicalNumber(value: Double, siDimension: SiDimension, originalInput
   }
 }
 
-
 trait PhysicalNumberJs extends js.Object {
   val value: Double
   val siDimension: ConcreteSiDimensionJs

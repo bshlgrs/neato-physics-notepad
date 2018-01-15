@@ -87,6 +87,8 @@ object Dimension {
   val second = GeneralUnit(1, Second, SymbolUnitName("s"))
   val degreeKelvin = GeneralUnit(1, Kelvin, SymbolUnitName("°K"))
   val ampere = GeneralUnit(1, Ampere, SymbolUnitName("A"))
+  val radian = GeneralUnit(1, Radian, SymbolUnitName("rad"))
+  val degree = GeneralUnit(180 / 3.14159265, Radian, SymbolUnitName("rad"))
   val joule = GeneralUnit(1, SiJoule, SymbolUnitName("J"))
   val watt = GeneralUnit(1, SiWatt, SymbolUnitName("W"))
   val electronVolt = GeneralUnit(1.60217662e-19, SiJoule, SymbolUnitName("eV"))
@@ -107,6 +109,8 @@ object Dimension {
     Set("tonne", "tonnes") -> tonne,
     Set("parsec") -> parsec,
     Set("ohm") -> ohm,
+    Set("rad", "radian") -> radian,
+    Set("degree", "degrees", "°") -> degree,
   ) ++ (for {
     (name: String, unit: GeneralUnit) <- unitsWhichCanHaveSiPrefixes
     (siPrefix: String, multiplier: Double) <- siPrefixes

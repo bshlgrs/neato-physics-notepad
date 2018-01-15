@@ -10,7 +10,7 @@ import Help from "./Help"
 
 ReactModal.setAppElement("#root")
 
-class App extends Component {
+class MainApp extends Component {
   constructor () {
     super();
     this.state = {
@@ -52,7 +52,6 @@ class App extends Component {
     } else {
       // todo: I think this breaks in some browsers
       const parts = pathname.split("/");
-      console.log(parts);
       if (parts[1] === "notepads") {
         const notepadId = parts[2];
 
@@ -66,7 +65,7 @@ class App extends Component {
               creatorToken: notepad.creator_token,
               notepadId: notepadId,
               positions: (notepad.content && Immutable.fromJS(notepad.content.positions)) || Immutable.Map(),
-              workspace: (notepad.content && Gem.WorkspaceJs.parse(notepad.content.workspace)) || Gem.Workspace()
+              workspace: (notepad.content && Gem.WorkspaceJs.parse(notepad.content.workspace, this.props.library)) || Gem.Workspace()
             });
           });
       }
@@ -129,7 +128,7 @@ class App extends Component {
   }
   render () {
     const state = this.state;
-    console.log(JSON.stringify(this.state.workspace.toJsObject));
+
     return <div className="gem-container">
       <ReactModal
            isOpen={this.state.currentAction === "showing-help"}
@@ -186,6 +185,7 @@ class App extends Component {
         </div>
       </nav>
      <Notepad
+      library={this.props.library}
       workspace={this.state.workspace}
       setWorkspace={(ws) => this.setState({workspace: ws})}
       positions={this.state.positions}
@@ -197,4 +197,4 @@ class App extends Component {
   }
 }
 
-export default App;
+export default MainApp;

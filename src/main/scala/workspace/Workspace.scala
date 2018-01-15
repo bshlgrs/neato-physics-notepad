@@ -299,8 +299,8 @@ trait WorkspaceJs extends js.Object {
 @JSExportTopLevel("Gem.WorkspaceJs")
 object WorkspaceJs {
   @JSExport
-  def parse(ws: WorkspaceJs): Workspace = Workspace(
-    MapWithIds.fromMap(ws.equations.map({ case js.Tuple2(id: Int, eq: EquationJs) => id -> EquationJs.parse(eq) }).toMap),
+  def parse(ws: WorkspaceJs, library: EquationLibrary): Workspace = Workspace(
+    MapWithIds.fromMap(ws.equations.map({ case js.Tuple2(id: Int, eq: EquationJs) => id -> EquationJs.parse(eq, library) }).toMap),
     SetOfSets(ws.equalities.map(_.map(VarIdJs.parse).toSet).toSet),
     ws.expressions.map({
       case js.Tuple2(varIdJs: VarIdJs, expr: ExpressionJs) => VarIdJs.parse(varIdJs) -> ExpressionJs.parseToVarIdExpr(expr)
