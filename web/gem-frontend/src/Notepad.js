@@ -94,6 +94,9 @@ class Notepad extends Component {
     };
   }
   refreshStoredPositions () {
+    if (!this.equationSpaceDiv) {
+      return;
+    }
     const parentPos = getPosition(this.equationSpaceDiv);
     Object.keys(this.varRefs).forEach((varRefString) => {
       if (this.varRefs[varRefString]) {
