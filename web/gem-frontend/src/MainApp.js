@@ -10,19 +10,21 @@ import Help from "./Help"
 
 ReactModal.setAppElement("#root")
 
+const blankState = {
+  title: "",
+  description: "",
+  workspace: Gem.Workspace(),
+  positions: Immutable.Map(),
+  currentAction: null,
+  creatorToken: null,
+  notepadId: null,
+  saving: false
+}
+
 class MainApp extends Component {
   constructor () {
     super();
-    this.state = {
-      title: "",
-      description: "",
-      workspace: Gem.Workspace(),
-      positions: Immutable.Map(),
-      currentAction: null,
-      creatorToken: null,
-      notepadId: null,
-      saving: false
-    }
+    this.state = blankState;
   }
   makeJson () {
     return {
@@ -116,11 +118,12 @@ class MainApp extends Component {
       })
       .then((resp) => resp.json())
       .then((data) => {
-        // this.setState({
-        //   creatorToken: this.state.currentUserToken,
-        //   notepadId: data.id
-        // });
-        window.location.href = "/notepads/" + data.id;
+        this.setState({
+          creatorToken: this.state.currentUserToken,
+          notepadId: data.id,
+          saving: false
+        });
+        window.history.pushState(null, null, "/notepads/" + data.id)
       });
   }
   saveAsCopy () {
@@ -148,7 +151,8 @@ class MainApp extends Component {
         <div className="pull-right">
           <button
             className="btn btn-default btn-large"
-            onClick={() => { window.location.href = "/"; }}
+            onClick= //{() => { window.history.pushState(null, null, "/"); this.setState(blankState); }}
+                       {() => { window.location.href = '/' }}
             style={{marginRight: "10px"}}>
             <i className='fa fa-plus' style={{paddingRight: "10px"}} />
             New
@@ -185,6 +189,7 @@ class MainApp extends Component {
         </div>
       </nav>
      <Notepad
+      key={window.location.href}
       library={this.props.library}
       workspace={this.state.workspace}
       setWorkspace={(ws) => this.setState({workspace: ws})}

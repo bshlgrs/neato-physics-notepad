@@ -3,17 +3,23 @@ import React from 'react';
 const Help = () => <div>
     <h2>Help</h2>
 
-    <p>Welcome to my Neato Physics Notebook! (Let me know if you think of a better name.)
-    This is a tool that I've wanted since I was 19; back then I wasn't good enough at
-    programming to make a version that's worth using. I recently decided to rewrite it, and
-    I think the result is much better than my first try.
-    </p>
+    <p>Welcome to my Neato Physics Notepad! If you haven't seen this before, I recommend
+    watching this video to see what it does:</p>
 
-    <p>At the moment, I don't have a better way of teaching you how to use this software than
-    recommending that you watch <a href="https://youtu.be/RWPHu8Vynv8">this video</a>, preferably
-    following along with the app while you're watching the video.</p>
+    <iframe width="560"
+        height="315"
+        src="https://www.youtube.com/embed/RWPHu8Vynv8?rel=0"
+        frameborder="0"
+        allow="autoplay; encrypted-media"
+        allowfullscreen />
 
-    <p>If you have any questions or comments, please let me know at bshlegeris@gmail.com.</p>
+    <p>Here are the notepads from the video, so that you can play with them:</p>
+
+    <ul>
+        <li><a href="http://physics.shlegeris.com/notepads/5">Brick</a></li>
+        {false && <li><a href="http://physics.shlegeris.com/notepads/4">Charge passing through a resistor</a></li>}
+        <li><a href="http://physics.shlegeris.com/notepads/3">Particles released from rest</a></li>
+    </ul>
   </div>
 
 export default Help;

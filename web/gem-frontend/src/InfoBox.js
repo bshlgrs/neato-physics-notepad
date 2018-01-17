@@ -34,9 +34,11 @@ class InfoBox extends React.Component {
     if (selectedType === "equation") {
       return this.renderEquation();
     } else if (selectedType === "expression") {
+      const dim = ws.getDimensionJs(selectedId);
       return <div className='info-box expression-info-box'>
         <BuckTex el={ws.getExpressionBuckTex(selectedId)} />
-        <div>TODO: display the dimensions of the quantity, as well as its name</div>
+        <div>{ws.getEquation(selectedId.eqIdx).varNameJs(selectedId.varName)} ::&nbsp;
+          {dim && <BuckTex inline el={dim.toBuckTex} />}</div>
         <button className="btn btn-danger" onClick={() => this.props.deleteExpression(selectedId)}>
           <i className="fa fa-trash" style={{marginRight: "10px"}}/>
           Delete expression
@@ -69,7 +71,7 @@ class NumberInfoBox extends React.Component {
     });
   }
   render () {
-    const {ws, numberId} = this.props;
+    const { ws, numberId } = this.props;
     const number = ws.getNumber(numberId);
     const dimensionInputBoxContents = this.state.dimensionInputBoxContents;
     const newDimension = Gem.Dimension.parseJs(dimensionInputBoxContents);

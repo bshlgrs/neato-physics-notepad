@@ -18,14 +18,15 @@ class EquationEditorApp extends Component {
       editingEq: emptyEquation,
       currentAction: null,
       editedId: null,
-      equations: Immutable.Map()
+      equations: Immutable.Map(),
+      loading: true
     }
   }
   componentWillMount () {
     fetch("/api/equations/", { headers: { 'Content-Type': 'application/json' } })
       .then((resp) => resp.json())
       .then((data) => {
-        this.setState({equations: Immutable.fromJS(data.equations)});
+        this.setState({equations: Immutable.fromJS(data.equations), loading: false});
       });
   }
   createEquation () {
@@ -106,6 +107,7 @@ class EquationEditorApp extends Component {
       <div className='row'>
         <div className='col-xs-10 col-xs-offset-1'>
           <h1>Equation editor</h1>
+          {this.state.loading && <p><i className='fa fa-spinner fa-pulse' style={{paddingRight: "10px"}} /> Loading</p>}
           {this.state.equations ? this.state.equations.toList().sortBy((x) => x.get('created_at')).map((eq, id) => {
             if (this.state.editedId === id && this.state.currentAction === 'editing') {
               return <EquationEditor

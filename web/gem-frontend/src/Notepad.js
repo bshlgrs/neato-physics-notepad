@@ -136,6 +136,10 @@ class Notepad extends Component {
     } else if (actionFinished(DRAGGING_FROM_VAR)) {
       document.removeEventListener('mouseup', this.onMouseUpFromVarDrag);
       document.removeEventListener('mousemove', this.onMouseMoveWhileDragging);
+      setTimeout(() => {
+        this.refreshStoredPositions();
+        this.forceUpdate();
+      }, 10)
     }
 
     if (actionStarted(DRAGGING_FROM_EXPR_VAR)) {

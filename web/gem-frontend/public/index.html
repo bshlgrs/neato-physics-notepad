@@ -1,7 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="utf-8">
+      <!-- Global site tag (gtag.js) - Google Analytics -->
+      <script async src="https://www.googletagmanager.com/gtag/js?id=UA-52980069-5"></script>
+      <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+
+          gtag('config', 'UA-52980069-5');
+      </script>
+
+      <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="theme-color" content="#000000">
     <!--
@@ -21,13 +31,15 @@
     -->
     <title>Buck's neato physics notepad</title>
 
-      <script src="%PUBLIC_URL%/scala-gem-fastopt.js"></script>
+      <script src="%PUBLIC_URL%/scala-gem.js"></script>
   </head>
   <body style="background-color: lightgrey;">
     <noscript>
       You need to enable JavaScript to run this app.
     </noscript>
-    <div id="root"></div>
+    <div id="root">
+        <p style="margin: 50%">Loading...</p>
+    </div>
     <!--
       This HTML file is a template.
       If you open it directly in the browser, you will see an empty page.
