@@ -74,14 +74,14 @@ object CompileToBuckTex {
       }
     }
     expr match {
-      case Sum(set) => {
-        wrapIfNeeded(centeredBox(set.toList.flatMap((x) => {
+      case Sum(list) => {
+        wrapIfNeeded(centeredBox(list.flatMap((x) => {
           val (useMinusSign, positivizedExpression) = extractMinusFromExpression(x)
           List(Text(if (useMinusSign) " - " else " + "), compileExpressionWithBinding(positivizedExpression, 1))
         }).tail), 1)
       }
-      case Product(set) =>
-        renderFractionGroup(set)
+      case Product(list) =>
+        renderFractionGroup(list)
       case Power(lhs, rhs) => rhs match {
         case RationalNumber(1, 2) => Surd(List(compileExpression(lhs)))
         case _ => centeredBox(List(compileExpressionWithBinding(lhs, strongestPullFromOutside),
@@ -148,10 +148,10 @@ object CompileToBuckTex {
       numericValueDisplay)
   }
 
-  def renderFractionGroup(set: Set[Expression[BuckTex]]): BuckTex = {
+  def renderFractionGroup(list: List[Expression[BuckTex]]): BuckTex = {
     // TODO: Do something cleverer here: support grouped square roots and fractions
-    val denominatorItems: Set[Expression[BuckTex]] = set.collect({ case x@Power(_, RationalNumber(n, _)) if n < 0 => x })
-    val numeratorItems = set -- denominatorItems
+    val denominatorItems: List[Expression[BuckTex]] = list.collect({ case x@Power(_, RationalNumber(n, _)) if n < 0 => x })
+    val numeratorItems = list.filterNot(denominatorItems.contains)
 
     val flippedDenominatorItems = denominatorItems.collect(
       { case Power(base, RationalNumber(n, d)) => Expression.makePower(base, RationalNumber(-n, d)): Expression[BuckTex] }
@@ -168,22 +168,22 @@ object CompileToBuckTex {
     }
   }
 
-  def groupWithRadical[A](items: Set[Expression[A]]): (List[Expression[A]], List[Expression[A]]) = {
+  def groupWithRadical[A](items: List[Expression[A]]): (List[Expression[A]], List[Expression[A]]) = {
     val itemsInsideRadical = items.collect({ case x@Power(_, RationalNumber(1, 2)) => x: Expression[A]})
-    val outsideItems = orderWithConstantsFirst(items -- itemsInsideRadical)
+    val outsideItems = orderWithConstantsFirst(items.filterNot(itemsInsideRadical.contains))
     val radicalItems = orderWithConstantsFirst(itemsInsideRadical.collect({ case Power(base, _) => base }))
 
     outsideItems -> radicalItems
   }
 
   // assumes these have been sorted
-  def renderProductOfPositivePowerTerms(set: Set[Expression[BuckTex]]): List[BuckTex] = {
+  def renderProductOfPositivePowerTerms(list: List[Expression[BuckTex]]): List[BuckTex] = {
     def renderAsMinusIfExprIsMinusOne(factor: Expression[BuckTex]):BuckTex = factor match {
       case RationalNumber(-1, 1) => Text("-")
       case _ => compileExpressionWithBinding(factor, 2)
     }
 
-    val (outsideRadical, insideRadical) = groupWithRadical(set)
+    val (outsideRadical, insideRadical) = groupWithRadical(list)
     val outsideRadicalTex = outsideRadical.map(renderAsMinusIfExprIsMinusOne)
     insideRadical match {
       case Nil => outsideRadicalTex

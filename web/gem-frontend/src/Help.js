@@ -17,9 +17,11 @@ const Help = () => <div>
 
     <ul>
         <li><a href="http://physics.shlegeris.com/notepads/5">Brick</a></li>
-        {false && <li><a href="http://physics.shlegeris.com/notepads/4">Charge passing through a resistor</a></li>}
+        <li><a href="http://physics.shlegeris.com/notepads/7">Charge passing through a resistor</a></li>
         <li><a href="http://physics.shlegeris.com/notepads/3">Particles released from rest</a></li>
     </ul>
+
+    <p>The source code is on <a href="https://github.com/bshlgrs/neato-physics-notepad">Github</a>.</p>
   </div>
 
 export default Help;

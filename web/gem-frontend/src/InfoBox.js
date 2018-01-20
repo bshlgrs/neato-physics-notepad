@@ -20,6 +20,11 @@ class InfoBox extends React.Component {
         return <div key={varSymbol}>{varName || "unnamed"} &nbsp;
           <BuckTex inline el={ws.getVariableBuckTex(varId)} />
           {dimension && [" :: ", <BuckTex key={2} inline el={dimension.toBuckTex} />]}
+          &nbsp;
+          {ws.varIsEqualToAnything(varId) &&
+            <a style={{fontSize: "0.8em"}} onClick={() => this.props.removeEquality(varId)}>
+              (remove equality)
+            </a>}
         </div>
       })}
       <button className="btn btn-danger" onClick={() => this.props.deleteEquation(selectedId)}>

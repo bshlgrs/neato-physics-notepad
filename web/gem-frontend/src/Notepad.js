@@ -414,6 +414,9 @@ class Notepad extends Component {
     this.props.setWorkspace(this.props.workspace.detachNumber(id));
     this.setState({ currentlySelected: {type: null, id: null} });
   }
+  removeEquality(varId) {
+    this.props.setWorkspace(this.props.workspace.removeEquality(varId));
+  }
 
   render() {
     const ws = this.props.workspace;
@@ -564,6 +567,7 @@ class Notepad extends Component {
                      ws={this.props.workspace}
                      deleteExpression={(id) => this.deleteExpression(id)}
                      deleteEquation={(id) => this.deleteEquation(id)}
+                     removeEquality={(varId) => this.removeEquality(varId)}
                      deleteNumber={(id) => this.deleteNumber(id)}
                      changeDimension={(id, dim) => this.props.setWorkspace(ws.changeDimension(id, dim))}
             />}

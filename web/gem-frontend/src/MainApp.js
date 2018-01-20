@@ -22,9 +22,10 @@ const blankState = {
 }
 
 class MainApp extends Component {
-  constructor () {
+  constructor (props) {
     super();
     this.state = blankState;
+    this.state.currentAction = props.initialAction;
   }
   makeJson () {
     return {

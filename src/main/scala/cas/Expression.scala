@@ -14,9 +14,9 @@ sealed trait Expression[A] {
 
   def toStringWithBinding: (String, Int) = {
     this match {
-      case Sum(set) => set.map((x) => wrap(x.toStringWithBinding, 0)).mkString(" + ") -> 0
-      case Product(set) =>
-        ExpressionDisplay.fractionDisplay(set, " ", (x: Expression[A]) => x.toStringWithBinding, (x) => s"√($x)", (n, d) => s"($n)/($d)") -> 1
+      case Sum(list) => list.map((x) => wrap(x.toStringWithBinding, 0)).mkString(" + ") -> 0
+      case Product(list) =>
+        ExpressionDisplay.fractionDisplay(list, " ", (x: Expression[A]) => x.toStringWithBinding, (x) => s"√($x)", (n, d) => s"($n)/($d)") -> 1
       case Power(lhs, rhs) => wrap(lhs.toStringWithBinding, 2) + "<sup>" + wrap(rhs.toStringWithBinding, 0) + "</sup>" -> 0
       case Variable(thing) => thing.toString -> 3
       case RealNumber(r) => r.toString -> 3
@@ -26,6 +26,14 @@ sealed trait Expression[A] {
       case SpecialFunction(name, args) => s"$name(${args.map(_.toString).mkString(", ")})" -> 3
     }
   }
+
+  def normalize: Expression[A] = this match {
+    case Sum(list) => Sum(list.map(_.normalize).sortBy(_.hashCode()))
+    case Product(list) => Product(list.map(_.normalize).sortBy(_.hashCode()))
+    case _ => this
+  }
+
+  def equivalent(other: Expression[A]): Boolean = this.normalize == other.normalize
 
 //  def toLatex: String = this.toLatexWithBinding._1
 //
@@ -108,8 +116,8 @@ sealed trait Expression[A] {
   def subs(x: A): Expression[A] = ???
 
   def vars: Set[A] = this match {
-    case Sum(terms) => terms.flatMap(_.vars)
-    case Product(factors) => factors.flatMap(_.vars)
+    case Sum(terms) => terms.flatMap(_.vars).toSet
+    case Product(factors) => factors.flatMap(_.vars).toSet
     case Power(lhs, rhs) => lhs.vars ++ rhs.vars
     case Variable(thing) => Set(thing)
     case _: Constant[_] => Set()
@@ -135,7 +143,7 @@ sealed trait Expression[A] {
       ).filter(_._2 != RationalNumber(0))
 
       // now we have a bunch of terms with the thing on the left and the coefficient on the right
-      val terms = termTuples.map({ case (x, y) => x * y }).toSet
+      val terms = termTuples.map({ case (x, y) => x * y }).toList
 
       terms.size match {
         case 0 => RationalNumber(0)
@@ -144,12 +152,12 @@ sealed trait Expression[A] {
       }
     }
     case (Sum(lhs), rhs) => {
-      Sum(lhs) + Sum(Set(rhs))
+      Sum(lhs) + Sum(List(rhs))
     }
     case (lhs, Sum(rhs)) => {
-      Sum(Set(lhs)) + Sum(rhs)
+      Sum(List(lhs)) + Sum(rhs)
     }
-    case _ => Sum(Set(this)) + Sum(Set(other))
+    case _ => Sum(List(this)) + Sum(List(other))
   }
 
   def +(other: Int): Expression[A] = this + RationalNumber[A](other)
@@ -172,17 +180,17 @@ sealed trait Expression[A] {
         factor -> (lhsFactorTuples.getOrElse(factor, RationalNumber[A](0)) + rhsFactorTuples.getOrElse(factor, RationalNumber[A](0)))
       ).filter(_._1 != RationalNumber(1))
 
-      val factors = factorTuples.map({ case (x, y) => x ** y}).toSet
+      val factors = factorTuples.map({ case (x, y) => x ** y}).toList
       val (numericFactors, nonNumericFactors) = factors.partition(_.isInstanceOf[Constant[_]])
       val numericFactor = numericFactors.foldLeft(RationalNumber(1): Expression[A]) ({ case (acc, factor) => acc * factor })
 
-      if (numericFactor == RationalNumber(0)) RationalNumber(0) else Expression.makeProduct(nonNumericFactors + numericFactor)
+      if (numericFactor == RationalNumber(0)) RationalNumber(0) else Expression.makeProduct(numericFactor +: nonNumericFactors)
     }
     case (Power(r1: RationalNumber[A], exp1), Power(r2: RationalNumber[A], exp2)) if exp1 == exp2 =>
       Expression.makePower[A](r1 * r2, exp1)
-    case (_: Product[_], _) => this * Product(Set(other))
-    case (_, _: Product[_]) => Product(Set(this)) * other
-    case (_, _) => Product(Set(this)) * Product(Set(other))
+    case (_: Product[_], _) => this * Product(List(other))
+    case (_, _: Product[_]) => Product(List(this)) * other
+    case (_, _) => Product(List(this)) * Product(List(other))
   }
   def *(other: Int): Expression[A] = this * RationalNumber[A](other)
 
@@ -373,8 +381,8 @@ sealed trait Expression[A] {
   }
 
   def toJsObject: js.Object = this match {
-    case Sum(terms) => js.Dynamic.literal("className" -> "Sum", "terms" -> js.Array(terms.toSeq.map(_.toJsObject) :_*))
-    case Product(factors) => js.Dynamic.literal("className" -> "Product", "factors" -> js.Array(factors.toSeq.map(_.toJsObject) :_*))
+    case Sum(terms) => js.Dynamic.literal("className" -> "Sum", "terms" -> js.Array(terms.map(_.toJsObject) :_*))
+    case Product(factors) => js.Dynamic.literal("className" -> "Product", "factors" -> js.Array(factors.map(_.toJsObject) :_*))
     case RationalNumber(n, d) => js.Dynamic.literal("className" -> "RationalNumber", "numerator" -> n, "denominator" -> d)
     case RealNumber(r) => js.Dynamic.literal("className" -> "RealNumber", "value" -> r)
     case NamedNumber(value, name, dimension) => js.Dynamic.literal("className" -> "NamedNumber", "value" -> value, "name" -> name, "dimension" -> dimension.toJsObject)
@@ -385,6 +393,8 @@ sealed trait Expression[A] {
     }
     case Power(base: Expression[A], exponent: Expression[A]) =>
       js.Dynamic.literal("className" -> "Power", "base" -> base.toJsObject, "exponent" -> exponent.toJsObject)
+    case SpecialFunction(name, args) =>
+      js.Dynamic.literal("className" -> "SpecialFunction", "name" -> name, "args" -> js.Array(args.map(_.toJsObject) :_*))
   }
 }
 
@@ -396,6 +406,7 @@ trait ExpressionJs extends js.Object {
   val className: String
   val terms: js.UndefOr[js.Array[ExpressionJs]]
   val factors: js.UndefOr[js.Array[ExpressionJs]]
+  val args: js.UndefOr[js.Array[ExpressionJs]]
   val numerator: js.UndefOr[Int]
   val denominator: js.UndefOr[Int]
   val value: js.UndefOr[Double]
@@ -408,21 +419,22 @@ trait ExpressionJs extends js.Object {
 
 object ExpressionJs {
   def parseToType[A](expr: ExpressionJs, f: ExpressionJs => A): Expression[A] = expr.className match {
-    case "Sum" => Sum(expr.terms.get.map(term => parseToType(term, f)).toSet)
-    case "Product" => Product(expr.factors.get.map(factor => parseToType(factor, f)).toSet)
+    case "Sum" => Sum(expr.terms.get.map(term => parseToType(term, f)).toList)
+    case "Product" => Product(expr.factors.get.map(factor => parseToType(factor, f)).toList)
     case "RationalNumber" => RationalNumber(expr.numerator.get, expr.denominator.get)
     case "RealNumber" => RealNumber(expr.value.get)
     case "NamedNumber" => NamedNumber(expr.value.get, expr.name.get, ConcreteSiDimensionJs.parse(expr.dimension.get))
     case "Variable" => Variable(f(expr))
     case "Power" => Power(parseToType(expr.base.get, f), parseToType(expr.exponent.get, f))
+    case "SpecialFunction" => SpecialFunction(expr.name.get, expr.args.get.map(arg => parseToType(arg, f)).toList)
   }
 
   def parseToStringExpr(expr: ExpressionJs): Expression[String] = parseToType(expr, _.name.get)
   def parseToVarIdExpr(expr: ExpressionJs): Expression[VarId] = parseToType(expr, varExprJs => VarIdJs.parse(varExprJs.varId.get))
 }
 
-case class Sum[A](terms: Set[Expression[A]]) extends Expression[A]
-case class Product[A](factors: Set[Expression[A]]) extends Expression[A]
+case class Sum[A](terms: List[Expression[A]]) extends Expression[A]
+case class Product[A](factors: List[Expression[A]]) extends Expression[A]
 case class Power[A](base: Expression[A], power: Expression[A]) extends Expression[A] {
   assert(power != RationalNumber(1), "power must not be 1")
 }
@@ -478,7 +490,7 @@ object Expression {
   val Zero = RationalNumber(0)
   val Pi = NamedNumber(3.14159265359, "π", SiDimension.Dimensionless)
 
-  def makeProduct[A](factors: Set[Expression[A]]): Expression[A] = {
+  def makeProduct[A](factors: List[Expression[A]]): Expression[A] = {
     val nonOneFactors = factors.filterNot(_ == RationalNumber(1))
     nonOneFactors.size match {
       case 0 => RationalNumber(1)
@@ -487,7 +499,7 @@ object Expression {
     }
   }
 
-  def makeSum[A](terms: Set[Expression[A]]): Expression[A] = {
+  def makeSum[A](terms: List[Expression[A]]): Expression[A] = {
     val nonZeroTerms = terms.filterNot(_ == RationalNumber(0))
     nonZeroTerms.size match {
       case 0 => RationalNumber(0)
@@ -516,22 +528,22 @@ object Expression {
 }
 
 object ExpressionDisplay {
-  def fractionDisplay[A](set: Set[Expression[A]],
+  def fractionDisplay[A](list: List[Expression[A]],
                          multiplySymbol: String,
                          toStringWithBinding: Expression[A] => (String, Int),
                          wrapWithSurd: String => String,
                          wrapWithFraction: (String, String) => String): String = {
     // TODO: Do something cleverer here: support grouped square roots and fractions
-    val denominatorItems = set.collect({ case x@Power(_, RationalNumber(n, _)) if n < 0 => x })
-    val numeratorItems = set -- denominatorItems
+    val denominatorItems = list.collect({ case x@Power(_, RationalNumber(n, _)) if n < 0 => x })
+    val numeratorItems = list.filterNot(denominatorItems.contains)
 
     val flippedDenominatorItems = denominatorItems.collect(
       { case Power(base, RationalNumber(n, d)) => Expression.makePower(base, RationalNumber(-n, d)): Expression[A] }
     )
 
-    def groupWithRadical(items: Set[Expression[A]]): String = {
+    def groupWithRadical(items: List[Expression[A]]): String = {
       val itemsInsideRadical = items.collect({ case x@Power(_, RationalNumber(1, 2)) => x: Expression[A]})
-      val outsideItems = items -- itemsInsideRadical
+      val outsideItems = items.filterNot(itemsInsideRadical.contains)
 
       val radicalStr = if (itemsInsideRadical.nonEmpty) {
         val insideItemStrings = orderWithConstantsFirst(itemsInsideRadical)
@@ -554,15 +566,15 @@ object ExpressionDisplay {
     }
   }
 
-  def orderWithConstantsFirst[A](stuff: Set[Expression[A]]): List[Expression[A]] = {
+  def orderWithConstantsFirst[A](stuff: List[Expression[A]]): List[Expression[A]] = {
     val foo = (x: Expression[A]) => x match {
-      case _: Constant[A] => 1 -> ""
-      case n: NamedNumber[A] => 2 -> n.name
-      case v: Variable[A] => 3 -> v.toString
-      case _ => 3 -> x.toString
+      case _: Constant[A] => 1
+      case n: NamedNumber[A] => 2
+      case v: Variable[A] => 3
+      case _ => 3
     }
 
-    stuff.toList.sortBy(foo)
+    stuff.sortBy(foo)
   }
 
   def wrap(tuple: (String, Int), binding: Int): String = if (tuple._2 >= binding) tuple._1 else s"(${tuple._1})"

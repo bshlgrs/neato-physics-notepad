@@ -16,14 +16,18 @@ if (window.location.pathname === "/equations") {
       const equationsForLibrary = Object.keys(equations).map((id) => {
         // const equations = data.equations;
         const { name, content} = equations[id];
-        const { eqString, dimensions, varNames } = content;
+        const { eqString, dimensions, varNames, constantsUsed } = content;
         return {
-          name, id: parseInt(id, 10), eqString, varNames, dimensionStrings: dimensions
+          name, id: parseInt(id, 10), eqString, varNames, constantsUsed, dimensionStrings: dimensions
         };
       });
 
       const library = Gem.EquationLibraryOps.buildFromJs(equationsForLibrary);
-      ReactDOM.render(<MainApp library={library} />, document.getElementById('root'));
+
+      const initialAction = window.localStorage.getItem("returningVisitor") ? null : 'showing-help';
+
+      ReactDOM.render(<MainApp library={library} initialAction={initialAction}/>, document.getElementById('root'));
+      window.localStorage.setItem("returningVisitor", 'true');
     });
 }
 registerServiceWorker();

@@ -105,11 +105,10 @@ object Dimension {
     Set("week") -> week,
     Set("month") -> month,
     Set("year") -> year,
-    Set("lightyear", "lightyears") -> lightYear,
+    Set("lightyear", "lightyears", "light year") -> lightYear,
     Set("tonne", "tonnes") -> tonne,
     Set("parsec") -> parsec,
     Set("ohm") -> ohm,
-    Set("rad", "radian") -> radian,
     Set("degree", "degrees", "°") -> degree,
   ) ++ (for {
     (name: String, unit: GeneralUnit) <- unitsWhichCanHaveSiPrefixes

@@ -16,8 +16,8 @@ sealed trait DimensionInference {
   def combineWithEquals(other: DimensionInference): DimensionInference = (this, other) match {
     case (BottomDimensionInference, _) => BottomDimensionInference
     case (_, BottomDimensionInference) => BottomDimensionInference
-    case (TopDimensionInference, x) => TopDimensionInference
-    case (x, TopDimensionInference) => TopDimensionInference
+    case (TopDimensionInference, x) => x
+    case (x, TopDimensionInference) => x
     case (ConcreteDimensionInference(dim1), ConcreteDimensionInference(dim2)) => {
       if (dim1 == dim2) ConcreteDimensionInference(dim1)
       else BottomDimensionInference

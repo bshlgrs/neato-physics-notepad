@@ -9,6 +9,10 @@ class NotepadsController < ApplicationController
     render json: Notepad.all
   end
 
+  def summary
+    render json: Notepad.all.select(:id, :title)
+  end
+
   def create
     n = Notepad.new(notepad_params.to_h)
     n.content = params[:notepad][:content]

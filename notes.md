@@ -1,25 +1,5 @@
 # Development notes
 
-## bugs
-
-- You can get a variable on the rhs of its expression
-- I sometimes get non-simplified stuff when I solve?
-- "a - b" is rendered as "a + -1b"
-- you can get "v = v" as an expression result
-- Units are calculated incorrectly sometimes
-
-
-## improvements
-
-- allow dimensionless numbers
-- [x] dragging from expr var to number should attach it
-- Maybe I should build an automated test suite using that "PossibleActions" code that I had but deleted
-- If equations have a value, they should display it.
-- Be smarter about calculating numerical values--search harder for answers.
-- key shortcuts
-- Refuse to let you drag equations out of the equation arena.
-- Nicer number printing
-  - If the value has no more precision, stop printing zeros
 
 ## Build notes
 
@@ -38,10 +18,8 @@
 
 ## Features to add
 
-- Most important: letting you make and share notepads. This requires:
-  - JSON serialization
-  - the rest of a web backend
-- Vector semantics
+- More backend features
+- Vector: You should be able to add onto the page diagrams that represent geometric facts about a situation. For example, you should be able to add a “Right-angled triangle diagram”, which is represented as a right-angle triangle. The user can treat its vertices and edges as variables and drag other variables to those parts of the triangle to declare those equal, just like you normally do by dragging to other variables. This would allow you to solve problems which require a few steps of trig.
 - Diagrams
   - eg free body diagrams
 - Smarter expression calculations
@@ -49,4 +27,6 @@
 - Differentiation
 - Building differences/sums
 - Crowdsourced equations
-
+- Quadratic equations
+- Built-in numbers. It would be nice to be able to search for “mass of sun” or “charge of electron” in the equation search thing and have that get you the result.
+- Smarter inference of dimensions

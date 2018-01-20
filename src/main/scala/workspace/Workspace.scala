@@ -93,6 +93,8 @@ case class Workspace(equations: MapWithIds[Equation] = MapWithIds.empty[Equation
     this.copy(equalities = equalities.remove(varId))
   }
 
+  def varIsEqualToAnything(varId: VarId): Boolean = equalities.getSet(varId).size > 1
+
   def deleteEquation(id: Int): Workspace = {
     this.copy(equations = equations.delete(id))
   }
@@ -281,14 +283,6 @@ object Workspace {
 
 
 trait WorkspaceJs extends js.Object {
-//  def toJsObject: js.Object = js.Dynamic.literal(
-//    "className" -> "Workspace",
-//    "equations" -> js.Array(equations.map.toSeq.map({ case (x: Int, y: Equation) => js.Tuple2(x, y.toJsObject) }) :_*),
-//    "equalities" -> js.Array(equalities.sets.toList.map(set => js.Array(set.toList.map(_.toJsObject) :_*)) :_*),
-//    "expressions" -> js.Array(expressions.toSeq.map({ case (x: VarId, y: Expression[VarId]) => js.Tuple2(x.toJsObject, y.toJsObject)}) :_*),
-//    "numbers" -> js.Array(numbers.map.toSeq.map(
-//      { case (id: Int, (n: PhysicalNumber, v: Option[VarId])) => js.Tuple3(id, n.toJsObject, v.map(_.toJsObject).orNull)}) :_*)
-//  )
   val className: String
   val equations: js.Array[js.Tuple2[Int, EquationJs]]
   val equalities: js.Array[js.Array[VarIdJs]]
@@ -299,14 +293,19 @@ trait WorkspaceJs extends js.Object {
 @JSExportTopLevel("Gem.WorkspaceJs")
 object WorkspaceJs {
   @JSExport
-  def parse(ws: WorkspaceJs, library: EquationLibrary): Workspace = Workspace(
-    MapWithIds.fromMap(ws.equations.map({ case js.Tuple2(id: Int, eq: EquationJs) => id -> EquationJs.parse(eq, library) }).toMap),
-    SetOfSets(ws.equalities.map(_.map(VarIdJs.parse).toSet).toSet),
-    ws.expressions.map({
+  def parse(ws: WorkspaceJs, library: EquationLibrary): Workspace = {
+    val equations = Try(
+      MapWithIds.fromMap(
+        ws.equations.map({ case js.Tuple2(id: Int, eq: EquationJs) => id -> EquationJs.parse(eq, library)}).toMap
+      )
+    ).getOrElse(throw new RuntimeException("equations didn't parse"))
+    val equalities = Try(SetOfSets(ws.equalities.map(_.map(VarIdJs.parse).toSet).toSet)).getOrElse(throw new RuntimeException("equalities"))
+    val expressions = Try(ws.expressions.map({
       case js.Tuple2(varIdJs: VarIdJs, expr: ExpressionJs) => VarIdJs.parse(varIdJs) -> ExpressionJs.parseToVarIdExpr(expr)
-    }).toMap,
-    MapWithIds(ws.numbers.map({ case js.Tuple3(id: Int, num: PhysicalNumberJs, mbVarId: js.UndefOr[VarIdJs]) =>
+    }).toMap).getOrElse(throw new RuntimeException("expressions"))
+    val numbers = Try(MapWithIds(ws.numbers.map({ case js.Tuple3(id: Int, num: PhysicalNumberJs, mbVarId: js.UndefOr[VarIdJs]) =>
       id -> (PhysicalNumberJs.parse(num) -> mbVarId.toOption.map(VarIdJs.parse))
-    }).toMap)
-  )
+    }).toMap)).getOrElse(throw new RuntimeException("numbers"))
+    Workspace(equations, equalities, expressions, numbers)
+  }
 }

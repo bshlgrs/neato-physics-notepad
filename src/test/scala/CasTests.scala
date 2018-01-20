@@ -22,7 +22,7 @@ class CasTests extends FunSpec {
   describe("simplification") {
     describe("addition") {
       it("is commutative") {
-        assert(x + y == y + x)
+        assert((x + y).equivalent(y + x))
       }
 
       it("is associative") {
@@ -42,7 +42,7 @@ class CasTests extends FunSpec {
 
     describe("multiplication") {
       it("is commutative") {
-        assert(x * y == y * x)
+        assert((x * y).equivalent(y * x))
       }
 
       it("is associative") {
@@ -60,7 +60,7 @@ class CasTests extends FunSpec {
       it("simplifies in cases of exponents") {
         assert((x ** three) * y / (x ** two) == x * y)
         assert((x ** three) * y * x * (z ** two) / (x ** two) / z == (x ** two) * y * z)
-        assert(h.sqrt * m.sqrt * g.sqrt * (m ** RationalNumber[String](-1, 2)) * two.sqrt == g.sqrt * h.sqrt * two.sqrt)
+        assert((h.sqrt * m.sqrt * g.sqrt * (m ** RationalNumber[String](-1, 2)) * two.sqrt).equivalent(g.sqrt * h.sqrt * two.sqrt))
       }
 
 //      it("is distributive") {
@@ -171,7 +171,7 @@ class CasTests extends FunSpec {
 
   describe("display stuff") {
     it("knows how to order stuff") {
-      assert(ExpressionDisplay.orderWithConstantsFirst(Set[Expression[String]](two, x)) == List(two, x))
+      assert(ExpressionDisplay.orderWithConstantsFirst(List[Expression[String]](two, x)) == List(two, x))
     }
 
     it("can render stuff") {

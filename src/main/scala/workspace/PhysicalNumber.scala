@@ -45,7 +45,8 @@ object PhysicalNumberJs {
     ConcreteSiDimensionJs.parse(physicalNumberJs.siDimension),
     physicalNumberJs.originalInputValue.toOption match {
       case None => None
-      case Some(value) => Some(value -> DimensionJs.parse(physicalNumberJs.originalInputDim.toOption.get))
+      case Some(value) => Some(value -> DimensionJs.parse(physicalNumberJs.originalInputDim.toOption.getOrElse(
+        throw new RuntimeException(s"Don't know how to parse originalInputDim in $physicalNumberJs"))))
     })
 }
 
