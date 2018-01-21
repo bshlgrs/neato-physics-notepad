@@ -35,28 +35,6 @@ sealed trait Expression[A] {
 
   def equivalent(other: Expression[A]): Boolean = this.normalize == other.normalize
 
-//  def toLatex: String = this.toLatexWithBinding._1
-//
-//  def toLatexWithBinding: (String, Int) = {
-//    this match {
-//      case Sum(set) => set.map((x) => wrap(x.toLatexWithBinding, 0)).mkString(" + ") -> 0
-//      case Product(set) =>
-//        ExpressionDisplay.fractionDisplay(set, " \\cdot ", (x: Expression[A]) => x.toStringWithBinding, (x) => s"\\sqrt{$x}", (n, d) => s"\\frac{$n}{$d}") -> 1
-//      case Power(lhs, rhs) => {
-//        rhs match {
-//          case RationalNumber(1, 2) => s"\\sqrt{${wrap(lhs.toLatexWithBinding, 0)}}" -> 3
-//          case RationalNumber(1, n) => s"\\sqrt[$n]{${wrap(lhs.toLatexWithBinding, 0)}}" -> 3
-//          case _ => (wrap(lhs.toLatexWithBinding, 2) + "^{" + wrap(rhs.toLatexWithBinding, 2) + "}") -> 2
-//        }
-//      }
-//      case Variable(thing) => thing.toString -> 3
-//      case RealNumber(r) => r.toString -> 3
-//      case NamedNumber(_, name, _) => name -> 3
-//      case RationalNumber(n, 1) => n.toString -> 3
-//      case RationalNumber(n, d) => s"\\frac{$n}{$d}" -> 3
-//    }
-//  }
-
   def solve(x: A, lhs: Expression[A] = RationalNumber(0)): Set[Expression[A]] = {
     assert(!lhs.vars.contains(x))
     this match {
@@ -306,10 +284,17 @@ sealed trait Expression[A] {
     case NamedNumber(x, _, _) => Some(x)
     case RationalNumber(n, d) => Some(n.toDouble / d)
     case SpecialFunction(name, args) => this match {
-      case SpecialFunction("sin", List(x)) => x.evaluate.map(Math.sin)
+      case SpecialFunction(name, List(x)) => {
+        if (Set("sin", "cos", "tan", "asin", "acos", "atan").contains(name)) {
+
+        }
+        x.evaluate.map(Math.sin)
+      }
       case SpecialFunction("cos", List(x)) => x.evaluate.map(Math.cos)
       case SpecialFunction("tan", List(x)) => x.evaluate.map(Math.tan)
       case SpecialFunction("asin", List(x)) => x.evaluate.map(Math.asin)
+      case SpecialFunction("acos", List(x)) => x.evaluate.map(Math.acos)
+      case SpecialFunction("atan", List(x)) => x.evaluate.map(Math.atan)
     }
   }
 
@@ -352,11 +337,17 @@ sealed trait Expression[A] {
     case Variable(name) => getDimensionDirectly(name)
     case _: Constant[_] => ConcreteDimensionInference(SiDimension.Dimensionless)
     case NamedNumber(v, n, dimension) => ConcreteDimensionInference(dimension)
-    case SpecialFunction("sin", List(angle)) => angle.calculateDimension(getDimensionDirectly) match {
-      case BottomDimensionInference => BottomDimensionInference
-      case TopDimensionInference => ConcreteDimensionInference(SiDimension.Dimensionless)
-      case ConcreteDimensionInference(SiDimension.Dimensionless) => ConcreteDimensionInference(SiDimension.Dimensionless)
-      case ConcreteDimensionInference(_) => BottomDimensionInference
+    case SpecialFunction(name, List(angle)) => {
+      if (Set("sin", "cos", "tan", "asin", "acos", "atan").contains(name)) {
+        angle.calculateDimension(getDimensionDirectly) match {
+          case BottomDimensionInference => BottomDimensionInference
+          case TopDimensionInference => ConcreteDimensionInference(SiDimension.Dimensionless)
+          case ConcreteDimensionInference(SiDimension.Dimensionless) => ConcreteDimensionInference(SiDimension.Dimensionless)
+          case ConcreteDimensionInference(_) => BottomDimensionInference
+        }
+      } else {
+        ???
+      }
     }
     case _ => throw new RuntimeException("I don't know how to do this asdfyuihk")
   }
@@ -377,6 +368,11 @@ sealed trait Expression[A] {
       } else {
         exponent * (base ** (exponent - 1)) * base.differentiate(wrt)
       }
+    }
+    case SpecialFunction("sin", List(angle)) => angle.differentiate(wrt) * SpecialFunction("cos", List(angle))
+    case SpecialFunction("cos", List(angle)) => angle.differentiate(wrt) * SpecialFunction("sin", List(angle)) * -1
+    case _ => {
+      throw new NotImplementedError(s"don't know how to differentiate $this")
     }
   }
 
