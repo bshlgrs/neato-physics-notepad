@@ -328,14 +328,14 @@ sealed trait Expression[A] {
     case Power(base, exponent) => exponent.calculateDimension(getDimensionDirectly) match {
         // For consistency, the exponent has to be dimensionless, and either the base is dimensionless or the exponent is constant.
       case BottomDimensionInference => BottomDimensionInference
-      case ConcreteDimensionInference(x) if !x.equalUnits(SiDimension.Dimensionless) => BottomDimensionInference
+      case ConcreteDimensionInference(x) if x != SiDimension.Dimensionless => BottomDimensionInference
       case _ => {
         base.calculateDimension(getDimensionDirectly) match {
           case BottomDimensionInference => BottomDimensionInference
           case TopDimensionInference => TopDimensionInference
           case ConcreteDimensionInference(baseDimension) => {
             // If the baseDimension is not (), the exponent must be constant
-            if (baseDimension.equalUnits(SiDimension.Dimensionless)) {
+            if (baseDimension == SiDimension.Dimensionless) {
               ConcreteDimensionInference(SiDimension.Dimensionless)
             } else {
               exponent.evaluate match {
@@ -411,7 +411,7 @@ trait ExpressionJs extends js.Object {
   val denominator: js.UndefOr[Int]
   val value: js.UndefOr[Double]
   val name: js.UndefOr[String]
-  val dimension: js.UndefOr[ConcreteSiDimensionJs]
+  val dimension: js.UndefOr[SiDimensionJs]
   val varId: js.UndefOr[VarIdJs]
   val base: js.UndefOr[ExpressionJs]
   val exponent: js.UndefOr[ExpressionJs]
@@ -423,7 +423,7 @@ object ExpressionJs {
     case "Product" => Product(expr.factors.get.map(factor => parseToType(factor, f)).toList)
     case "RationalNumber" => RationalNumber(expr.numerator.get, expr.denominator.get)
     case "RealNumber" => RealNumber(expr.value.get)
-    case "NamedNumber" => NamedNumber(expr.value.get, expr.name.get, ConcreteSiDimensionJs.parse(expr.dimension.get))
+    case "NamedNumber" => NamedNumber(expr.value.get, expr.name.get, SiDimensionJs.parse(expr.dimension.get))
     case "Variable" => Variable(f(expr))
     case "Power" => Power(parseToType(expr.base.get, f), parseToType(expr.exponent.get, f))
     case "SpecialFunction" => SpecialFunction(expr.name.get, expr.args.get.map(arg => parseToType(arg, f)).toList)

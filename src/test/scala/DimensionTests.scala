@@ -1,3 +1,4 @@
+import cas.RationalNumber
 import org.scalatest.FunSpec
 import workspace._
 import workspace.dimensions._
@@ -5,17 +6,16 @@ import workspace.dimensions._
 class DimensionTests extends FunSpec {
   describe("dimensions") {
     it("can combine them correctly") {
-      val velocity = SiDimension.fromInts(Map(Meter -> 1, Second -> -1))
-      assert(velocity == Meter / Second)
-      val kg_per_second = SiDimension.fromInts(Map(Kilogram -> 1, Second -> -1))
-      assert(velocity * kg_per_second == SiDimension.fromInts(Map(Meter -> 1, Second -> -2, Kilogram -> 1)))
+      val velocity = Meter / Second
+      val kg_per_second = Kilogram / Second
+      assert(velocity * kg_per_second == Meter * Kilogram / Second / Second)
     }
 
     it("removes dimensions of power zero") {
-      val velocity = SiDimension.fromInts(Map(Meter -> 1, Second -> -1))
-      val time = SiDimension.fromInts(Map(Second -> 1))
+      val velocity = Meter / Second
+      val time = Second
 
-      assert(velocity * time == SiDimension.fromInts(Map(Meter -> 1)))
+      assert(velocity * time == SiDimension(Map(SiUnit.Meter -> RationalNumber(1))))
     }
   }
 
@@ -26,12 +26,12 @@ class DimensionTests extends FunSpec {
     }
 
     it("can parse") {
-      val tenMeters = PhysicalNumber(10, SiDimension.fromInts(Map(Meter -> 1)), Some((10, Dimension.meter.toDim)))
+      val tenMeters = PhysicalNumber(10, Meter, Some((10, Dimension.meter.toDim)))
       assert(PhysicalNumber.parsePhysicalNumber("10m").toOption.contains(tenMeters))
       assert(PhysicalNumber.parsePhysicalNumber("10 m").toOption.contains(tenMeters))
       assert(PhysicalNumber.parsePhysicalNumber("10.0 m").toOption.contains(tenMeters))
 
-      val fiveMetersPerSecond = PhysicalNumber(5, SiDimension.fromInts(Map(Meter -> 1, Second -> -1)), Some(5.0 -> Dimension.meter.toDim / Dimension.second.toDim))
+      val fiveMetersPerSecond = PhysicalNumber(5, Meter / Second, Some(5.0 -> Dimension.meter.toDim / Dimension.second.toDim))
       assert(PhysicalNumber.parsePhysicalNumber("5m/s").toOption.contains(fiveMetersPerSecond))
       assert(PhysicalNumber.parsePhysicalNumber("5m s^-1").toOption.contains(fiveMetersPerSecond))
       assert(PhysicalNumber.parsePhysicalNumber("5.0 m s^-1").toOption.contains(fiveMetersPerSecond))
@@ -45,7 +45,7 @@ class DimensionTests extends FunSpec {
       assert(PhysicalNumber.parsePhysicalNumber("4.0 kg m^2/s/s").toOption.contains(fourJoules2))
 
       assert(PhysicalNumber.parsePhysicalNumber("3Hz").toOption.contains(
-        PhysicalNumber(3, SiDimension.fromInts(Map(Second -> -1)), Some(3.0 -> Dimension.hertz.toDim)))
+        PhysicalNumber(3, SiDimension(Map(SiUnit.Second -> RationalNumber(-1))), Some(3.0 -> Dimension.hertz.toDim)))
       )
     }
 

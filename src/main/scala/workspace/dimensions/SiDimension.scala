@@ -7,10 +7,7 @@ import scala.scalajs.js
 import scala.scalajs.js.annotation.{JSExport, JSExportTopLevel, ScalaJSDefined}
 
 
-sealed trait SiDimension {
-
-  val units: Map[SiUnit, RationalNumber[String]]
-
+case class SiDimension(units: Map[SiUnit, RationalNumber[String]])  {
   def *(other: SiDimension): SiDimension = SiDimension(
     (units.keys ++ other.units.keys)
       .map((u) => u -> (this.units.getOrElse(u, RationalNumber[String](0)) + other.units.getOrElse(u, RationalNumber[String](0))).asInstanceOf[RationalNumber[String]])
@@ -37,31 +34,26 @@ sealed trait SiDimension {
     }))
   }
 
-  @JSExport
-  def equalUnits(other: SiDimension): Boolean = this.units == other.units
-
-  def toJsObject: js.Object
-}
-
-case class ConcreteSiDimension(units: Map[SiUnit, RationalNumber[String]]) extends SiDimension {
-  def toJsObject: js.Object = js.Dynamic.literal(
-    "className" -> "ConcreteSiDimension", "units" -> js.Dictionary(units.toSeq.map({
+  lazy val toJsObject: js.Object = js.Dynamic.literal(
+    "className" -> "SiDimension", "units" -> js.Dictionary(units.toSeq.map({
       case (siUnit, rationalNumber) =>
         siUnit.symbol -> rationalNumber.toJsObject
     }) :_*)
   )
+
+  lazy val invert: SiDimension = SiDimension(units.mapValues({ case RationalNumber(n, d) => RationalNumber(-n, d) }))
 }
 
 
-trait ConcreteSiDimensionJs extends js.Object {
+trait SiDimensionJs extends js.Object {
   val className: String
   val units: js.Dictionary[RationalNumberJs]
 }
 
-object ConcreteSiDimensionJs {
-  def parse(concreteSiDimensionJs: ConcreteSiDimensionJs): ConcreteSiDimension = {
-    assert(concreteSiDimensionJs.className == "ConcreteSiDimension")
-    ConcreteSiDimension(
+object SiDimensionJs {
+  def parse(concreteSiDimensionJs: SiDimensionJs): SiDimension = {
+    assert(concreteSiDimensionJs.className == "SiDimension")
+    SiDimension(
       concreteSiDimensionJs.units.toMap.map({ case (s: String, r: RationalNumberJs) =>
         SiUnit.fromSymbol(s).getOrElse(Util.err("error 123")) -> RationalNumber[String](r.numerator, r.denominator)
       })
@@ -70,22 +62,19 @@ object ConcreteSiDimensionJs {
 }
 
 object SiDimension {
-  val SiNewton: SiDimension = SiDimension.fromInts(Map[SiUnit, Int](Kilogram -> 1, Meter -> 1, Second -> -2))
+  val SiNewton: SiDimension = Kilogram * Meter / Second / Second
   val SiJoule: SiDimension = SiNewton * Meter
   val SiCoulomb: SiDimension = Ampere * Second
   val SiVolt: SiDimension = SiJoule / SiCoulomb
   val SiNewtonsPerCoulomb: SiDimension = SiNewton / SiCoulomb
   val SiWatt: SiDimension = SiJoule / Second
   val SiOhm: SiDimension = SiVolt / Ampere
-  val Dimensionless = ConcreteSiDimension(Map())
-
-  def apply(units: Map[SiUnit, RationalNumber[String]]): SiDimension = ConcreteSiDimension(units)
-  def fromInts(units: Map[SiUnit, Int]): SiDimension = ConcreteSiDimension(units.mapValues(int => RationalNumber[String](int)))
+  val Dimensionless = SiDimension(Map())
 }
 
 case class GeneralUnit(value: Double, dimension: SiDimension, name: UnitName) {
-  def toDim: Dimension = Dimension(Map(this -> RationalNumber(1)))
-  def toJsObject: js.Object = js.Dynamic.literal(
+  lazy val toDim: Dimension = Dimension(Map(this -> RationalNumber(1)))
+  lazy val toJsObject: js.Object = js.Dynamic.literal(
     "className" -> "GeneralUnit",
     "value" -> value,
     "dimension" -> dimension.toJsObject,
@@ -93,27 +82,31 @@ case class GeneralUnit(value: Double, dimension: SiDimension, name: UnitName) {
   )
 }
 
-sealed trait SiUnit extends SiDimension {
-  val units = Map(this -> RationalNumber(1))
-
+sealed trait SiUnit {
   def symbol: String = this match {
-    case Meter => "m"
-    case Kilogram => "kg"
-    case Second => "s"
-    case Kelvin => "K"
-    case Ampere => "A"
+    case SiUnit.Meter => "m"
+    case SiUnit.Kilogram => "kg"
+    case SiUnit.Second => "s"
+    case SiUnit.Kelvin => "K"
+    case SiUnit.Ampere => "A"
   }
 
-  override def toJsObject: js.Object = js.Dynamic.literal("className" -> "SiUnit", "symbol" -> this.symbol)
+  def toJsObject: js.Object = js.Dynamic.literal("className" -> "SiUnit", "symbol" -> this.symbol)
 }
 
 object SiUnit {
+  case object Meter extends SiUnit
+  case object Kilogram extends SiUnit
+  case object Second extends SiUnit
+  case object Kelvin extends SiUnit
+  case object Ampere extends SiUnit
+
   def fromSymbol(symbol: String): Option[SiUnit] =
     Map("m" -> Meter, "kg" -> Kilogram, "s" -> Second, "K" -> Kelvin, "A" -> Ampere).get(symbol)
 }
 
-case object Meter extends SiUnit
-case object Kilogram extends SiUnit
-case object Second extends SiUnit
-case object Kelvin extends SiUnit
-case object Ampere extends SiUnit
+object Second extends SiDimension(Map(SiUnit.Second -> RationalNumber(1)))
+object Meter extends SiDimension(Map(SiUnit.Meter -> RationalNumber(1)))
+object Kilogram extends SiDimension(Map(SiUnit.Kilogram -> RationalNumber(1)))
+object Kelvin extends SiDimension(Map(SiUnit.Kelvin -> RationalNumber(1)))
+object Ampere extends SiDimension(Map(SiUnit.Ampere -> RationalNumber(1)))

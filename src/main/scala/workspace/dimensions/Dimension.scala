@@ -9,10 +9,10 @@ import scala.scalajs.js.annotation.{JSExport, JSExportTopLevel, ScalaJSDefined}
 
 case class Dimension(units: Map[GeneralUnit, RationalNumber[String]]) {
   @JSExport
-  def totalConstant: Double = units.map({ case (unit: GeneralUnit, power: RationalNumber[String]) => math.pow(unit.value, power.toDouble) }).product
+  lazy val totalConstant: Double = units.map({ case (unit: GeneralUnit, power: RationalNumber[String]) => math.pow(unit.value, power.toDouble) }).product
 
   @JSExport
-  def siDimension: SiDimension = units.map({ case (unit: GeneralUnit, power: RationalNumber[String]) => unit.dimension ** power })
+  lazy val siDimension: SiDimension = units.map({ case (unit: GeneralUnit, power: RationalNumber[String]) => unit.dimension ** power })
     .reduceOption(_ * _)
     .getOrElse(SiDimension.Dimensionless)
 
@@ -47,8 +47,14 @@ case class Dimension(units: Map[GeneralUnit, RationalNumber[String]]) {
     CompileToBuckTex.horizontalBox((initialUnitsTex ++ lastUnitsTex).tail.toList)
   }
 
-  def toJsObject: js.Object = js.Dynamic.literal("className" -> "Dimension", "units" -> js.Dictionary(units.map({
-    case (u: GeneralUnit, r: RationalNumber[String]) => u.name.string -> r.toJsObject
+  lazy val toJsObject: js.Object = js.Dynamic.literal("className" -> "Dimension", "units" -> js.Dictionary(units.map({
+    case (u: GeneralUnit, r: RationalNumber[String]) => {
+      /// The special case here is because ScalaJS does something bad when it has Unicode in its key names in objects
+      if (u.name.string == "Ω")
+        "ohm" -> r.toJsObject
+      else
+        u.name.string -> r.toJsObject
+    }
   }).toSeq :_*))
 }
 

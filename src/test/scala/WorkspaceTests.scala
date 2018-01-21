@@ -25,6 +25,12 @@ class WorkspaceTests extends FunSpec {
     Set()
   )
 
+  val resistivityEquation = LibraryEquation("Resistivity", EquationParser.parseExpression("P - I**2*R").get, 3, (f) => ???,
+    Map("P" -> SiDimension.SiWatt, "I" -> Ampere, "R" -> SiDimension.SiOhm),
+    Map("P" -> "Power", "I" -> "Current", "R" -> "Resistance"),
+    Set()
+  )
+
   import RationalNumber._
   describe("sequences of actions") {
     it("can do the ball-down-a-slide one") {
@@ -238,6 +244,17 @@ class WorkspaceTests extends FunSpec {
 //      ws.allVarIds.map(varId => ws.addExpression(varId).getExpressionBuckTex(varId))
       println(ws)
     }
+
+    it("does a tenth thing") {
+      val ws = Workspace.empty
+        .addEquation(resistivityEquation)
+        .addEquation(keEquation)
+
+      println(ws.getDimensionCalc(VarId(0, "I")))
+      //        ws.allVarIds.map(ws.getDimension)
+      //      ws.allVarIds.map(varId => ws.addExpression(varId).getExpressionBuckTex(varId))
+      println(ws)
+    }
   }
 
   describe("changing number dimensions") {
@@ -258,6 +275,22 @@ class WorkspaceTests extends FunSpec {
 
       println(ws.getDimensionCalc(VarId(0, "E_K")))
 
+    }
+  }
+
+  describe("number inference") {
+    it("can do it") {
+      val ws = Workspace.empty.addEquation(keEquation)
+        .addAndAttachNumber(VarId(0, "E_K"), PhysicalNumber(3, SiDimension.SiJoule))
+        .addAndAttachNumber(VarId(0, "v"), PhysicalNumber(5, Meter / Second))
+        .addExpression(VarId(0, "m"))
+        .addEquation(peEquation)
+        .addAndAttachNumber(VarId(1, "g"), PhysicalNumber(7, Meter / Second / Second))
+        .addAndAttachNumber(VarId(1, "h"), PhysicalNumber(11, Meter))
+        .addEquality(VarId(0, "m"), VarId(1, "m"))
+        .addExpression(VarId(1, "E_P"))
+
+      println(ws.recursivelyEvaluatedNumbers)
     }
   }
 }

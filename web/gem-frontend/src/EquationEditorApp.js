@@ -123,7 +123,7 @@ class EquationEditorApp extends Component {
               return <EquationShow
                 key={eq.get('id')}
                 eq={eq}
-                onDelete={() => {}}//this.deleteEquation(id)}
+                onDelete={() => this.deleteEquation(id)}
                 startEditing={() => this.setState({ currentAction: 'editing', editedId: id, editingEq: eq })}
               />;
             }

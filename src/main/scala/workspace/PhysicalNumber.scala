@@ -1,6 +1,6 @@
 package workspace
 
-import workspace.dimensions.{ConcreteSiDimensionJs, Dimension, DimensionJs, SiDimension}
+import workspace.dimensions.{SiDimensionJs, Dimension, DimensionJs, SiDimension}
 
 import scala.scalajs.js
 import scala.scalajs.js.annotation.{JSExport, JSExportAll, JSExportTopLevel, ScalaJSDefined}
@@ -34,20 +34,20 @@ case class PhysicalNumber(value: Double, siDimension: SiDimension, originalInput
 
 trait PhysicalNumberJs extends js.Object {
   val value: Double
-  val siDimension: ConcreteSiDimensionJs
+  val siDimension: SiDimensionJs
   val originalInputValue: js.UndefOr[Double]
   val originalInputDim: js.UndefOr[DimensionJs]
 }
 
 object PhysicalNumberJs {
   def parse(physicalNumberJs: PhysicalNumberJs): PhysicalNumber = PhysicalNumber(
-    physicalNumberJs.value,
-    ConcreteSiDimensionJs.parse(physicalNumberJs.siDimension),
-    physicalNumberJs.originalInputValue.toOption match {
+    Util.annotateFailWithMessage("val", physicalNumberJs.value),
+    Util.annotateFailWithMessage("dim", SiDimensionJs.parse(physicalNumberJs.siDimension)),
+    Util.annotateFailWithMessage("dsd", physicalNumberJs.originalInputValue.toOption match {
       case None => None
       case Some(value) => Some(value -> DimensionJs.parse(physicalNumberJs.originalInputDim.toOption.getOrElse(
         throw new RuntimeException(s"Don't know how to parse originalInputDim in $physicalNumberJs"))))
-    })
+    }))
 }
 
 @JSExportTopLevel("Gem.PhysicalNumber")

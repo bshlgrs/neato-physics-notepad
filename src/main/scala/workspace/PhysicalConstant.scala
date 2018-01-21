@@ -12,6 +12,7 @@ object PhysicalConstant {
   val G = PhysicalConstant("Gravitational constant", NamedNumber(6.67408e-11, "G", (Meter ** 3) / Kilogram / (Second ** 2)))
   val k_E = PhysicalConstant("Coulomb's constant", NamedNumber(8.99e9, "k_E", SiNewton * (Meter ** 2) / (SiCoulomb ** 2)))
   val pi = PhysicalConstant("π", NamedNumber(3.1415926535, "π", Dimensionless))
+  val hbar = PhysicalConstant("ħ", NamedNumber(1.0545718e-34, "ħ", Meter ** 2 * Kilogram / Second))
 
-  val constants: Set[PhysicalConstant] = Set(G, k_E, pi)
+  val constants: Set[PhysicalConstant] = Set(G, k_E, pi, hbar)
 }

@@ -1,7 +1,7 @@
 package workspace
 
 import scala.util.{Failure, Success, Try}
-import cas.{Expression, ExpressionJs, RationalNumber, RealNumber}
+import cas._
 import workspace.dimensions._
 
 import scala.scalajs.js
@@ -39,6 +39,7 @@ case class Workspace(equations: MapWithIds[Equation] = MapWithIds.empty[Equation
   def addEquation(equation: Equation): Workspace = this.copy(equations=this.equations.addWithNextId(equation))
 
   def addNumber(physicalNumber: PhysicalNumber): Workspace = this.copy(numbers=this.numbers.addWithNextId((physicalNumber, None)))
+  def addAndAttachNumber(varId: VarId, physicalNumber: PhysicalNumber): Workspace = this.addNumber(physicalNumber).attachNumber(this.nextNumberId, varId).get
 
   def allVarIds: Set[VarId] = for {
     (equationId, equation) <- equations.toSet
@@ -57,7 +58,7 @@ case class Workspace(equations: MapWithIds[Equation] = MapWithIds.empty[Equation
     }
   }
 
-  def allVarsGroupedByEquality: js.Array[js.Array[VarId]] = {
+  lazy val allVarsGroupedByEquality: js.Array[js.Array[VarId]] = {
     arr(allVarIds.groupBy(varId => equalities.getSet(varId)).values.map(arr))
   }
 
@@ -117,7 +118,7 @@ case class Workspace(equations: MapWithIds[Equation] = MapWithIds.empty[Equation
       eq: Equation <- Try(this.equations.get(eqIdx).get)
       mbVariableDimension: Option[SiDimension] <- Try(getDimensionDirectly(VarId(eqIdx, varName)))
       _ <- mbVariableDimension match {
-        case Some(variableDimension) => Try(assert(variableDimension.equalUnits(number.siDimension), "var dimension does not match"))
+        case Some(variableDimension) => Try(assert(variableDimension == number.siDimension), "var dimension does not match")
         case _ => Success()
       }
     } yield {
@@ -150,13 +151,18 @@ case class Workspace(equations: MapWithIds[Equation] = MapWithIds.empty[Equation
   lazy val allDimensions: Map[VarId, Option[SiDimension]] = allVarIds.map(varId => varId -> getDimensionCalc(varId)).toMap
 
   def getDimensionCalc(varId: VarId): Option[SiDimension] = {
-    val calculatedTypes = equalities.getSet(varId).flatMap({ case VarId(eqIdx, varName) => {
+    val calculatedTypes = equalities.getSet(varId).flatMap({ case varId@VarId(eqIdx, varName) => {
       val solutions = equations(eqIdx).solutions(varName, eqIdx)
-      val types = solutions.map(_.calculateDimension((x) => DimensionInference.fromTopOption(getDimensionDirectly(x))))
+      val types = solutions.map(_.calculateDimension((x) => DimensionInference.fromTopOption(getDimensionDirectly(x)))) ++
+         Set(DimensionInference.fromTopOption(getDimensionDirectly(varId)))
 
       types
     }})
-    calculatedTypes.reduceOption(_ combineWithEquals _).getOrElse(TopDimensionInference).asTopOption
+    calculatedTypes.reduceOption(_ combineWithEquals _).getOrElse(TopDimensionInference) match {
+      case BottomDimensionInference => Util.err(s"Types were inconsistent for $varId: $calculatedTypes")
+      case TopDimensionInference => None
+      case ConcreteDimensionInference(dim) => Some(dim)
+    }
   }
 
   def getDimensionJs(varId: VarId): SiDimension = getDimension(varId).orNull
@@ -194,16 +200,37 @@ case class Workspace(equations: MapWithIds[Equation] = MapWithIds.empty[Equation
   }
 
   def getNumberForExpression(exprVarId: VarId): Option[Double] = {
-    val expr = expressions(exprVarId)
-    val maximallyNumericExpression = expr.vars.foldLeft(expr)((reducedExpr, varId) => this.getNumber(varId) match {
-      case None => reducedExpr
-      case Some(num) => reducedExpr.substitute(varId, RealNumber[VarId](num.value))
-    })
-    maximallyNumericExpression.evaluate
+//    val expr = expressions(exprVarId)
+//    val maximallyNumericExpression = expr.vars.foldLeft(expr)((reducedExpr, varId) => this.getNumber(varId) match {
+//      case None => reducedExpr
+//      case Some(num) => reducedExpr.substitute(varId, RealNumber[VarId](num.value))
+//    })
+//    maximallyNumericExpression.evaluate
+    recursivelyEvaluatedNumbers.get(exprVarId)
   }
 
-  def getNumberForExpressionJs(exprVarId: VarId): Any = {
-    getNumberForExpression(exprVarId).orNull
+  def getNumberForExpressionJs(varId: VarId): Any = {
+//    getNumberForExpression(exprVarId).orNull
+    recursivelyEvaluatedNumbers.get(varId).orNull
+  }
+
+  lazy val recursivelyEvaluatedNumbers: Map[VarId, Double] = {
+    def evalNumbers(knownNumbers: Map[Set[VarId], Double]): Map[Set[VarId], Double] = {
+      val newNumbers: Map[Set[VarId], Double] = knownNumbers ++ expressions.map({ case (v: VarId, e: Expression[VarId]) => {
+        v -> e.mapVariablesToExpressions(varId2 => knownNumbers.get(equalities.getSet(varId2)) match {
+          case None => Variable(varId2)
+          case Some(value) => RealNumber[VarId](value)
+      })}}).mapValues(_.evaluate).collect({ case (k, Some(v)) => equalities.getSet(k) -> v })
+      if (newNumbers != knownNumbers) {
+        evalNumbers(newNumbers)
+      } else newNumbers
+    }
+
+    val setValue = evalNumbers(numbers.map.collect({case (_: Int, (n: PhysicalNumber, Some(varId))) =>
+      equalities.getSet(varId) -> n.value
+    }))
+
+    Util.traceShow(setValue.flatMap({ case (setVarId, value) => setVarId.map(_ -> value) }))
   }
 
   def getExpressionBuckTex(exprVarId: VarId): BuckTex = {
@@ -254,12 +281,12 @@ case class Workspace(equations: MapWithIds[Equation] = MapWithIds.empty[Equation
   private def arr[A](x: Iterable[A]): js.Array[A] = js.Array(x.toSeq : _*)
 
   def consistentUnits(varId1: VarId, varId2: VarId): Boolean = (getDimensionDirectly(varId1), getDimensionDirectly(varId2)) match {
-    case (Some(x), Some(y)) => x.equalUnits(y)
+    case (Some(x), Some(y)) => x == y
     case _ => true
   }
 
   def consistentUnitsWithDimension(varId1: VarId, dimension: SiDimension): Boolean = getDimensionDirectly(varId1) match {
-    case Some(var1Dimension) => var1Dimension.equalUnits(dimension)
+    case Some(var1Dimension) => var1Dimension == dimension
     case _ => true
   }
 
@@ -294,18 +321,21 @@ trait WorkspaceJs extends js.Object {
 object WorkspaceJs {
   @JSExport
   def parse(ws: WorkspaceJs, library: EquationLibrary): Workspace = {
-    val equations = Try(
+    import Util.annotateFailWithMessage
+
+    val equations = annotateFailWithMessage("equations",
       MapWithIds.fromMap(
         ws.equations.map({ case js.Tuple2(id: Int, eq: EquationJs) => id -> EquationJs.parse(eq, library)}).toMap
-      )
-    ).getOrElse(throw new RuntimeException("equations didn't parse"))
-    val equalities = Try(SetOfSets(ws.equalities.map(_.map(VarIdJs.parse).toSet).toSet)).getOrElse(throw new RuntimeException("equalities"))
-    val expressions = Try(ws.expressions.map({
+      ))
+    val equalities = annotateFailWithMessage("equalities", SetOfSets(ws.equalities.map(_.map(VarIdJs.parse).toSet).toSet))
+    val expressions = annotateFailWithMessage("expressions", ws.expressions.map({
       case js.Tuple2(varIdJs: VarIdJs, expr: ExpressionJs) => VarIdJs.parse(varIdJs) -> ExpressionJs.parseToVarIdExpr(expr)
-    }).toMap).getOrElse(throw new RuntimeException("expressions"))
-    val numbers = Try(MapWithIds(ws.numbers.map({ case js.Tuple3(id: Int, num: PhysicalNumberJs, mbVarId: js.UndefOr[VarIdJs]) =>
-      id -> (PhysicalNumberJs.parse(num) -> mbVarId.toOption.map(VarIdJs.parse))
-    }).toMap)).getOrElse(throw new RuntimeException("numbers"))
+    }).toMap)
+    val numbers = annotateFailWithMessage("numbers", MapWithIds(ws.numbers.map({ case js.Tuple3(id: Int, num: PhysicalNumberJs, mbVarId: js.UndefOr[VarIdJs]) =>
+      println(scalajs.js.JSON.stringify(num))
+      id -> (annotateFailWithMessage("parse1", PhysicalNumberJs.parse(num)) -> annotateFailWithMessage("parse2", mbVarId.toOption.map(VarIdJs.parse)))
+    }).toMap))
+
     Workspace(equations, equalities, expressions, numbers)
   }
 }

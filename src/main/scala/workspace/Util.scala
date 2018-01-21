@@ -13,6 +13,17 @@ object Util {
 
   def err[A](s: String): A = throw new RuntimeException(s)
 
+  def annotateFailWithMessage[A](string: String, f: => A): A = {
+    try {
+      f
+    } catch {
+      case e: RuntimeException => {
+        println(string)
+        throw e
+      }
+    }
+  }
+
   def showNumber(value: Double): String = {
 //    if (value == 0) {
 //      "0"
