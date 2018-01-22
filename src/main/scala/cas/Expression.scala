@@ -284,12 +284,7 @@ sealed trait Expression[A] {
     case NamedNumber(x, _, _) => Some(x)
     case RationalNumber(n, d) => Some(n.toDouble / d)
     case SpecialFunction(name, args) => this match {
-      case SpecialFunction(name, List(x)) => {
-        if (Set("sin", "cos", "tan", "asin", "acos", "atan").contains(name)) {
-
-        }
-        x.evaluate.map(Math.sin)
-      }
+      case SpecialFunction("sin", List(x)) => x.evaluate.map(Math.sin)
       case SpecialFunction("cos", List(x)) => x.evaluate.map(Math.cos)
       case SpecialFunction("tan", List(x)) => x.evaluate.map(Math.tan)
       case SpecialFunction("asin", List(x)) => x.evaluate.map(Math.asin)
@@ -346,10 +341,10 @@ sealed trait Expression[A] {
           case ConcreteDimensionInference(_) => BottomDimensionInference
         }
       } else {
-        ???
+        throw new NotImplementedError(s"Don't know how to infer dimensions on $this")
       }
     }
-    case _ => throw new RuntimeException("I don't know how to do this asdfyuihk")
+    case _ => throw new RuntimeException(s"I don't know how to do this asdfyuihk $this")
   }
 
   def differentiate(wrt: A): Expression[A] = this match {
