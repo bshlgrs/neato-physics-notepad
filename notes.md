@@ -32,3 +32,10 @@
 - Quadratic equations
 - Built-in numbers. It would be nice to be able to search for “mass of sun” or “charge of electron” in the equation search thing and have that get you the result.
 - Smarter inference of dimensions
+
+## Conceptual problems
+
+- I don't know how to represent angles.
+  - I think the right answer might be to
+- I can't represent Newton-meters (for torque) apart from as Joules.
+- I sometimes get confused between the kind of equality that is "these variables are referring to the same thing" and "these variables have the same value"

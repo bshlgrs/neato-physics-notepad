@@ -39,7 +39,11 @@ object EquationParser {
     }
   }
 
-  val number: P[Expression[String]] = P( CharIn('0'to'9').rep(1).!.map(str => RationalNumber[String](str.toInt)))
+  val number: P[Expression[String]] = P(
+      CharIn('0'to'9').rep(1).!.map(str => RationalNumber[String](str.toInt))
+    | (CharIn('0'to'9').rep(1).! ~ "." ~ CharIn('0'to'9').rep(1).!).map({ case (a, b) => RealNumber(s"$a.$b".toFloat) })
+  )
+
   val variable: P[Expression[String]] = P(
     (CharsWhile(_.isLetter).rep(1).! ~ ("_" ~ CharsWhile(_.isLetterOrDigit).rep(1).!).?).map({
       case (x, None) => Variable(x)
