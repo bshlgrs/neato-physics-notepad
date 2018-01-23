@@ -4059,15 +4059,20 @@ function $f_Lworkspace_dimensions_SiUnit__symbol__T($thiz) {
       if ((x$5 === $thiz)) {
         return "s"
       } else {
-        var x$7 = $m_Lworkspace_dimensions_SiUnit$Kelvin$();
+        var x$7 = $m_Lworkspace_dimensions_SiUnit$Mole$();
         if ((x$7 === $thiz)) {
-          return "K"
+          return "mol"
         } else {
-          var x$9 = $m_Lworkspace_dimensions_SiUnit$Ampere$();
+          var x$9 = $m_Lworkspace_dimensions_SiUnit$Kelvin$();
           if ((x$9 === $thiz)) {
-            return "A"
+            return "K"
           } else {
-            throw new $c_s_MatchError().init___O($thiz)
+            var x$11 = $m_Lworkspace_dimensions_SiUnit$Ampere$();
+            if ((x$11 === $thiz)) {
+              return "A"
+            } else {
+              throw new $c_s_MatchError().init___O($thiz)
+            }
           }
         }
       }
@@ -7933,25 +7938,27 @@ $c_Lworkspace_dimensions_SiUnit$.prototype.init___ = (function() {
 });
 $c_Lworkspace_dimensions_SiUnit$.prototype.fromSymbol__T__s_Option = (function(symbol) {
   var y = $m_Lworkspace_dimensions_SiUnit$Meter$();
-  var jsx$4 = new $c_T2().init___O__O("m", y);
+  var jsx$5 = new $c_T2().init___O__O("m", y);
   var y$1 = $m_Lworkspace_dimensions_SiUnit$Kilogram$();
-  var jsx$3 = new $c_T2().init___O__O("kg", y$1);
+  var jsx$4 = new $c_T2().init___O__O("kg", y$1);
   var y$2 = $m_Lworkspace_dimensions_SiUnit$Second$();
-  var jsx$2 = new $c_T2().init___O__O("s", y$2);
+  var jsx$3 = new $c_T2().init___O__O("s", y$2);
   var y$3 = $m_Lworkspace_dimensions_SiUnit$Kelvin$();
-  var jsx$1 = new $c_T2().init___O__O("K", y$3);
+  var jsx$2 = new $c_T2().init___O__O("K", y$3);
   var y$4 = $m_Lworkspace_dimensions_SiUnit$Ampere$();
-  var array = [jsx$4, jsx$3, jsx$2, jsx$1, new $c_T2().init___O__O("A", y$4)];
-  var this$12 = new $c_scm_MapBuilder().init___sc_GenMap($m_sci_Map$EmptyMap$());
+  var jsx$1 = new $c_T2().init___O__O("A", y$4);
+  var y$5 = $m_Lworkspace_dimensions_SiUnit$Mole$();
+  var array = [jsx$5, jsx$4, jsx$3, jsx$2, jsx$1, new $c_T2().init___O__O("mol", y$5)];
+  var this$14 = new $c_scm_MapBuilder().init___sc_GenMap($m_sci_Map$EmptyMap$());
   var i = 0;
   var len = $uI(array.length);
   while ((i < len)) {
     var index = i;
     var arg1 = array[index];
-    this$12.$$plus$eq__T2__scm_MapBuilder($as_T2(arg1));
+    this$14.$$plus$eq__T2__scm_MapBuilder($as_T2(arg1));
     i = ((1 + i) | 0)
   };
-  return $as_sc_MapLike(this$12.elems$1).get__O__s_Option(symbol)
+  return $as_sc_MapLike(this$14.elems$1).get__O__s_Option(symbol)
 });
 var $d_Lworkspace_dimensions_SiUnit$ = new $TypeData().initClass({
   Lworkspace_dimensions_SiUnit$: 0
@@ -15635,6 +15642,12 @@ function $c_Lworkspace_PhysicalConstant$() {
   this.hbar$1 = null;
   this.plankConstant$1 = null;
   this.speedOfLight$1 = null;
+  this.vacuumPermeability$1 = null;
+  this.vacuumPermittivity$1 = null;
+  this.elementaryCharge$1 = null;
+  this.boltzmannConstant$1 = null;
+  this.avogadroConstant$1 = null;
+  this.faradayConstant$1 = null;
   this.constants$1 = null
 }
 $c_Lworkspace_PhysicalConstant$.prototype = new $h_O();
@@ -15652,6 +15665,12 @@ $c_Lworkspace_PhysicalConstant$.prototype.init___ = (function() {
   this.hbar$1 = new $c_Lworkspace_PhysicalConstant().init___T__Lcas_NamedNumber("\u0127", new $c_Lcas_NamedNumber().init___D__T__Lworkspace_dimensions_SiDimension(1.0545718E-34, "\u0127", $m_Lworkspace_dimensions_Meter$().$$times$times__I__Lworkspace_dimensions_SiDimension(2).$$times__Lworkspace_dimensions_SiDimension__Lworkspace_dimensions_SiDimension($m_Lworkspace_dimensions_Kilogram$()).$$div__Lworkspace_dimensions_SiDimension__Lworkspace_dimensions_SiDimension($m_Lworkspace_dimensions_Second$())));
   this.plankConstant$1 = new $c_Lworkspace_PhysicalConstant().init___T__Lcas_NamedNumber("h", new $c_Lcas_NamedNumber().init___D__T__Lworkspace_dimensions_SiDimension(6.62607004E-34, "h", $m_Lworkspace_dimensions_Meter$().$$times$times__I__Lworkspace_dimensions_SiDimension(2).$$times__Lworkspace_dimensions_SiDimension__Lworkspace_dimensions_SiDimension($m_Lworkspace_dimensions_Kilogram$()).$$div__Lworkspace_dimensions_SiDimension__Lworkspace_dimensions_SiDimension($m_Lworkspace_dimensions_Second$())));
   this.speedOfLight$1 = new $c_Lworkspace_PhysicalConstant().init___T__Lcas_NamedNumber("c", new $c_Lcas_NamedNumber().init___D__T__Lworkspace_dimensions_SiDimension(2.99792458E8, "c", $m_Lworkspace_dimensions_Meter$().$$div__Lworkspace_dimensions_SiDimension__Lworkspace_dimensions_SiDimension($m_Lworkspace_dimensions_Second$())));
+  this.vacuumPermeability$1 = new $c_Lworkspace_PhysicalConstant().init___T__Lcas_NamedNumber("\u03bc_0", new $c_Lcas_NamedNumber().init___D__T__Lworkspace_dimensions_SiDimension(1.256637E-6, "\u03bc_0", $m_Lworkspace_dimensions_SiDimension$().SiNewton$1.$$div__Lworkspace_dimensions_SiDimension__Lworkspace_dimensions_SiDimension($m_Lworkspace_dimensions_Ampere$().$$times$times__I__Lworkspace_dimensions_SiDimension(2))));
+  this.vacuumPermittivity$1 = new $c_Lworkspace_PhysicalConstant().init___T__Lcas_NamedNumber("\u03b5_0", new $c_Lcas_NamedNumber().init___D__T__Lworkspace_dimensions_SiDimension(8.854187817E-12, "\u03b5_0", $m_Lworkspace_dimensions_SiDimension$().SiFarad$1.$$div__Lworkspace_dimensions_SiDimension__Lworkspace_dimensions_SiDimension($m_Lworkspace_dimensions_Meter$())));
+  this.elementaryCharge$1 = new $c_Lworkspace_PhysicalConstant().init___T__Lcas_NamedNumber("e", new $c_Lcas_NamedNumber().init___D__T__Lworkspace_dimensions_SiDimension(1.6021766208E-19, "e", $m_Lworkspace_dimensions_SiDimension$().SiCoulomb$1));
+  this.boltzmannConstant$1 = new $c_Lworkspace_PhysicalConstant().init___T__Lcas_NamedNumber("k", new $c_Lcas_NamedNumber().init___D__T__Lworkspace_dimensions_SiDimension(1.3806485E-23, "k", $m_Lworkspace_dimensions_SiDimension$().SiJoule$1.$$div__Lworkspace_dimensions_SiDimension__Lworkspace_dimensions_SiDimension($m_Lworkspace_dimensions_Kelvin$())));
+  this.avogadroConstant$1 = new $c_Lworkspace_PhysicalConstant().init___T__Lcas_NamedNumber("N_A", new $c_Lcas_NamedNumber().init___D__T__Lworkspace_dimensions_SiDimension(6.022140858E23, "N_A", $m_Lworkspace_dimensions_Mole$().invert__Lworkspace_dimensions_SiDimension()));
+  this.faradayConstant$1 = new $c_Lworkspace_PhysicalConstant().init___T__Lcas_NamedNumber("F", new $c_Lcas_NamedNumber().init___D__T__Lworkspace_dimensions_SiDimension(96485.333, "F", $m_Lworkspace_dimensions_SiDimension$().SiCoulomb$1.$$div__Lworkspace_dimensions_SiDimension__Lworkspace_dimensions_SiDimension($m_Lworkspace_dimensions_Mole$())));
   var array = [this.G$1, this.k$undE$1, this.pi$1, this.hbar$1, this.plankConstant$1, this.speedOfLight$1];
   if (($uI(array.length) === 0)) {
     var jsx$1 = $m_sci_Set$EmptySet$()
@@ -15953,6 +15972,8 @@ function $c_Lworkspace_dimensions_Dimension$() {
   this.radian$1 = null;
   this.degree$1 = null;
   this.joule$1 = null;
+  this.mole$1 = null;
+  this.farad$1 = null;
   this.watt$1 = null;
   this.electronVolt$1 = null;
   this.newton$1 = null;
@@ -15995,6 +16016,8 @@ $c_Lworkspace_dimensions_Dimension$.prototype.init___ = (function() {
   this.radian$1 = new $c_Lworkspace_dimensions_GeneralUnit().init___D__Lworkspace_dimensions_SiDimension__Lworkspace_UnitName(1.0, $m_Lworkspace_dimensions_SiDimension$().Dimensionless$1, new $c_Lworkspace_SymbolUnitName().init___T("rad"));
   this.degree$1 = new $c_Lworkspace_dimensions_GeneralUnit().init___D__Lworkspace_dimensions_SiDimension__Lworkspace_UnitName(0.017453292500000002, $m_Lworkspace_dimensions_SiDimension$().Dimensionless$1, new $c_Lworkspace_SymbolUnitName().init___T("\u00b0"));
   this.joule$1 = new $c_Lworkspace_dimensions_GeneralUnit().init___D__Lworkspace_dimensions_SiDimension__Lworkspace_UnitName(1.0, $m_Lworkspace_dimensions_SiDimension$().SiJoule$1, new $c_Lworkspace_SymbolUnitName().init___T("J"));
+  this.mole$1 = new $c_Lworkspace_dimensions_GeneralUnit().init___D__Lworkspace_dimensions_SiDimension__Lworkspace_UnitName(1.0, $m_Lworkspace_dimensions_Mole$(), new $c_Lworkspace_SymbolUnitName().init___T("mol"));
+  this.farad$1 = new $c_Lworkspace_dimensions_GeneralUnit().init___D__Lworkspace_dimensions_SiDimension__Lworkspace_UnitName(1.0, $m_Lworkspace_dimensions_SiDimension$().SiFarad$1, new $c_Lworkspace_SymbolUnitName().init___T("F"));
   this.watt$1 = new $c_Lworkspace_dimensions_GeneralUnit().init___D__Lworkspace_dimensions_SiDimension__Lworkspace_UnitName(1.0, $m_Lworkspace_dimensions_SiDimension$().SiWatt$1, new $c_Lworkspace_SymbolUnitName().init___T("W"));
   this.electronVolt$1 = new $c_Lworkspace_dimensions_GeneralUnit().init___D__Lworkspace_dimensions_SiDimension__Lworkspace_UnitName(1.60217662E-19, $m_Lworkspace_dimensions_SiDimension$().SiJoule$1, new $c_Lworkspace_SymbolUnitName().init___T("eV"));
   this.newton$1 = new $c_Lworkspace_dimensions_GeneralUnit().init___D__Lworkspace_dimensions_SiDimension__Lworkspace_UnitName(1.0, $m_Lworkspace_dimensions_SiDimension$().SiNewton$1, new $c_Lworkspace_SymbolUnitName().init___T("N"));
@@ -16003,31 +16026,35 @@ $c_Lworkspace_dimensions_Dimension$.prototype.init___ = (function() {
   this.coulomb$1 = new $c_Lworkspace_dimensions_GeneralUnit().init___D__Lworkspace_dimensions_SiDimension__Lworkspace_UnitName(1.0, $m_Lworkspace_dimensions_SiDimension$().SiCoulomb$1, new $c_Lworkspace_SymbolUnitName().init___T("C"));
   this.volt$1 = new $c_Lworkspace_dimensions_GeneralUnit().init___D__Lworkspace_dimensions_SiDimension__Lworkspace_UnitName(1.0, $m_Lworkspace_dimensions_SiDimension$().SiVolt$1, new $c_Lworkspace_SymbolUnitName().init___T("V"));
   var y = this.meter$1;
-  var jsx$11 = new $c_T2().init___O__O("m", y);
+  var jsx$13 = new $c_T2().init___O__O("m", y);
   var y$1 = new $c_Lworkspace_dimensions_GeneralUnit().init___D__Lworkspace_dimensions_SiDimension__Lworkspace_UnitName(0.001, $m_Lworkspace_dimensions_Kilogram$(), new $c_Lworkspace_SymbolUnitName().init___T("g"));
-  var jsx$10 = new $c_T2().init___O__O("g", y$1);
+  var jsx$12 = new $c_T2().init___O__O("g", y$1);
   var y$2 = this.second$1;
-  var jsx$9 = new $c_T2().init___O__O("s", y$2);
+  var jsx$11 = new $c_T2().init___O__O("s", y$2);
   var y$3 = this.degreeKelvin$1;
-  var jsx$8 = new $c_T2().init___O__O("K", y$3);
+  var jsx$10 = new $c_T2().init___O__O("K", y$3);
   var y$4 = this.ampere$1;
-  var jsx$7 = new $c_T2().init___O__O("A", y$4);
+  var jsx$9 = new $c_T2().init___O__O("A", y$4);
   var y$5 = this.joule$1;
-  var jsx$6 = new $c_T2().init___O__O("J", y$5);
-  var y$6 = this.watt$1;
-  var jsx$5 = new $c_T2().init___O__O("W", y$6);
-  var y$7 = this.electronVolt$1;
-  var jsx$4 = new $c_T2().init___O__O("eV", y$7);
-  var y$8 = this.newton$1;
-  var jsx$3 = new $c_T2().init___O__O("N", y$8);
-  var y$9 = this.hertz$1;
-  var jsx$2 = new $c_T2().init___O__O("Hz", y$9);
-  var y$10 = this.coulomb$1;
-  var jsx$1 = new $c_T2().init___O__O("C", y$10);
-  var y$11 = new $c_Lworkspace_dimensions_GeneralUnit().init___D__Lworkspace_dimensions_SiDimension__Lworkspace_UnitName(1.0, $m_Lworkspace_dimensions_SiDimension$().SiVolt$1, new $c_Lworkspace_SymbolUnitName().init___T("V"));
-  var array = [jsx$11, jsx$10, jsx$9, jsx$8, jsx$7, jsx$6, jsx$5, jsx$4, jsx$3, jsx$2, jsx$1, new $c_T2().init___O__O("V", y$11)];
+  var jsx$8 = new $c_T2().init___O__O("J", y$5);
+  var y$6 = this.farad$1;
+  var jsx$7 = new $c_T2().init___O__O("F", y$6);
+  var y$7 = this.watt$1;
+  var jsx$6 = new $c_T2().init___O__O("W", y$7);
+  var y$8 = this.electronVolt$1;
+  var jsx$5 = new $c_T2().init___O__O("eV", y$8);
+  var y$9 = this.mole$1;
+  var jsx$4 = new $c_T2().init___O__O("mol", y$9);
+  var y$10 = this.newton$1;
+  var jsx$3 = new $c_T2().init___O__O("N", y$10);
+  var y$11 = this.hertz$1;
+  var jsx$2 = new $c_T2().init___O__O("Hz", y$11);
+  var y$12 = this.coulomb$1;
+  var jsx$1 = new $c_T2().init___O__O("C", y$12);
+  var y$13 = new $c_Lworkspace_dimensions_GeneralUnit().init___D__Lworkspace_dimensions_SiDimension__Lworkspace_UnitName(1.0, $m_Lworkspace_dimensions_SiDimension$().SiVolt$1, new $c_Lworkspace_SymbolUnitName().init___T("V"));
+  var array = [jsx$13, jsx$12, jsx$11, jsx$10, jsx$9, jsx$8, jsx$7, jsx$6, jsx$5, jsx$4, jsx$3, jsx$2, jsx$1, new $c_T2().init___O__O("V", y$13)];
   if (($uI(array.length) === 0)) {
-    var jsx$12 = $m_sci_Set$EmptySet$()
+    var jsx$14 = $m_sci_Set$EmptySet$()
   } else {
     var b = new $c_scm_SetBuilder().init___sc_Set($m_sci_Set$EmptySet$());
     var i = 0;
@@ -16038,12 +16065,12 @@ $c_Lworkspace_dimensions_Dimension$.prototype.init___ = (function() {
       b.$$plus$eq__O__scm_SetBuilder(arg1);
       i = ((1 + i) | 0)
     };
-    var jsx$12 = b.elems$1
+    var jsx$14 = b.elems$1
   };
-  this.unitsWhichCanHaveSiPrefixes$1 = $as_sci_Set(jsx$12);
+  this.unitsWhichCanHaveSiPrefixes$1 = $as_sci_Set(jsx$14);
   var array$1 = [new $c_T2().init___O__O("a", 1.0E-18), new $c_T2().init___O__O("f", 1.0E-15), new $c_T2().init___O__O("p", 1.0E-12), new $c_T2().init___O__O("n", 1.0E-9), new $c_T2().init___O__O("\u03bc", 1.0E-6), new $c_T2().init___O__O("m", 0.001), new $c_T2().init___O__O("c", 0.01), new $c_T2().init___O__O("", 1.0), new $c_T2().init___O__O("k", 1000.0), new $c_T2().init___O__O("M", 1000000.0), new $c_T2().init___O__O("G", 1.0E9), new $c_T2().init___O__O("T", 1.0E12), new $c_T2().init___O__O("P", 1.0E15), new $c_T2().init___O__O("E", 1.0E18)];
   if (($uI(array$1.length) === 0)) {
-    var jsx$13 = $m_sci_Set$EmptySet$()
+    var jsx$15 = $m_sci_Set$EmptySet$()
   } else {
     var b$1 = new $c_scm_SetBuilder().init___sc_Set($m_sci_Set$EmptySet$());
     var i$1 = 0;
@@ -16054,9 +16081,9 @@ $c_Lworkspace_dimensions_Dimension$.prototype.init___ = (function() {
       b$1.$$plus$eq__O__scm_SetBuilder(arg1$1);
       i$1 = ((1 + i$1) | 0)
     };
-    var jsx$13 = b$1.elems$1
+    var jsx$15 = b$1.elems$1
   };
-  this.siPrefixes$1 = $as_sci_Set(jsx$13);
+  this.siPrefixes$1 = $as_sci_Set(jsx$15);
   return this
 });
 $c_Lworkspace_dimensions_Dimension$.prototype.parseJs__T__Lworkspace_dimensions_Dimension = (function(str) {
@@ -16493,6 +16520,7 @@ function $c_Lworkspace_dimensions_SiDimension$() {
   this.SiNewtonsPerCoulomb$1 = null;
   this.SiWatt$1 = null;
   this.SiOhm$1 = null;
+  this.SiFarad$1 = null;
   this.Dimensionless$1 = null
 }
 $c_Lworkspace_dimensions_SiDimension$.prototype = new $h_O();
@@ -16511,6 +16539,7 @@ $c_Lworkspace_dimensions_SiDimension$.prototype.init___ = (function() {
   this.SiNewtonsPerCoulomb$1 = this.SiNewton$1.$$div__Lworkspace_dimensions_SiDimension__Lworkspace_dimensions_SiDimension(this.SiCoulomb$1);
   this.SiWatt$1 = this.SiJoule$1.$$div__Lworkspace_dimensions_SiDimension__Lworkspace_dimensions_SiDimension($m_Lworkspace_dimensions_Second$());
   this.SiOhm$1 = this.SiVolt$1.$$div__Lworkspace_dimensions_SiDimension__Lworkspace_dimensions_SiDimension($m_Lworkspace_dimensions_Ampere$());
+  this.SiFarad$1 = this.SiCoulomb$1.$$div__Lworkspace_dimensions_SiDimension__Lworkspace_dimensions_SiDimension(this.SiVolt$1);
   this.Dimensionless$1 = new $c_Lworkspace_dimensions_SiDimension().init___sci_Map($as_sci_Map($m_s_Predef$().Map$2.apply__sc_Seq__sc_GenMap($m_sci_Nil$())));
   return this
 });
@@ -25428,94 +25457,99 @@ $c_Lworkspace_dimensions_SiDimension.prototype.toBuckTex$lzycompute__p1__Lworksp
           if (((x$7 !== null) && x$7.equals__O__Z(this))) {
             var jsx$1 = new $c_Lworkspace_Text().init___T("V")
           } else {
-            var x$9 = $m_Lworkspace_dimensions_SiDimension$().SiWatt$1;
+            var x$9 = $m_Lworkspace_dimensions_SiDimension$().SiFarad$1;
             if (((x$9 !== null) && x$9.equals__O__Z(this))) {
-              var jsx$1 = new $c_Lworkspace_Text().init___T("W")
+              var jsx$1 = new $c_Lworkspace_Text().init___T("F")
             } else {
-              var x$11 = $m_Lworkspace_dimensions_SiDimension$().SiOhm$1;
+              var x$11 = $m_Lworkspace_dimensions_SiDimension$().SiWatt$1;
               if (((x$11 !== null) && x$11.equals__O__Z(this))) {
-                var jsx$1 = new $c_Lworkspace_Text().init___T("\u03a9")
+                var jsx$1 = new $c_Lworkspace_Text().init___T("W")
               } else {
-                var x$13 = $m_Lworkspace_dimensions_SiDimension$().SiNewtonsPerCoulomb$1;
+                var x$13 = $m_Lworkspace_dimensions_SiDimension$().SiOhm$1;
                 if (((x$13 !== null) && x$13.equals__O__Z(this))) {
-                  var jsx$1 = new $c_Lworkspace_Text().init___T("N/C")
+                  var jsx$1 = new $c_Lworkspace_Text().init___T("\u03a9")
                 } else {
-                  var this$1 = this.units$1;
-                  var this$2 = $m_sci_List$();
-                  var cbf = this$2.ReusableCBFInstance$2;
-                  var this$4 = $as_sci_List($f_sc_TraversableLike__to__scg_CanBuildFrom__O(this$1, cbf));
-                  var f = new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function($this) {
-                    return (function(x$2$2$2) {
-                      var x$2$2 = $as_T2(x$2$2$2);
-                      var this$3 = $as_Lworkspace_dimensions_SiUnit(x$2$2.$$und1__O());
-                      return $f_Lworkspace_dimensions_SiUnit__symbol__T(this$3)
-                    })
-                  })(this));
-                  var ord = $m_s_math_Ordering$String$();
-                  var this$11 = $as_sci_List($f_sc_SeqLike__sortBy__F1__s_math_Ordering__O(this$4, f, ord));
-                  var f$1 = (function(this$2$1) {
-                    return (function(x0$1$2) {
-                      var x0$1 = $as_T2(x0$1$2);
-                      if ((x0$1 !== null)) {
-                        var unit = $as_Lworkspace_dimensions_SiUnit(x0$1.$$und1__O());
-                        var p2 = $as_Lcas_RationalNumber(x0$1.$$und2__O());
-                        if ((p2 !== null)) {
-                          var p3 = p2.numerator$1;
-                          var p4 = p2.denominator$1;
-                          if (((p3 === 1) && (p4 === 1))) {
-                            return new $c_Lworkspace_Text().init___T($f_Lworkspace_dimensions_SiUnit__symbol__T(unit))
-                          }
-                        }
-                      };
-                      if ((x0$1 !== null)) {
-                        var unit$2 = $as_Lworkspace_dimensions_SiUnit(x0$1.$$und1__O());
-                        var power = $as_Lcas_RationalNumber(x0$1.$$und2__O());
-                        $m_sci_List$();
-                        var jsx$2 = new $c_Lworkspace_Text().init___T((" " + $f_Lworkspace_dimensions_SiUnit__symbol__T(unit$2)));
-                        $m_sci_List$();
-                        var xs = new $c_sjs_js_WrappedArray().init___sjs_js_Array([new $c_Lworkspace_Text().init___T($as_T($f_Lcas_Expression__toStringWithBinding__T2(power).$$und1__O()))]);
-                        var this$6 = $m_sci_List$();
-                        var cbf$1 = this$6.ReusableCBFInstance$2;
-                        var xs$1 = new $c_sjs_js_WrappedArray().init___sjs_js_Array([jsx$2, new $c_Lworkspace_Sup().init___sci_List($as_sci_List($f_sc_TraversableLike__to__scg_CanBuildFrom__O(xs, cbf$1)))]);
-                        var this$8 = $m_sci_List$();
-                        var cbf$2 = this$8.ReusableCBFInstance$2;
-                        var items = $as_sci_List($f_sc_TraversableLike__to__scg_CanBuildFrom__O(xs$1, cbf$2));
-                        return new $c_Lworkspace_FlexBox().init___sci_List__Lworkspace_FlexDirection__Lworkspace_AlignItemDirection(items, $m_Lworkspace_Row$(), $m_Lworkspace_FlexEnd$())
-                      };
-                      throw new $c_s_MatchError().init___O(x0$1)
-                    })
-                  })(this);
-                  var this$10 = $m_sci_List$();
-                  var bf = this$10.ReusableCBFInstance$2;
-                  if ((bf === $m_sci_List$().ReusableCBFInstance$2)) {
-                    if ((this$11 === $m_sci_Nil$())) {
-                      var jsx$3 = $m_sci_Nil$()
-                    } else {
-                      var arg1 = this$11.head__O();
-                      var h = new $c_sci_$colon$colon().init___O__sci_List(f$1(arg1), $m_sci_Nil$());
-                      var t = h;
-                      var rest = $as_sci_List(this$11.tail__O());
-                      while ((rest !== $m_sci_Nil$())) {
-                        var arg1$1 = rest.head__O();
-                        var nx = new $c_sci_$colon$colon().init___O__sci_List(f$1(arg1$1), $m_sci_Nil$());
-                        t.tl$5 = nx;
-                        t = nx;
-                        rest = $as_sci_List(rest.tail__O())
-                      };
-                      var jsx$3 = h
-                    }
+                  var x$15 = $m_Lworkspace_dimensions_SiDimension$().SiNewtonsPerCoulomb$1;
+                  if (((x$15 !== null) && x$15.equals__O__Z(this))) {
+                    var jsx$1 = new $c_Lworkspace_Text().init___T("N/C")
                   } else {
-                    var b = $f_sc_TraversableLike__builder$1__psc_TraversableLike__scg_CanBuildFrom__scm_Builder(this$11, bf);
-                    var these = this$11;
-                    while ((!these.isEmpty__Z())) {
-                      var arg1$2 = these.head__O();
-                      b.$$plus$eq__O__scm_Builder(f$1(arg1$2));
-                      these = $as_sci_List(these.tail__O())
+                    var this$1 = this.units$1;
+                    var this$2 = $m_sci_List$();
+                    var cbf = this$2.ReusableCBFInstance$2;
+                    var this$4 = $as_sci_List($f_sc_TraversableLike__to__scg_CanBuildFrom__O(this$1, cbf));
+                    var f = new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function($this) {
+                      return (function(x$2$2$2) {
+                        var x$2$2 = $as_T2(x$2$2$2);
+                        var this$3 = $as_Lworkspace_dimensions_SiUnit(x$2$2.$$und1__O());
+                        return $f_Lworkspace_dimensions_SiUnit__symbol__T(this$3)
+                      })
+                    })(this));
+                    var ord = $m_s_math_Ordering$String$();
+                    var this$11 = $as_sci_List($f_sc_SeqLike__sortBy__F1__s_math_Ordering__O(this$4, f, ord));
+                    var f$1 = (function(this$2$1) {
+                      return (function(x0$1$2) {
+                        var x0$1 = $as_T2(x0$1$2);
+                        if ((x0$1 !== null)) {
+                          var unit = $as_Lworkspace_dimensions_SiUnit(x0$1.$$und1__O());
+                          var p2 = $as_Lcas_RationalNumber(x0$1.$$und2__O());
+                          if ((p2 !== null)) {
+                            var p3 = p2.numerator$1;
+                            var p4 = p2.denominator$1;
+                            if (((p3 === 1) && (p4 === 1))) {
+                              return new $c_Lworkspace_Text().init___T($f_Lworkspace_dimensions_SiUnit__symbol__T(unit))
+                            }
+                          }
+                        };
+                        if ((x0$1 !== null)) {
+                          var unit$2 = $as_Lworkspace_dimensions_SiUnit(x0$1.$$und1__O());
+                          var power = $as_Lcas_RationalNumber(x0$1.$$und2__O());
+                          $m_sci_List$();
+                          var jsx$2 = new $c_Lworkspace_Text().init___T((" " + $f_Lworkspace_dimensions_SiUnit__symbol__T(unit$2)));
+                          $m_sci_List$();
+                          var xs = new $c_sjs_js_WrappedArray().init___sjs_js_Array([new $c_Lworkspace_Text().init___T($as_T($f_Lcas_Expression__toStringWithBinding__T2(power).$$und1__O()))]);
+                          var this$6 = $m_sci_List$();
+                          var cbf$1 = this$6.ReusableCBFInstance$2;
+                          var xs$1 = new $c_sjs_js_WrappedArray().init___sjs_js_Array([jsx$2, new $c_Lworkspace_Sup().init___sci_List($as_sci_List($f_sc_TraversableLike__to__scg_CanBuildFrom__O(xs, cbf$1)))]);
+                          var this$8 = $m_sci_List$();
+                          var cbf$2 = this$8.ReusableCBFInstance$2;
+                          var items = $as_sci_List($f_sc_TraversableLike__to__scg_CanBuildFrom__O(xs$1, cbf$2));
+                          return new $c_Lworkspace_FlexBox().init___sci_List__Lworkspace_FlexDirection__Lworkspace_AlignItemDirection(items, $m_Lworkspace_Row$(), $m_Lworkspace_FlexEnd$())
+                        };
+                        throw new $c_s_MatchError().init___O(x0$1)
+                      })
+                    })(this);
+                    var this$10 = $m_sci_List$();
+                    var bf = this$10.ReusableCBFInstance$2;
+                    if ((bf === $m_sci_List$().ReusableCBFInstance$2)) {
+                      if ((this$11 === $m_sci_Nil$())) {
+                        var jsx$3 = $m_sci_Nil$()
+                      } else {
+                        var arg1 = this$11.head__O();
+                        var h = new $c_sci_$colon$colon().init___O__sci_List(f$1(arg1), $m_sci_Nil$());
+                        var t = h;
+                        var rest = $as_sci_List(this$11.tail__O());
+                        while ((rest !== $m_sci_Nil$())) {
+                          var arg1$1 = rest.head__O();
+                          var nx = new $c_sci_$colon$colon().init___O__sci_List(f$1(arg1$1), $m_sci_Nil$());
+                          t.tl$5 = nx;
+                          t = nx;
+                          rest = $as_sci_List(rest.tail__O())
+                        };
+                        var jsx$3 = h
+                      }
+                    } else {
+                      var b = $f_sc_TraversableLike__builder$1__psc_TraversableLike__scg_CanBuildFrom__scm_Builder(this$11, bf);
+                      var these = this$11;
+                      while ((!these.isEmpty__Z())) {
+                        var arg1$2 = these.head__O();
+                        b.$$plus$eq__O__scm_Builder(f$1(arg1$2));
+                        these = $as_sci_List(these.tail__O())
+                      };
+                      var jsx$3 = b.result__O()
                     };
-                    var jsx$3 = b.result__O()
-                  };
-                  var items$1 = $as_sci_List(jsx$3);
-                  var jsx$1 = new $c_Lworkspace_FlexBox().init___sci_List__Lworkspace_FlexDirection__Lworkspace_AlignItemDirection(items$1, $m_Lworkspace_Row$(), $m_Lworkspace_FlexEnd$())
+                    var items$1 = $as_sci_List(jsx$3);
+                    var jsx$1 = new $c_Lworkspace_FlexBox().init___sci_List__Lworkspace_FlexDirection__Lworkspace_AlignItemDirection(items$1, $m_Lworkspace_Row$(), $m_Lworkspace_FlexEnd$())
+                  }
                 }
               }
             }
@@ -25565,6 +25599,26 @@ $c_Lworkspace_dimensions_SiDimension.prototype.equals__O__Z = (function(x$1) {
     return false
   }
 });
+$c_Lworkspace_dimensions_SiDimension.prototype.invert$lzycompute__p1__Lworkspace_dimensions_SiDimension = (function() {
+  if (((4 & this.bitmap$0$1) === 0)) {
+    var this$1 = this.units$1;
+    var f = new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function($this) {
+      return (function(x0$3$2) {
+        var x0$3 = $as_Lcas_RationalNumber(x0$3$2);
+        if ((x0$3 !== null)) {
+          var n = x0$3.numerator$1;
+          var d = x0$3.denominator$1;
+          return new $c_Lcas_RationalNumber().init___I__I(((-n) | 0), d)
+        } else {
+          throw new $c_s_MatchError().init___O(x0$3)
+        }
+      })
+    })(this));
+    this.invert$1 = new $c_Lworkspace_dimensions_SiDimension().init___sci_Map(new $c_sci_MapLike$$anon$2().init___sci_MapLike__F1(this$1, f));
+    this.bitmap$0$1 = (4 | this.bitmap$0$1)
+  };
+  return this.invert$1
+});
 $c_Lworkspace_dimensions_SiDimension.prototype.productElement__I__O = (function(x$1) {
   switch (x$1) {
     case 0: {
@@ -25582,6 +25636,9 @@ $c_Lworkspace_dimensions_SiDimension.prototype.init___sci_Map = (function(units)
 });
 $c_Lworkspace_dimensions_SiDimension.prototype.toString__T = (function() {
   return $m_sr_ScalaRunTime$().$$undtoString__s_Product__T(this)
+});
+$c_Lworkspace_dimensions_SiDimension.prototype.invert__Lworkspace_dimensions_SiDimension = (function() {
+  return (((4 & this.bitmap$0$1) === 0) ? this.invert$lzycompute__p1__Lworkspace_dimensions_SiDimension() : this.invert$1)
 });
 $c_Lworkspace_dimensions_SiDimension.prototype.toJsObject$lzycompute__p1__sjs_js_Object = (function() {
   if (((2 & this.bitmap$0$1) === 0)) {
@@ -31921,6 +31978,52 @@ function $m_Lworkspace_dimensions_Meter$() {
   return $n_Lworkspace_dimensions_Meter$
 }
 /** @constructor */
+function $c_Lworkspace_dimensions_Mole$() {
+  $c_Lworkspace_dimensions_SiDimension.call(this)
+}
+$c_Lworkspace_dimensions_Mole$.prototype = new $h_Lworkspace_dimensions_SiDimension();
+$c_Lworkspace_dimensions_Mole$.prototype.constructor = $c_Lworkspace_dimensions_Mole$;
+/** @constructor */
+function $h_Lworkspace_dimensions_Mole$() {
+  /*<skip>*/
+}
+$h_Lworkspace_dimensions_Mole$.prototype = $c_Lworkspace_dimensions_Mole$.prototype;
+$c_Lworkspace_dimensions_Mole$.prototype.init___ = (function() {
+  var self = $m_Lworkspace_dimensions_SiUnit$Mole$();
+  var y = new $c_Lcas_RationalNumber().init___I__I(1, 1);
+  var array = [new $c_T2().init___O__O(self, y)];
+  var this$4 = new $c_scm_MapBuilder().init___sc_GenMap($m_sci_Map$EmptyMap$());
+  var i = 0;
+  var len = $uI(array.length);
+  while ((i < len)) {
+    var index = i;
+    var arg1 = array[index];
+    this$4.$$plus$eq__T2__scm_MapBuilder($as_T2(arg1));
+    i = ((1 + i) | 0)
+  };
+  $c_Lworkspace_dimensions_SiDimension.prototype.init___sci_Map.call(this, $as_sci_Map(this$4.elems$1));
+  return this
+});
+var $d_Lworkspace_dimensions_Mole$ = new $TypeData().initClass({
+  Lworkspace_dimensions_Mole$: 0
+}, false, "workspace.dimensions.Mole$", {
+  Lworkspace_dimensions_Mole$: 1,
+  Lworkspace_dimensions_SiDimension: 1,
+  O: 1,
+  s_Product: 1,
+  s_Equals: 1,
+  s_Serializable: 1,
+  Ljava_io_Serializable: 1
+});
+$c_Lworkspace_dimensions_Mole$.prototype.$classData = $d_Lworkspace_dimensions_Mole$;
+var $n_Lworkspace_dimensions_Mole$ = (void 0);
+function $m_Lworkspace_dimensions_Mole$() {
+  if ((!$n_Lworkspace_dimensions_Mole$)) {
+    $n_Lworkspace_dimensions_Mole$ = new $c_Lworkspace_dimensions_Mole$().init___()
+  };
+  return $n_Lworkspace_dimensions_Mole$
+}
+/** @constructor */
 function $c_Lworkspace_dimensions_Second$() {
   $c_Lworkspace_dimensions_SiDimension.call(this)
 }
@@ -32169,6 +32272,57 @@ function $m_Lworkspace_dimensions_SiUnit$Meter$() {
     $n_Lworkspace_dimensions_SiUnit$Meter$ = new $c_Lworkspace_dimensions_SiUnit$Meter$().init___()
   };
   return $n_Lworkspace_dimensions_SiUnit$Meter$
+}
+/** @constructor */
+function $c_Lworkspace_dimensions_SiUnit$Mole$() {
+  $c_O.call(this)
+}
+$c_Lworkspace_dimensions_SiUnit$Mole$.prototype = new $h_O();
+$c_Lworkspace_dimensions_SiUnit$Mole$.prototype.constructor = $c_Lworkspace_dimensions_SiUnit$Mole$;
+/** @constructor */
+function $h_Lworkspace_dimensions_SiUnit$Mole$() {
+  /*<skip>*/
+}
+$h_Lworkspace_dimensions_SiUnit$Mole$.prototype = $c_Lworkspace_dimensions_SiUnit$Mole$.prototype;
+$c_Lworkspace_dimensions_SiUnit$Mole$.prototype.init___ = (function() {
+  return this
+});
+$c_Lworkspace_dimensions_SiUnit$Mole$.prototype.productPrefix__T = (function() {
+  return "Mole"
+});
+$c_Lworkspace_dimensions_SiUnit$Mole$.prototype.productArity__I = (function() {
+  return 0
+});
+$c_Lworkspace_dimensions_SiUnit$Mole$.prototype.productElement__I__O = (function(x$1) {
+  throw new $c_jl_IndexOutOfBoundsException().init___T(("" + x$1))
+});
+$c_Lworkspace_dimensions_SiUnit$Mole$.prototype.toString__T = (function() {
+  return "Mole"
+});
+$c_Lworkspace_dimensions_SiUnit$Mole$.prototype.hashCode__I = (function() {
+  return 2404027
+});
+$c_Lworkspace_dimensions_SiUnit$Mole$.prototype.productIterator__sc_Iterator = (function() {
+  return new $c_sr_ScalaRunTime$$anon$1().init___s_Product(this)
+});
+var $d_Lworkspace_dimensions_SiUnit$Mole$ = new $TypeData().initClass({
+  Lworkspace_dimensions_SiUnit$Mole$: 0
+}, false, "workspace.dimensions.SiUnit$Mole$", {
+  Lworkspace_dimensions_SiUnit$Mole$: 1,
+  O: 1,
+  Lworkspace_dimensions_SiUnit: 1,
+  s_Product: 1,
+  s_Equals: 1,
+  s_Serializable: 1,
+  Ljava_io_Serializable: 1
+});
+$c_Lworkspace_dimensions_SiUnit$Mole$.prototype.$classData = $d_Lworkspace_dimensions_SiUnit$Mole$;
+var $n_Lworkspace_dimensions_SiUnit$Mole$ = (void 0);
+function $m_Lworkspace_dimensions_SiUnit$Mole$() {
+  if ((!$n_Lworkspace_dimensions_SiUnit$Mole$)) {
+    $n_Lworkspace_dimensions_SiUnit$Mole$ = new $c_Lworkspace_dimensions_SiUnit$Mole$().init___()
+  };
+  return $n_Lworkspace_dimensions_SiUnit$Mole$
 }
 /** @constructor */
 function $c_Lworkspace_dimensions_SiUnit$Second$() {

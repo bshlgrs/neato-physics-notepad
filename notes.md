@@ -7,9 +7,11 @@
 
 ## Equations to add
 
-- Conversion between frequency and wavelength for light
 - areas, volumes
 - escape velocity
+- second rocket equation
+    - also delete the spurious first one
+- E = 1 / (2* π * ε_0) * p/(z**3)
 
 ## Mistakes I've made
 
