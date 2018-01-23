@@ -56,6 +56,8 @@ class InfoBox extends React.Component {
                             detachNumber={this.props.detachNumber}
                             changeDimension={this.props.changeDimension}
                           />
+    } else if (selectedType === "triangle") {
+      return <TriangleInfoBox />;
     }
     return null;
   };
@@ -125,6 +127,20 @@ class NumberInfoBox extends React.Component {
           </button>}
       </div>
     </div>;
+  }
+}
+
+class TriangleInfoBox extends React.Component {
+  constructor () {
+    super();
+    this.state = {};
+  }
+
+  render () {
+    return <div className="info-box">
+      <p>Triangle!</p>
+
+    </div>
   }
 }
 

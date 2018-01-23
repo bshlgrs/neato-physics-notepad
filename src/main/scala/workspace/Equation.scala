@@ -111,7 +111,7 @@ object LibraryEquationJs {
 }
 
 @JSExportAll
-case class CustomEquation(lhs: Expression[String], rhs: Expression[String]) extends Equation {
+case class CustomEquation(lhs: Expression[String], rhs: Expression[String], builtInEqualities: Set[(VarId, VarId)] = Set()) extends Equation {
   def expr: Expression[String] = lhs - rhs
 
   def varName(varSymbol: String): Option[String] = None

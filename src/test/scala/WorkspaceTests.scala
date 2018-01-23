@@ -293,4 +293,10 @@ class WorkspaceTests extends FunSpec {
       println(ws.recursivelyEvaluatedNumbers)
     }
   }
+
+  describe("diagrams") {
+    it("lets you use them") {
+
+    }
+  }
 }

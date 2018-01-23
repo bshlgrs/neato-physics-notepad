@@ -49,14 +49,13 @@
   justify-content: stretch;
 }
 
-
 .expression {
   font-size: 32px;
   position: absolute;
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: grab;
+  cursor: move;
 }
 
 .equation {
@@ -65,12 +64,12 @@
   align-items: center;
   justify-content: center;
   font-size: 36px;
-  cursor: grab;
+  cursor: move;
 }
 
 .physical-number {
   font-size: 24px;
-  cursor: grab;
+  cursor: move;
   color: darkred;
 }
 

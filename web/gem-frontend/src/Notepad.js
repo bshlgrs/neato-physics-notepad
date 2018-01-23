@@ -6,6 +6,7 @@ import Immutable from 'immutable';
 import BuckTex from './BuckTex';
 import InfoBox from './InfoBox';
 import Textarea from 'react-textarea-autosize';
+import Triangle from './Triangle';
 
 const DRAGGING = "dragging";
 const DRAGGING_FROM_VAR = "dragging-from-var";
@@ -185,10 +186,13 @@ class Notepad extends Component {
   }
   handleStartDrag(e, thingId, ref, selectionObject) {
     if (e.button !== 0) return;
-
+    const rel = getRelativePositionOfEvent(e, ref, this.equationSpaceDiv);
+    this.handleStartDragWithRel(e, thingId, rel, selectionObject);
+  }
+  handleStartDragWithRel(e, thingId, rel, selectionObject) {
     this.setState({
       currentAction: DRAGGING,
-      rel: getRelativePositionOfEvent(e, ref, this.equationSpaceDiv),
+      rel: rel,
       draggedThingId: thingId,
       currentlySelected: selectionObject
     });
@@ -418,6 +422,14 @@ class Notepad extends Component {
     this.props.setWorkspace(this.props.workspace.removeEquality(varId));
   }
 
+  addTriangle () {
+    const newDiagramId = this.props.workspace.diagrams.nextId;
+    const newWs = this.props.workspace.addDiagram;
+    this.props.setPositions(this.props.positions.set('diagram-' + newDiagramId,
+      Immutable.fromJS({x: 100, y: 100})));
+    this.props.setWorkspace(newWs);
+  }
+
   render() {
     const ws = this.props.workspace;
     this.equationRefs = {};
@@ -442,11 +454,6 @@ class Notepad extends Component {
                 .filter((x) => x[1] === equationId)
                 .length === 0
             );
-
-            // if (currentAction === DRAGGING_FROM_EXPR_VAR) {
-            //   const that = this;
-            //   debugger;
-            // }
 
             return <div
               key={idx}
@@ -511,9 +518,32 @@ class Notepad extends Component {
             </div>;
           })}
 
+          {ws.diagrams.keysJs.map((id) => {
+            const triangle = ws.diagrams.getJs(id);
+            const { x, y } = this.props.positions.get('diagram-' + id).toJS();
+            const top = y;
+            const left = x;
+            return <div key={id} style={{position: "absolute", top, left}}>
+              <Triangle
+                triangle={triangle}
+                onMouseDown={(e) => {
+                  const rel = {
+                    x: e.pageX - left,
+                    y: e.pageY - top
+                  }
+                  return this.handleStartDragWithRel(e, 'diagram-' + id, rel, { type: 'triangle', id: id });
+                }}
+                  />
+            </div>
+          })}
+
           <div className='reset-button-div'>
             <button className="btn btn-large btn-danger" onClick={() => this.reset()} >
               Reset
+            </button>
+
+            <button className="btn btn-large btn-default" onClick={() => this.addTriangle()} >
+              Add triangle
             </button>
           </div>
         </div>

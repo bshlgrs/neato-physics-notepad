@@ -2,7 +2,7 @@ package workspace
 import scala.annotation._
 import scala.collection.immutable
 import scala.scalajs.js
-import scala.scalajs.js.annotation.{JSExport, JSExportTopLevel, ScalaJSDefined}
+import scala.scalajs.js.annotation.{JSExport, JSExportAll, JSExportTopLevel, ScalaJSDefined}
 
 
 object Util {
@@ -50,13 +50,16 @@ object Util {
   }
 }
 
+@JSExportAll
 case class MapWithIds[A](map: Map[Int, A], nextId: Int = 0) {
   type Pair = (Int, A)
   def get(key: Int): Option[A] = map.get(key)
+  def getJs(key: Int): Any = map.get(key).orNull
   def apply(key: Int): A = map(key)
   def getOrElse(key: Int, other: A): A = map.getOrElse(key, other)
   def keySet: Set[Int] = map.keySet
   def keys: Iterable[Int] = map.keys
+  def keysJs: js.Array[Int] = js.Array(map.keys.toSeq :_*)
   def values: Iterable[A] = map.values
   def find(p: Pair => Boolean): Option[Pair] = map.find(p)
   def addWithNextId(thing: A): MapWithIds[A] = MapWithIds(map + (nextId -> thing), nextId + 1)
@@ -64,6 +67,7 @@ case class MapWithIds[A](map: Map[Int, A], nextId: Int = 0) {
   def set(k: Int, v: A): MapWithIds[A] = this.copy(map + (k -> v))
   def delete(k: Int): MapWithIds[A] = this.copy(map - k)
   def mapValues[B](f: A => B): MapWithIds[B] = this.copy(map = map.mapValues(f))
+  def modify(k: Int, f: A => A): MapWithIds[A] = this.copy(map + (k -> f(map(k))))
 }
 
 object MapWithIds {

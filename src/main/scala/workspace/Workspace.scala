@@ -9,10 +9,12 @@ import scala.scalajs.js.annotation.{JSExport, JSExportAll, JSExportTopLevel, Sca
 
 @JSExportAll
 @JSExportTopLevel("Gem.Workspace")
-case class Workspace(equations: MapWithIds[Equation] = MapWithIds.empty[Equation],
-                     equalities: SetOfSets[VarId] = SetOfSets(Set()),
-                     expressions: Map[VarId, Expression[VarId]] = Map(),
-                     numbers: MapWithIds[(PhysicalNumber, Option[VarId])] = MapWithIds.empty) {
+case class Workspace(equations: MapWithIds[Equation],
+                     equalities: SetOfSets[VarId],
+                     expressions: Map[VarId, Expression[VarId]],
+                     numbers: MapWithIds[(PhysicalNumber, Option[VarId])],
+                     diagrams: MapWithIds[TriangleDiagram]
+                    ) {
   def toJsObject: js.Object = js.Dynamic.literal(
     "className" -> "Workspace",
     "equations" -> js.Array(equations.map.toSeq.map({ case (x: Int, y: Equation) => js.Tuple2(x, y.toJsObject) }) :_*),
@@ -36,7 +38,12 @@ case class Workspace(equations: MapWithIds[Equation] = MapWithIds.empty[Equation
   def nextEqId: Int = equations.nextId
   def nextNumberId: Int = numbers.nextId
 
-  def addEquation(equation: Equation): Workspace = this.copy(equations=this.equations.addWithNextId(equation))
+  def addEquation(equation: Equation): Workspace = {
+    val equalitiesToAdd: Set[(VarId, VarId)] = equation match { case CustomEquation(_, _, e) => e; case _ => Set() }
+
+    val wsWithAddedEquation = this.copy(equations=this.equations.addWithNextId(equation))
+    equalitiesToAdd.foldLeft(wsWithAddedEquation) ((ws, eq) => ws.addEquality(eq._1, eq._2))
+  }
 
   def addNumber(physicalNumber: PhysicalNumber): Workspace = this.copy(numbers=this.numbers.addWithNextId((physicalNumber, None)))
   def addAndAttachNumber(varId: VarId, physicalNumber: PhysicalNumber): Workspace = this.addNumber(physicalNumber).attachNumber(this.nextNumberId, varId).get
@@ -168,13 +175,10 @@ case class Workspace(equations: MapWithIds[Equation] = MapWithIds.empty[Equation
   def getDimensionJs(varId: VarId): SiDimension = getDimension(varId).orNull
 
   def possibleRewritesForExpr(exprVarId: VarId): Set[(VarId, Int)] = {
-    // todo: prevent allowing you to make tautologies like "v = v"
     val expr = expressions(exprVarId)
     for {
       varToRemoveId <- expr.vars
       equationIdToUse <- equations.keys
-      // if equationToUse is actually a different equation than the one this variable comes from
-//      if equationIdToUse != exprVarId.eqIdx
 
       // if equationToUse contains a related variable
       if checkRewriteAttemptIsValid(exprVarId, varToRemoveId, equationIdToUse)
@@ -199,20 +203,8 @@ case class Workspace(equations: MapWithIds[Equation] = MapWithIds.empty[Equation
     CompileToBuckTex.showEquation(equation, idx, varSubscripts)
   }
 
-  def getNumberForExpression(exprVarId: VarId): Option[Double] = {
-//    val expr = expressions(exprVarId)
-//    val maximallyNumericExpression = expr.vars.foldLeft(expr)((reducedExpr, varId) => this.getNumber(varId) match {
-//      case None => reducedExpr
-//      case Some(num) => reducedExpr.substitute(varId, RealNumber[VarId](num.value))
-//    })
-//    maximallyNumericExpression.evaluate
-    recursivelyEvaluatedNumbers.get(exprVarId)
-  }
-
-  def getNumberForExpressionJs(varId: VarId): Any = {
-//    getNumberForExpression(exprVarId).orNull
-    recursivelyEvaluatedNumbers.get(varId).orNull
-  }
+  def getNumberForExpression(exprVarId: VarId): Option[Double] = recursivelyEvaluatedNumbers.get(exprVarId)
+  def getNumberForExpressionJs(exprVarId: VarId): Any = recursivelyEvaluatedNumbers.get(exprVarId).orNull
 
   lazy val recursivelyEvaluatedNumbers: Map[VarId, Double] = {
     def evalNumbers(knownNumbers: Map[Set[VarId], Double]): Map[Set[VarId], Double] = {
@@ -296,16 +288,28 @@ case class Workspace(equations: MapWithIds[Equation] = MapWithIds.empty[Equation
     val newNumbers = numbers.set(id, (newNumber, mbAttachment))
     this.copy(numbers = newNumbers)
   }
+
+  def addDiagram: Workspace = this.copy(diagrams = this.diagrams.addWithNextId(TriangleDiagram(Map())))
+  def setDiagramVar(diagramId: Int, varName: String, newSetting: Option[Either[VarId, String]]): Workspace = {
+    val d = diagrams(diagramId)
+
+    this.copy(diagrams = this.diagrams.set(diagramId, d.set(varName, newSetting)))
+  }
+
+  def setDiagramVarToVarId(diagramId: Int, varName: String, newSetting: VarId): Workspace =
+    setDiagramVar(diagramId, varName, Some(Left(newSetting)))
+  def setDiagramVarToName(diagramId: Int, varName: String, newSetting: String): Workspace =
+    setDiagramVar(diagramId, varName, Some(Right(newSetting)))
+  def setDiagramVarToBlank(diagramId: Int, varName: String): Workspace =
+    setDiagramVar(diagramId, varName, None)
+
+  def deleteDiagram(diagramId: Int): Workspace = this.copy(diagrams = this.diagrams.delete(diagramId))
 }
-
-case class InvalidActionException(comment: String) extends RuntimeException
-
-
 
 @JSExportTopLevel("Gem.WorkspaceOps")
 @JSExportAll
 object Workspace {
-  def empty = Workspace(MapWithIds.empty, SetOfSets[VarId](Set()), Map(), MapWithIds.empty)
+  def empty = Workspace(MapWithIds.empty, SetOfSets[VarId](Set()), Map(), MapWithIds.empty, MapWithIds.empty)
 }
 
 
@@ -336,6 +340,7 @@ object WorkspaceJs {
       id -> (annotateFailWithMessage("parse1", PhysicalNumberJs.parse(num)) -> annotateFailWithMessage("parse2", mbVarId.toOption.map(VarIdJs.parse)))
     }).toMap))
 
-    Workspace(equations, equalities, expressions, numbers)
+    // todo: save triangles
+    Workspace(equations, equalities, expressions, numbers, MapWithIds.empty)
   }
 }

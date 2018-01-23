@@ -23,10 +23,14 @@
 - Diagrams
   - eg free body diagrams
 - Smarter expression calculations
-  - smarter numerical expression calculations
 - Differentiation
 - Building differences/sums
 - Crowdsourced equations
 - Quadratic equations
 - Built-in numbers. It would be nice to be able to search for “mass of sun” or “charge of electron” in the equation search thing and have that get you the result.
 - Smarter inference of dimensions
+- When you add a custom equation with variables that match already existing variables, these should be added with the equality intact
+- The search bar interface should be unified--various functions should return an array of "search results" that are then concatenated;
+    each should come with its onClick handler etc.
+- Variable aliases
+- Solve trigonometric equations
