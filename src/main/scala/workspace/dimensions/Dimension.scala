@@ -96,6 +96,8 @@ object Dimension {
   val radian = GeneralUnit(1, SiDimension.Dimensionless, SymbolUnitName("rad"))
   val degree = GeneralUnit(3.14159265 / 180, SiDimension.Dimensionless, SymbolUnitName("°"))
   val joule = GeneralUnit(1, SiJoule, SymbolUnitName("J"))
+  val mole = GeneralUnit(1, Mole, SymbolUnitName("mol"))
+  val farad = GeneralUnit(1, SiFarad, SymbolUnitName("F"))
   val watt = GeneralUnit(1, SiWatt, SymbolUnitName("W"))
   val electronVolt = GeneralUnit(1.60217662e-19, SiJoule, SymbolUnitName("eV"))
   val newton = GeneralUnit(1, SiNewton, SymbolUnitName("N"))
@@ -128,8 +130,10 @@ object Dimension {
     "K" -> degreeKelvin,
     "A" -> ampere,
     "J" -> joule,
+    "F" -> farad,
     "W" -> watt,
     "eV" -> electronVolt,
+    "mol" -> mole,
     "N" -> newton,
     "Hz" -> hertz,
     "C" -> coulomb,

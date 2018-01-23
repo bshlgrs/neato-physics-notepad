@@ -25,6 +25,7 @@ case class SiDimension(units: Map[SiUnit, RationalNumber[String]])  {
     case SiDimension.SiNewton => Text("N")
     case SiDimension.SiCoulomb => Text("C")
     case SiDimension.SiVolt => Text("V")
+    case SiDimension.SiFarad => Text("F")
     case SiDimension.SiWatt => Text("W")
     case SiDimension.SiOhm => Text("Ω")
     case SiDimension.SiNewtonsPerCoulomb => Text("N/C")
@@ -69,6 +70,7 @@ object SiDimension {
   val SiNewtonsPerCoulomb: SiDimension = SiNewton / SiCoulomb
   val SiWatt: SiDimension = SiJoule / Second
   val SiOhm: SiDimension = SiVolt / Ampere
+  val SiFarad: SiDimension = SiCoulomb / SiVolt
   val Dimensionless = SiDimension(Map())
 }
 
@@ -87,6 +89,7 @@ sealed trait SiUnit {
     case SiUnit.Meter => "m"
     case SiUnit.Kilogram => "kg"
     case SiUnit.Second => "s"
+    case SiUnit.Mole => "mol"
     case SiUnit.Kelvin => "K"
     case SiUnit.Ampere => "A"
   }
@@ -100,9 +103,10 @@ object SiUnit {
   case object Second extends SiUnit
   case object Kelvin extends SiUnit
   case object Ampere extends SiUnit
+  case object Mole extends SiUnit
 
   def fromSymbol(symbol: String): Option[SiUnit] =
-    Map("m" -> Meter, "kg" -> Kilogram, "s" -> Second, "K" -> Kelvin, "A" -> Ampere).get(symbol)
+    Map("m" -> Meter, "kg" -> Kilogram, "s" -> Second, "K" -> Kelvin, "A" -> Ampere, "mol" -> Mole).get(symbol)
 }
 
 object Second extends SiDimension(Map(SiUnit.Second -> RationalNumber(1)))
@@ -110,3 +114,4 @@ object Meter extends SiDimension(Map(SiUnit.Meter -> RationalNumber(1)))
 object Kilogram extends SiDimension(Map(SiUnit.Kilogram -> RationalNumber(1)))
 object Kelvin extends SiDimension(Map(SiUnit.Kelvin -> RationalNumber(1)))
 object Ampere extends SiDimension(Map(SiUnit.Ampere -> RationalNumber(1)))
+object Mole extends SiDimension(Map(SiUnit.Mole -> RationalNumber(1)))
