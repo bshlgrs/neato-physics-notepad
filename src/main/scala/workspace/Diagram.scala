@@ -60,5 +60,5 @@ case class TriangleDiagram(vars: Map[String, Either[VarId, String]]) {
   def set(varName: String, mbSetting: Option[Either[VarId, String]]): TriangleDiagram = mbSetting match {
     case None => this.copy(vars - varName)
     case Some(setting) => this.copy(vars + (varName -> setting))
-  }
+  }                                     
 }

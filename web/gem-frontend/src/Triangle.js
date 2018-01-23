@@ -2,7 +2,8 @@ import React from 'react';
 
 class Triangle extends React.Component {
   render () {
-
+    const triangle = this.props.triangle;
+    debugger;
     // Variables
       // Variables can be unspecified, custom, or made equal to something else.
     // Triangles should have a flippable orientation
