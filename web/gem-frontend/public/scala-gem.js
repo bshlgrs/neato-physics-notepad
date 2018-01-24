@@ -4842,9 +4842,10 @@ $c_Lcas_EquationParser$.prototype.init___ = (function() {
   var repr = $m_Lfastparse_all$().implicitReprOps$1;
   var WL = new $c_Lfastparse_parsers_Combinators$NoTrace().init___Lfastparse_core_Parser__Lfastparse_utils_ReprOps(p, repr);
   this.White$1 = new $c_Lfastparse_WhitespaceApi$Wrapper().init___Lfastparse_core_Parser(WL);
-  var this$18 = $m_Lfastparse_noApi$();
+  var this$46 = $m_Lfastparse_noApi$();
   var p$1 = new $c_sjsr_AnonFunction0().init___sjs_js_Function0((function(this$2$1) {
     return (function() {
+      var this$18 = $m_Lcas_EquationParser$().White$1;
       var this$13 = $m_Lcas_EquationParser$().White$1;
       var this$12 = $m_Lcas_EquationParser$().White$1;
       var this$11 = $m_Lcas_EquationParser$().White$1;
@@ -4876,7 +4877,7 @@ $c_Lcas_EquationParser$.prototype.init___ = (function() {
       var x$6 = $m_Lfastparse_all$().Pass$1;
       var p0$1 = qual$1.rep__I__Lfastparse_core_Parser__I__I__Lfastparse_core_Implicits$Repeater__Lfastparse_core_Parser(1, x$6, 2147483647, (-1), $m_Lfastparse_core_Implicits$Repeater$UnitRepeater$());
       var p0$2 = new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser(p0$1, this$12.WL$1).$$bang__Lfastparse_core_Parser();
-      return new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser(p0$2, this$13.WL$1).map__F1__Lfastparse_core_Parser(new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function($this) {
+      var p0$3 = new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser(p0$2, this$13.WL$1).map__F1__Lfastparse_core_Parser(new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function($this) {
         return (function(str$2) {
           var str = $as_T(str$2);
           var this$15 = new $c_sci_StringOps().init___T(str);
@@ -4884,190 +4885,17 @@ $c_Lcas_EquationParser$.prototype.init___ = (function() {
           var $$this = this$15.repr$1;
           return new $c_Lcas_RationalNumber().init___I__I(this$17.parseInt__T__I__I($$this, 10), 1)
         })
-      })(this$2$1)))
-    })
-  })(this));
-  var name = new $c_Lsourcecode_Name().init___T("number");
-  this.number$1 = new $c_Lfastparse_parsers_Combinators$Rule().init___T__F0__Lfastparse_utils_ReprOps(name.value$2, p$1, this$18.implicitReprOps$1);
-  var this$41 = $m_Lfastparse_noApi$();
-  var p$2 = new $c_sjsr_AnonFunction0().init___sjs_js_Function0((function(this$3$1) {
-    return (function() {
-      var this$40 = $m_Lcas_EquationParser$().White$1;
+      })(this$2$1)));
+      var jsx$5 = new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser(p0$3, this$18.WL$1);
+      var this$41 = $m_Lcas_EquationParser$().White$1;
+      var this$30 = $m_Lcas_EquationParser$().White$1;
+      var this$28 = $m_Lcas_EquationParser$().White$1;
       var this$27 = $m_Lcas_EquationParser$().White$1;
       var this$26 = $m_Lcas_EquationParser$().White$1;
-      var this$25 = $m_Lcas_EquationParser$().White$1;
-      var this$24 = $m_Lfastparse_noApi$().CharsWhile$2;
-      var pred = new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function($this$1) {
-        return (function(x$2$2) {
-          if ((x$2$2 === null)) {
-            var x$2 = 0
-          } else {
-            var this$20 = $as_jl_Character(x$2$2);
-            var x$2 = this$20.value$1
-          };
-          var this$23 = $m_jl_Character$();
-          return this$23.isLetter__I__Z(x$2)
-        })
-      })(this$3$1));
-      $m_Lfastparse_noApi$();
-      var min = 1;
-      var p0$3 = this$24.create__F1__I__Z__Lfastparse_parsers_Intrinsics$ElemsWhile(pred, min, true);
-      var qual$2 = new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser(p0$3, this$25.WL$1);
-      var x$10 = $m_Lfastparse_all$().Pass$1;
-      var p0$4 = qual$2.rep__I__Lfastparse_core_Parser__I__I__Lfastparse_core_Implicits$Repeater__Lfastparse_core_Parser(1, x$10, 2147483647, (-1), $m_Lfastparse_core_Implicits$Repeater$UnitRepeater$());
-      var p0$5 = new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser(p0$4, this$26.WL$1).$$bang__Lfastparse_core_Parser();
-      var jsx$4 = new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser(p0$5, this$27.WL$1);
-      var this$37 = $m_Lcas_EquationParser$().White$1;
-      var this$28 = $m_Lcas_EquationParser$().White$1;
-      var jsx$2 = new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser($m_Lfastparse_noApi$().LiteralStr__T__Lfastparse_core_Parser("_"), this$28.WL$1);
-      var this$36 = $m_Lcas_EquationParser$().White$1;
-      var this$35 = $m_Lcas_EquationParser$().White$1;
-      var this$34 = $m_Lfastparse_noApi$().CharsWhile$2;
-      var pred$1 = new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function(this$3$2) {
-        return (function(x$3$2) {
-          if ((x$3$2 === null)) {
-            var x$3 = 0
-          } else {
-            var this$30 = $as_jl_Character(x$3$2);
-            var x$3 = this$30.value$1
-          };
-          var this$33 = $m_jl_Character$();
-          return this$33.isLetterOrDigit__I__Z(x$3)
-        })
-      })(this$3$1));
-      $m_Lfastparse_noApi$();
-      var min$1 = 1;
-      var p0$6 = this$34.create__F1__I__Z__Lfastparse_parsers_Intrinsics$ElemsWhile(pred$1, min$1, true);
-      var qual$3 = new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser(p0$6, this$35.WL$1);
-      var x$14 = $m_Lfastparse_all$().Pass$1;
-      var p0$7 = qual$3.rep__I__Lfastparse_core_Parser__I__I__Lfastparse_core_Implicits$Repeater__Lfastparse_core_Parser(1, x$14, 2147483647, (-1), $m_Lfastparse_core_Implicits$Repeater$UnitRepeater$());
-      var p0$8 = jsx$2.$$tilde__Lfastparse_core_Parser__Lfastparse_core_Implicits$Sequencer__Lfastparse_core_Parser(new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser(p0$7, this$36.WL$1).$$bang__Lfastparse_core_Parser(), $m_Lfastparse_core_Implicits$Sequencer$().SingleSequencer__Lfastparse_core_Implicits$Sequencer());
-      var jsx$3 = new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser(p0$8, this$37.WL$1);
-      var this$38 = $m_Lfastparse_core_Implicits$Optioner$();
-      var jsx$1 = jsx$3.$$qmark__Lfastparse_core_Implicits$Optioner__Lfastparse_core_Parser(new $c_Lfastparse_core_Implicits$LowPriOptioner$GenericOptioner().init___Lfastparse_core_Implicits$LowPriOptioner(this$38));
-      var this$39 = $m_Lfastparse_core_Implicits$Sequencer$();
-      var p0$9 = jsx$4.$$tilde__Lfastparse_core_Parser__Lfastparse_core_Implicits$Sequencer__Lfastparse_core_Parser(jsx$1, $as_Lfastparse_core_Implicits$Sequencer($f_Lfastparse_core_LowestPriSequencer__Sequencer1__O(this$39)));
-      return new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser(p0$9, this$40.WL$1).map__F1__Lfastparse_core_Parser(new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function(this$4$1) {
-        return (function(x0$2$2) {
-          var x0$2 = $as_T2(x0$2$2);
-          if ((x0$2 !== null)) {
-            var x = $as_T(x0$2.$$und1__O());
-            var p2 = $as_s_Option(x0$2.$$und2__O());
-            var x$2$1 = $m_s_None$();
-            if ((x$2$1 === p2)) {
-              return new $c_Lcas_Variable().init___O(x)
-            }
-          };
-          if ((x0$2 !== null)) {
-            var x$4 = $as_T(x0$2.$$und1__O());
-            var p3 = $as_s_Option(x0$2.$$und2__O());
-            if ($is_s_Some(p3)) {
-              var x4 = $as_s_Some(p3);
-              var subscript = $as_T(x4.value$2);
-              return new $c_Lcas_Variable().init___O(((x$4 + "_") + subscript))
-            }
-          };
-          throw new $c_s_MatchError().init___O(x0$2)
-        })
-      })(this$3$1)))
-    })
-  })(this));
-  var name$1 = new $c_Lsourcecode_Name().init___T("variable");
-  this.variable$1 = new $c_Lfastparse_parsers_Combinators$Rule().init___T__F0__Lfastparse_utils_ReprOps(name$1.value$2, p$2, this$41.implicitReprOps$1);
-  var this$45 = $m_Lfastparse_noApi$();
-  var p$3 = new $c_sjsr_AnonFunction0().init___sjs_js_Function0((function(this$4$2) {
-    return (function() {
-      var this$44 = $m_Lcas_EquationParser$().White$1;
-      var this$43 = $m_Lcas_EquationParser$().White$1;
-      var this$42 = $m_Lcas_EquationParser$().White$1;
-      var p0$10 = $m_Lcas_EquationParser$().number$1;
-      var p0$11 = new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser(p0$10, this$42.WL$1).$$bar__Lfastparse_core_Parser__Lfastparse_core_Parser($m_Lcas_EquationParser$().functionCall__Lfastparse_core_Parser());
-      var p0$12 = new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser(p0$11, this$43.WL$1).$$bar__Lfastparse_core_Parser__Lfastparse_core_Parser($m_Lcas_EquationParser$().variable$1);
-      return new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser(p0$12, this$44.WL$1).$$bar__Lfastparse_core_Parser__Lfastparse_core_Parser($m_Lcas_EquationParser$().parens__Lfastparse_core_Parser())
-    })
-  })(this));
-  var name$2 = new $c_Lsourcecode_Name().init___T("atom");
-  this.atom$1 = new $c_Lfastparse_parsers_Combinators$Rule().init___T__F0__Lfastparse_utils_ReprOps(name$2.value$2, p$3, this$45.implicitReprOps$1);
-  var this$57 = this.White$1;
-  var this$56 = $m_Lfastparse_noApi$();
-  var p$4 = new $c_sjsr_AnonFunction0().init___sjs_js_Function0((function(this$5$1) {
-    return (function() {
-      var this$49 = $m_Lcas_EquationParser$().White$1;
-      var this$47 = $m_Lcas_EquationParser$().White$1;
-      var this$46 = $m_Lcas_EquationParser$().White$1;
-      var p0$13 = new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser($m_Lfastparse_noApi$().LiteralStr__T__Lfastparse_core_Parser("-"), this$46.WL$1).$$bang__Lfastparse_core_Parser();
-      var jsx$10 = new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser(p0$13, this$47.WL$1);
-      var this$48 = $m_Lfastparse_core_Implicits$Optioner$();
-      var p0$14 = jsx$10.$$qmark__Lfastparse_core_Implicits$Optioner__Lfastparse_core_Parser(new $c_Lfastparse_core_Implicits$LowPriOptioner$GenericOptioner().init___Lfastparse_core_Implicits$LowPriOptioner(this$48));
-      var jsx$11 = new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser(p0$14, this$49.WL$1);
-      var this$54 = $m_Lcas_EquationParser$().White$1;
-      var this$52 = $m_Lcas_EquationParser$().White$1;
-      var this$50 = $m_Lcas_EquationParser$().White$1;
-      var p0$15 = $m_Lcas_EquationParser$().atom$1;
-      var jsx$8 = new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser(p0$15, this$50.WL$1);
-      var jsx$7 = $m_Lfastparse_noApi$().LiteralStr__T__Lfastparse_core_Parser("**");
-      var this$51 = $m_Lfastparse_core_Implicits$Sequencer$();
-      var p0$16 = jsx$8.$$tilde__Lfastparse_core_Parser__Lfastparse_core_Implicits$Sequencer__Lfastparse_core_Parser(jsx$7, $f_Lfastparse_core_Implicits$LowPriSequencer__UnitSequencer__Lfastparse_core_Implicits$Sequencer(this$51));
-      var jsx$9 = new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser(p0$16, this$52.WL$1);
-      var jsx$6 = $m_Lcas_EquationParser$().atom$1;
-      var this$53 = $m_Lfastparse_core_Implicits$Sequencer$();
-      var p0$17 = jsx$9.$$tilde__Lfastparse_core_Parser__Lfastparse_core_Implicits$Sequencer__Lfastparse_core_Parser(jsx$6, $as_Lfastparse_core_Implicits$Sequencer($f_Lfastparse_core_LowestPriSequencer__Sequencer1__O(this$53)));
-      var jsx$5 = new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser(p0$17, this$54.WL$1).$$bar__Lfastparse_core_Parser__Lfastparse_core_Parser($m_Lcas_EquationParser$().atom$1);
-      var this$55 = $m_Lfastparse_core_Implicits$Sequencer$();
-      return jsx$11.$$tilde__Lfastparse_core_Parser__Lfastparse_core_Implicits$Sequencer__Lfastparse_core_Parser(jsx$5, $as_Lfastparse_core_Implicits$Sequencer($f_Lfastparse_core_LowestPriSequencer__Sequencer1__O(this$55)))
-    })
-  })(this));
-  var name$3 = new $c_Lsourcecode_Name().init___T("expr2");
-  var p0$18 = new $c_Lfastparse_parsers_Combinators$Rule().init___T__F0__Lfastparse_utils_ReprOps(name$3.value$2, p$4, this$56.implicitReprOps$1);
-  this.expr2$1 = new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser(p0$18, this$57.WL$1).map__F1__Lfastparse_core_Parser(new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function(this$6$1) {
-    return (function(x0$4$2) {
-      var x0$4 = $as_T2(x0$4$2);
-      if ((x0$4 !== null)) {
-        var mbMinus = $as_s_Option(x0$4.$$und1__O());
-        var x$5 = x0$4.$$und2__O();
-        if ((mbMinus !== null)) {
-          if ($is_Lcas_Expression(x$5)) {
-            var x5 = $as_Lcas_Expression(x$5);
-            var other = (mbMinus.isDefined__Z() ? (-1) : 1);
-            return $f_Lcas_Expression__$$times__I__Lcas_Expression(x5, other)
-          }
-        }
-      };
-      if ((x0$4 !== null)) {
-        var mbMinus$2 = $as_s_Option(x0$4.$$und1__O());
-        var p2$1 = x0$4.$$und2__O();
-        if ((mbMinus$2 !== null)) {
-          if ($is_T2(p2$1)) {
-            var x3 = $as_T2(p2$1);
-            var x$2$3 = x3.$$und1__O();
-            var y = x3.$$und2__O();
-            if ($is_Lcas_Expression(x$2$3)) {
-              var x7 = $as_Lcas_Expression(x$2$3);
-              if ($is_Lcas_Expression(y)) {
-                var x8 = $as_Lcas_Expression(y);
-                var this$58 = $m_Lcas_Expression$().makePower__Lcas_Expression__Lcas_Expression__Lcas_Expression(x7, x8);
-                var other$1 = (mbMinus$2.isDefined__Z() ? (-1) : 1);
-                return $f_Lcas_Expression__$$times__I__Lcas_Expression(this$58, other$1)
-              }
-            }
-          }
-        }
-      };
-      throw new $c_s_MatchError().init___O(x0$4)
-    })
-  })(this)));
-  var this$70 = this.White$1;
-  var this$69 = $m_Lfastparse_noApi$();
-  var p$5 = new $c_sjsr_AnonFunction0().init___sjs_js_Function0((function(this$7$1) {
-    return (function() {
-      var this$59 = $m_Lcas_EquationParser$().White$1;
-      var p0$19 = $m_Lcas_EquationParser$().expr2$1;
-      var jsx$16 = new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser(p0$19, this$59.WL$1);
-      var this$66 = $m_Lcas_EquationParser$().White$1;
-      var this$64 = $m_Lcas_EquationParser$().White$1;
-      var this$63 = $m_Lcas_EquationParser$().White$1;
-      var this$60 = $m_Lfastparse_noApi$();
-      var array$1 = [$m_s_Predef$().wrapString__T__sci_WrappedString("*/")];
+      var this$23 = $m_Lfastparse_noApi$();
+      var this$22 = new $c_sr_RichChar().init___C(48);
+      var end$1 = new $c_jl_Character().init___C(57);
+      var array$1 = [$f_sr_IntegralProxy__to__O__sci_NumericRange$Inclusive(this$22, end$1)];
       $m_sc_Seq$();
       $m_sjs_js_WrappedArray$();
       var b$1 = new $c_sjs_js_WrappedArray().init___();
@@ -5087,39 +4915,22 @@ $c_Lcas_EquationParser$.prototype.init___ = (function() {
         b$1.array$6.push(elem$1);
         i$1 = ((1 + i$1) | 0)
       };
-      var p0$20 = new $c_Lfastparse_parsers_Intrinsics$ElemIn().init___T__sc_Seq__Lfastparse_utils_ReprOps__Lfastparse_utils_ElemSetHelper("CharIn", b$1, this$60.implicitReprOps$1, $m_Lfastparse_utils_ElemSetHelper$CharBitSetHelper$());
-      var p0$21 = new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser(p0$20, this$63.WL$1).$$bang__Lfastparse_core_Parser();
-      var jsx$14 = new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser(p0$21, this$64.WL$1);
-      var jsx$13 = $m_Lcas_EquationParser$().expr2$1;
-      var this$65 = $m_Lfastparse_core_Implicits$Sequencer$();
-      var p0$22 = jsx$14.$$tilde$div__Lfastparse_core_Parser__Lfastparse_core_Implicits$Sequencer__Lfastparse_core_Parser(jsx$13, $as_Lfastparse_core_Implicits$Sequencer($f_Lfastparse_core_LowestPriSequencer__Sequencer1__O(this$65)));
-      var jsx$15 = new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser(p0$22, this$66.WL$1);
-      var this$67 = $m_Lfastparse_core_Implicits$Repeater$();
-      var jsx$12 = jsx$15.rep__Lfastparse_core_Implicits$Repeater__Lfastparse_core_Parser(new $c_Lfastparse_core_Implicits$LowPriRepeater$GenericRepeater().init___Lfastparse_core_Implicits$LowPriRepeater(this$67));
-      var this$68 = $m_Lfastparse_core_Implicits$Sequencer$();
-      return jsx$16.$$tilde__Lfastparse_core_Parser__Lfastparse_core_Implicits$Sequencer__Lfastparse_core_Parser(jsx$12, $as_Lfastparse_core_Implicits$Sequencer($f_Lfastparse_core_LowestPriSequencer__Sequencer1__O(this$68)))
-    })
-  })(this));
-  var name$4 = new $c_Lsourcecode_Name().init___T("expr1");
-  var p0$23 = new $c_Lfastparse_parsers_Combinators$Rule().init___T__F0__Lfastparse_utils_ReprOps(name$4.value$2, p$5, this$69.implicitReprOps$1);
-  this.expr1$1 = new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser(p0$23, this$70.WL$1).map__F1__Lfastparse_core_Parser(new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function(this$8$1) {
-    return (function(tree$2) {
-      var tree = $as_T2(tree$2);
-      return $m_Lcas_EquationParser$().eval__T2__Lcas_Expression(tree)
-    })
-  })(this)));
-  var this$82 = this.White$1;
-  var this$81 = $m_Lfastparse_noApi$();
-  var p$6 = new $c_sjsr_AnonFunction0().init___sjs_js_Function0((function(this$9$1) {
-    return (function() {
-      var this$71 = $m_Lcas_EquationParser$().White$1;
-      var p0$24 = $m_Lcas_EquationParser$().expr1$1;
-      var jsx$21 = new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser(p0$24, this$71.WL$1);
-      var this$78 = $m_Lcas_EquationParser$().White$1;
-      var this$76 = $m_Lcas_EquationParser$().White$1;
-      var this$75 = $m_Lcas_EquationParser$().White$1;
-      var this$72 = $m_Lfastparse_noApi$();
-      var array$2 = [$m_s_Predef$().wrapString__T__sci_WrappedString("+-")];
+      var p0$4 = new $c_Lfastparse_parsers_Intrinsics$ElemIn().init___T__sc_Seq__Lfastparse_utils_ReprOps__Lfastparse_utils_ElemSetHelper("CharIn", b$1, this$23.implicitReprOps$1, $m_Lfastparse_utils_ElemSetHelper$CharBitSetHelper$());
+      var qual$2 = new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser(p0$4, this$26.WL$1);
+      var x$10 = $m_Lfastparse_all$().Pass$1;
+      var p0$5 = qual$2.rep__I__Lfastparse_core_Parser__I__I__Lfastparse_core_Implicits$Repeater__Lfastparse_core_Parser(1, x$10, 2147483647, (-1), $m_Lfastparse_core_Implicits$Repeater$UnitRepeater$());
+      var p0$6 = new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser(p0$5, this$27.WL$1).$$bang__Lfastparse_core_Parser();
+      var jsx$3 = new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser(p0$6, this$28.WL$1);
+      var jsx$2 = $m_Lfastparse_noApi$().LiteralStr__T__Lfastparse_core_Parser(".");
+      var this$29 = $m_Lfastparse_core_Implicits$Sequencer$();
+      var p0$7 = jsx$3.$$tilde__Lfastparse_core_Parser__Lfastparse_core_Implicits$Sequencer__Lfastparse_core_Parser(jsx$2, $f_Lfastparse_core_Implicits$LowPriSequencer__UnitSequencer__Lfastparse_core_Implicits$Sequencer(this$29));
+      var jsx$4 = new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser(p0$7, this$30.WL$1);
+      var this$39 = $m_Lcas_EquationParser$().White$1;
+      var this$38 = $m_Lcas_EquationParser$().White$1;
+      var this$35 = $m_Lfastparse_noApi$();
+      var this$34 = new $c_sr_RichChar().init___C(48);
+      var end$2 = new $c_jl_Character().init___C(57);
+      var array$2 = [$f_sr_IntegralProxy__to__O__sci_NumericRange$Inclusive(this$34, end$2)];
       $m_sc_Seq$();
       $m_sjs_js_WrappedArray$();
       var b$2 = new $c_sjs_js_WrappedArray().init___();
@@ -5139,49 +4950,325 @@ $c_Lcas_EquationParser$.prototype.init___ = (function() {
         b$2.array$6.push(elem$2);
         i$2 = ((1 + i$2) | 0)
       };
-      var p0$25 = new $c_Lfastparse_parsers_Intrinsics$ElemIn().init___T__sc_Seq__Lfastparse_utils_ReprOps__Lfastparse_utils_ElemSetHelper("CharIn", b$2, this$72.implicitReprOps$1, $m_Lfastparse_utils_ElemSetHelper$CharBitSetHelper$());
-      var p0$26 = new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser(p0$25, this$75.WL$1).$$bang__Lfastparse_core_Parser();
-      var jsx$19 = new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser(p0$26, this$76.WL$1);
-      var jsx$18 = $m_Lcas_EquationParser$().expr1$1;
-      var this$77 = $m_Lfastparse_core_Implicits$Sequencer$();
-      var p0$27 = jsx$19.$$tilde$div__Lfastparse_core_Parser__Lfastparse_core_Implicits$Sequencer__Lfastparse_core_Parser(jsx$18, $as_Lfastparse_core_Implicits$Sequencer($f_Lfastparse_core_LowestPriSequencer__Sequencer1__O(this$77)));
-      var jsx$20 = new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser(p0$27, this$78.WL$1);
-      var this$79 = $m_Lfastparse_core_Implicits$Repeater$();
-      var jsx$17 = jsx$20.rep__Lfastparse_core_Implicits$Repeater__Lfastparse_core_Parser(new $c_Lfastparse_core_Implicits$LowPriRepeater$GenericRepeater().init___Lfastparse_core_Implicits$LowPriRepeater(this$79));
-      var this$80 = $m_Lfastparse_core_Implicits$Sequencer$();
-      return jsx$21.$$tilde__Lfastparse_core_Parser__Lfastparse_core_Implicits$Sequencer__Lfastparse_core_Parser(jsx$17, $as_Lfastparse_core_Implicits$Sequencer($f_Lfastparse_core_LowestPriSequencer__Sequencer1__O(this$80)))
+      var p0$8 = new $c_Lfastparse_parsers_Intrinsics$ElemIn().init___T__sc_Seq__Lfastparse_utils_ReprOps__Lfastparse_utils_ElemSetHelper("CharIn", b$2, this$35.implicitReprOps$1, $m_Lfastparse_utils_ElemSetHelper$CharBitSetHelper$());
+      var qual$3 = new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser(p0$8, this$38.WL$1);
+      var x$14 = $m_Lfastparse_all$().Pass$1;
+      var p0$9 = qual$3.rep__I__Lfastparse_core_Parser__I__I__Lfastparse_core_Implicits$Repeater__Lfastparse_core_Parser(1, x$14, 2147483647, (-1), $m_Lfastparse_core_Implicits$Repeater$UnitRepeater$());
+      var jsx$1 = new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser(p0$9, this$39.WL$1).$$bang__Lfastparse_core_Parser();
+      var this$40 = $m_Lfastparse_core_Implicits$Sequencer$();
+      var p0$10 = jsx$4.$$tilde__Lfastparse_core_Parser__Lfastparse_core_Implicits$Sequencer__Lfastparse_core_Parser(jsx$1, $as_Lfastparse_core_Implicits$Sequencer($f_Lfastparse_core_LowestPriSequencer__Sequencer1__O(this$40)));
+      return jsx$5.$$bar__Lfastparse_core_Parser__Lfastparse_core_Parser(new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser(p0$10, this$41.WL$1).map__F1__Lfastparse_core_Parser(new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function(this$2$2) {
+        return (function(x0$2$2) {
+          var x0$2 = $as_T2(x0$2$2);
+          if ((x0$2 !== null)) {
+            var a = $as_T(x0$2.$$und1__O());
+            var b$3 = $as_T(x0$2.$$und2__O());
+            var x = new $c_s_StringContext().init___sc_Seq(new $c_sjs_js_WrappedArray().init___sjs_js_Array(["", ".", ""])).s__sc_Seq__T(new $c_sjs_js_WrappedArray().init___sjs_js_Array([a, b$3]));
+            var this$43 = new $c_sci_StringOps().init___T(x);
+            var $$this$1 = this$43.repr$1;
+            return new $c_Lcas_RealNumber().init___D($fround($m_jl_Double$().parseDouble__T__D($$this$1)))
+          } else {
+            throw new $c_s_MatchError().init___O(x0$2)
+          }
+        })
+      })(this$2$1))))
+    })
+  })(this));
+  var name = new $c_Lsourcecode_Name().init___T("number");
+  this.number$1 = new $c_Lfastparse_parsers_Combinators$Rule().init___T__F0__Lfastparse_utils_ReprOps(name.value$2, p$1, this$46.implicitReprOps$1);
+  var this$69 = $m_Lfastparse_noApi$();
+  var p$2 = new $c_sjsr_AnonFunction0().init___sjs_js_Function0((function(this$3$1) {
+    return (function() {
+      var this$68 = $m_Lcas_EquationParser$().White$1;
+      var this$55 = $m_Lcas_EquationParser$().White$1;
+      var this$54 = $m_Lcas_EquationParser$().White$1;
+      var this$53 = $m_Lcas_EquationParser$().White$1;
+      var this$52 = $m_Lfastparse_noApi$().CharsWhile$2;
+      var pred = new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function($this$1) {
+        return (function(x$2$2) {
+          if ((x$2$2 === null)) {
+            var x$2 = 0
+          } else {
+            var this$48 = $as_jl_Character(x$2$2);
+            var x$2 = this$48.value$1
+          };
+          var this$51 = $m_jl_Character$();
+          return this$51.isLetter__I__Z(x$2)
+        })
+      })(this$3$1));
+      $m_Lfastparse_noApi$();
+      var min = 1;
+      var p0$11 = this$52.create__F1__I__Z__Lfastparse_parsers_Intrinsics$ElemsWhile(pred, min, true);
+      var qual$4 = new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser(p0$11, this$53.WL$1);
+      var x$18 = $m_Lfastparse_all$().Pass$1;
+      var p0$12 = qual$4.rep__I__Lfastparse_core_Parser__I__I__Lfastparse_core_Implicits$Repeater__Lfastparse_core_Parser(1, x$18, 2147483647, (-1), $m_Lfastparse_core_Implicits$Repeater$UnitRepeater$());
+      var p0$13 = new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser(p0$12, this$54.WL$1).$$bang__Lfastparse_core_Parser();
+      var jsx$9 = new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser(p0$13, this$55.WL$1);
+      var this$65 = $m_Lcas_EquationParser$().White$1;
+      var this$56 = $m_Lcas_EquationParser$().White$1;
+      var jsx$7 = new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser($m_Lfastparse_noApi$().LiteralStr__T__Lfastparse_core_Parser("_"), this$56.WL$1);
+      var this$64 = $m_Lcas_EquationParser$().White$1;
+      var this$63 = $m_Lcas_EquationParser$().White$1;
+      var this$62 = $m_Lfastparse_noApi$().CharsWhile$2;
+      var pred$1 = new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function(this$3$2) {
+        return (function(x$3$2) {
+          if ((x$3$2 === null)) {
+            var x$3 = 0
+          } else {
+            var this$58 = $as_jl_Character(x$3$2);
+            var x$3 = this$58.value$1
+          };
+          var this$61 = $m_jl_Character$();
+          return this$61.isLetterOrDigit__I__Z(x$3)
+        })
+      })(this$3$1));
+      $m_Lfastparse_noApi$();
+      var min$1 = 1;
+      var p0$14 = this$62.create__F1__I__Z__Lfastparse_parsers_Intrinsics$ElemsWhile(pred$1, min$1, true);
+      var qual$5 = new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser(p0$14, this$63.WL$1);
+      var x$22 = $m_Lfastparse_all$().Pass$1;
+      var p0$15 = qual$5.rep__I__Lfastparse_core_Parser__I__I__Lfastparse_core_Implicits$Repeater__Lfastparse_core_Parser(1, x$22, 2147483647, (-1), $m_Lfastparse_core_Implicits$Repeater$UnitRepeater$());
+      var p0$16 = jsx$7.$$tilde__Lfastparse_core_Parser__Lfastparse_core_Implicits$Sequencer__Lfastparse_core_Parser(new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser(p0$15, this$64.WL$1).$$bang__Lfastparse_core_Parser(), $m_Lfastparse_core_Implicits$Sequencer$().SingleSequencer__Lfastparse_core_Implicits$Sequencer());
+      var jsx$8 = new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser(p0$16, this$65.WL$1);
+      var this$66 = $m_Lfastparse_core_Implicits$Optioner$();
+      var jsx$6 = jsx$8.$$qmark__Lfastparse_core_Implicits$Optioner__Lfastparse_core_Parser(new $c_Lfastparse_core_Implicits$LowPriOptioner$GenericOptioner().init___Lfastparse_core_Implicits$LowPriOptioner(this$66));
+      var this$67 = $m_Lfastparse_core_Implicits$Sequencer$();
+      var p0$17 = jsx$9.$$tilde__Lfastparse_core_Parser__Lfastparse_core_Implicits$Sequencer__Lfastparse_core_Parser(jsx$6, $as_Lfastparse_core_Implicits$Sequencer($f_Lfastparse_core_LowestPriSequencer__Sequencer1__O(this$67)));
+      return new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser(p0$17, this$68.WL$1).map__F1__Lfastparse_core_Parser(new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function(this$4$1) {
+        return (function(x0$3$2) {
+          var x0$3 = $as_T2(x0$3$2);
+          if ((x0$3 !== null)) {
+            var x$4 = $as_T(x0$3.$$und1__O());
+            var p2 = $as_s_Option(x0$3.$$und2__O());
+            var x$2$1 = $m_s_None$();
+            if ((x$2$1 === p2)) {
+              return new $c_Lcas_Variable().init___O(x$4)
+            }
+          };
+          if ((x0$3 !== null)) {
+            var x$4$1 = $as_T(x0$3.$$und1__O());
+            var p3 = $as_s_Option(x0$3.$$und2__O());
+            if ($is_s_Some(p3)) {
+              var x4 = $as_s_Some(p3);
+              var subscript = $as_T(x4.value$2);
+              return new $c_Lcas_Variable().init___O(((x$4$1 + "_") + subscript))
+            }
+          };
+          throw new $c_s_MatchError().init___O(x0$3)
+        })
+      })(this$3$1)))
+    })
+  })(this));
+  var name$1 = new $c_Lsourcecode_Name().init___T("variable");
+  this.variable$1 = new $c_Lfastparse_parsers_Combinators$Rule().init___T__F0__Lfastparse_utils_ReprOps(name$1.value$2, p$2, this$69.implicitReprOps$1);
+  var this$73 = $m_Lfastparse_noApi$();
+  var p$3 = new $c_sjsr_AnonFunction0().init___sjs_js_Function0((function(this$4$2) {
+    return (function() {
+      var this$72 = $m_Lcas_EquationParser$().White$1;
+      var this$71 = $m_Lcas_EquationParser$().White$1;
+      var this$70 = $m_Lcas_EquationParser$().White$1;
+      var p0$18 = $m_Lcas_EquationParser$().number$1;
+      var p0$19 = new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser(p0$18, this$70.WL$1).$$bar__Lfastparse_core_Parser__Lfastparse_core_Parser($m_Lcas_EquationParser$().functionCall__Lfastparse_core_Parser());
+      var p0$20 = new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser(p0$19, this$71.WL$1).$$bar__Lfastparse_core_Parser__Lfastparse_core_Parser($m_Lcas_EquationParser$().variable$1);
+      return new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser(p0$20, this$72.WL$1).$$bar__Lfastparse_core_Parser__Lfastparse_core_Parser($m_Lcas_EquationParser$().parens__Lfastparse_core_Parser())
+    })
+  })(this));
+  var name$2 = new $c_Lsourcecode_Name().init___T("atom");
+  this.atom$1 = new $c_Lfastparse_parsers_Combinators$Rule().init___T__F0__Lfastparse_utils_ReprOps(name$2.value$2, p$3, this$73.implicitReprOps$1);
+  var this$85 = this.White$1;
+  var this$84 = $m_Lfastparse_noApi$();
+  var p$4 = new $c_sjsr_AnonFunction0().init___sjs_js_Function0((function(this$5$1) {
+    return (function() {
+      var this$77 = $m_Lcas_EquationParser$().White$1;
+      var this$75 = $m_Lcas_EquationParser$().White$1;
+      var this$74 = $m_Lcas_EquationParser$().White$1;
+      var p0$21 = new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser($m_Lfastparse_noApi$().LiteralStr__T__Lfastparse_core_Parser("-"), this$74.WL$1).$$bang__Lfastparse_core_Parser();
+      var jsx$15 = new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser(p0$21, this$75.WL$1);
+      var this$76 = $m_Lfastparse_core_Implicits$Optioner$();
+      var p0$22 = jsx$15.$$qmark__Lfastparse_core_Implicits$Optioner__Lfastparse_core_Parser(new $c_Lfastparse_core_Implicits$LowPriOptioner$GenericOptioner().init___Lfastparse_core_Implicits$LowPriOptioner(this$76));
+      var jsx$16 = new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser(p0$22, this$77.WL$1);
+      var this$82 = $m_Lcas_EquationParser$().White$1;
+      var this$80 = $m_Lcas_EquationParser$().White$1;
+      var this$78 = $m_Lcas_EquationParser$().White$1;
+      var p0$23 = $m_Lcas_EquationParser$().atom$1;
+      var jsx$13 = new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser(p0$23, this$78.WL$1);
+      var jsx$12 = $m_Lfastparse_noApi$().LiteralStr__T__Lfastparse_core_Parser("**");
+      var this$79 = $m_Lfastparse_core_Implicits$Sequencer$();
+      var p0$24 = jsx$13.$$tilde__Lfastparse_core_Parser__Lfastparse_core_Implicits$Sequencer__Lfastparse_core_Parser(jsx$12, $f_Lfastparse_core_Implicits$LowPriSequencer__UnitSequencer__Lfastparse_core_Implicits$Sequencer(this$79));
+      var jsx$14 = new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser(p0$24, this$80.WL$1);
+      var jsx$11 = $m_Lcas_EquationParser$().atom$1;
+      var this$81 = $m_Lfastparse_core_Implicits$Sequencer$();
+      var p0$25 = jsx$14.$$tilde__Lfastparse_core_Parser__Lfastparse_core_Implicits$Sequencer__Lfastparse_core_Parser(jsx$11, $as_Lfastparse_core_Implicits$Sequencer($f_Lfastparse_core_LowestPriSequencer__Sequencer1__O(this$81)));
+      var jsx$10 = new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser(p0$25, this$82.WL$1).$$bar__Lfastparse_core_Parser__Lfastparse_core_Parser($m_Lcas_EquationParser$().atom$1);
+      var this$83 = $m_Lfastparse_core_Implicits$Sequencer$();
+      return jsx$16.$$tilde__Lfastparse_core_Parser__Lfastparse_core_Implicits$Sequencer__Lfastparse_core_Parser(jsx$10, $as_Lfastparse_core_Implicits$Sequencer($f_Lfastparse_core_LowestPriSequencer__Sequencer1__O(this$83)))
+    })
+  })(this));
+  var name$3 = new $c_Lsourcecode_Name().init___T("expr2");
+  var p0$26 = new $c_Lfastparse_parsers_Combinators$Rule().init___T__F0__Lfastparse_utils_ReprOps(name$3.value$2, p$4, this$84.implicitReprOps$1);
+  this.expr2$1 = new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser(p0$26, this$85.WL$1).map__F1__Lfastparse_core_Parser(new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function(this$6$1) {
+    return (function(x0$5$2) {
+      var x0$5 = $as_T2(x0$5$2);
+      if ((x0$5 !== null)) {
+        var mbMinus = $as_s_Option(x0$5.$$und1__O());
+        var x$5 = x0$5.$$und2__O();
+        if ((mbMinus !== null)) {
+          if ($is_Lcas_Expression(x$5)) {
+            var x5 = $as_Lcas_Expression(x$5);
+            var other = (mbMinus.isDefined__Z() ? (-1) : 1);
+            return $f_Lcas_Expression__$$times__I__Lcas_Expression(x5, other)
+          }
+        }
+      };
+      if ((x0$5 !== null)) {
+        var mbMinus$2 = $as_s_Option(x0$5.$$und1__O());
+        var p2$1 = x0$5.$$und2__O();
+        if ((mbMinus$2 !== null)) {
+          if ($is_T2(p2$1)) {
+            var x3 = $as_T2(p2$1);
+            var x$2$3 = x3.$$und1__O();
+            var y = x3.$$und2__O();
+            if ($is_Lcas_Expression(x$2$3)) {
+              var x7 = $as_Lcas_Expression(x$2$3);
+              if ($is_Lcas_Expression(y)) {
+                var x8 = $as_Lcas_Expression(y);
+                var this$86 = $m_Lcas_Expression$().makePower__Lcas_Expression__Lcas_Expression__Lcas_Expression(x7, x8);
+                var other$1 = (mbMinus$2.isDefined__Z() ? (-1) : 1);
+                return $f_Lcas_Expression__$$times__I__Lcas_Expression(this$86, other$1)
+              }
+            }
+          }
+        }
+      };
+      throw new $c_s_MatchError().init___O(x0$5)
+    })
+  })(this)));
+  var this$98 = this.White$1;
+  var this$97 = $m_Lfastparse_noApi$();
+  var p$5 = new $c_sjsr_AnonFunction0().init___sjs_js_Function0((function(this$7$1) {
+    return (function() {
+      var this$87 = $m_Lcas_EquationParser$().White$1;
+      var p0$27 = $m_Lcas_EquationParser$().expr2$1;
+      var jsx$21 = new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser(p0$27, this$87.WL$1);
+      var this$94 = $m_Lcas_EquationParser$().White$1;
+      var this$92 = $m_Lcas_EquationParser$().White$1;
+      var this$91 = $m_Lcas_EquationParser$().White$1;
+      var this$88 = $m_Lfastparse_noApi$();
+      var array$3 = [$m_s_Predef$().wrapString__T__sci_WrappedString("*/")];
+      $m_sc_Seq$();
+      $m_sjs_js_WrappedArray$();
+      var b$4 = new $c_sjs_js_WrappedArray().init___();
+      var x1$3 = $uI(array$3.length);
+      switch (x1$3) {
+        case (-1): {
+          break
+        }
+      };
+      var i$3 = 0;
+      var len$3 = $uI(array$3.length);
+      while ((i$3 < len$3)) {
+        var index$3 = i$3;
+        var arg1$3 = array$3[index$3];
+        var x$1$3 = $as_sc_Seq(arg1$3);
+        var elem$3 = x$1$3.toIndexedSeq__sci_IndexedSeq();
+        b$4.array$6.push(elem$3);
+        i$3 = ((1 + i$3) | 0)
+      };
+      var p0$28 = new $c_Lfastparse_parsers_Intrinsics$ElemIn().init___T__sc_Seq__Lfastparse_utils_ReprOps__Lfastparse_utils_ElemSetHelper("CharIn", b$4, this$88.implicitReprOps$1, $m_Lfastparse_utils_ElemSetHelper$CharBitSetHelper$());
+      var p0$29 = new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser(p0$28, this$91.WL$1).$$bang__Lfastparse_core_Parser();
+      var jsx$19 = new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser(p0$29, this$92.WL$1);
+      var jsx$18 = $m_Lcas_EquationParser$().expr2$1;
+      var this$93 = $m_Lfastparse_core_Implicits$Sequencer$();
+      var p0$30 = jsx$19.$$tilde$div__Lfastparse_core_Parser__Lfastparse_core_Implicits$Sequencer__Lfastparse_core_Parser(jsx$18, $as_Lfastparse_core_Implicits$Sequencer($f_Lfastparse_core_LowestPriSequencer__Sequencer1__O(this$93)));
+      var jsx$20 = new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser(p0$30, this$94.WL$1);
+      var this$95 = $m_Lfastparse_core_Implicits$Repeater$();
+      var jsx$17 = jsx$20.rep__Lfastparse_core_Implicits$Repeater__Lfastparse_core_Parser(new $c_Lfastparse_core_Implicits$LowPriRepeater$GenericRepeater().init___Lfastparse_core_Implicits$LowPriRepeater(this$95));
+      var this$96 = $m_Lfastparse_core_Implicits$Sequencer$();
+      return jsx$21.$$tilde__Lfastparse_core_Parser__Lfastparse_core_Implicits$Sequencer__Lfastparse_core_Parser(jsx$17, $as_Lfastparse_core_Implicits$Sequencer($f_Lfastparse_core_LowestPriSequencer__Sequencer1__O(this$96)))
+    })
+  })(this));
+  var name$4 = new $c_Lsourcecode_Name().init___T("expr1");
+  var p0$31 = new $c_Lfastparse_parsers_Combinators$Rule().init___T__F0__Lfastparse_utils_ReprOps(name$4.value$2, p$5, this$97.implicitReprOps$1);
+  this.expr1$1 = new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser(p0$31, this$98.WL$1).map__F1__Lfastparse_core_Parser(new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function(this$8$1) {
+    return (function(tree$2) {
+      var tree = $as_T2(tree$2);
+      return $m_Lcas_EquationParser$().eval__T2__Lcas_Expression(tree)
+    })
+  })(this)));
+  var this$110 = this.White$1;
+  var this$109 = $m_Lfastparse_noApi$();
+  var p$6 = new $c_sjsr_AnonFunction0().init___sjs_js_Function0((function(this$9$1) {
+    return (function() {
+      var this$99 = $m_Lcas_EquationParser$().White$1;
+      var p0$32 = $m_Lcas_EquationParser$().expr1$1;
+      var jsx$26 = new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser(p0$32, this$99.WL$1);
+      var this$106 = $m_Lcas_EquationParser$().White$1;
+      var this$104 = $m_Lcas_EquationParser$().White$1;
+      var this$103 = $m_Lcas_EquationParser$().White$1;
+      var this$100 = $m_Lfastparse_noApi$();
+      var array$4 = [$m_s_Predef$().wrapString__T__sci_WrappedString("+-")];
+      $m_sc_Seq$();
+      $m_sjs_js_WrappedArray$();
+      var b$5 = new $c_sjs_js_WrappedArray().init___();
+      var x1$4 = $uI(array$4.length);
+      switch (x1$4) {
+        case (-1): {
+          break
+        }
+      };
+      var i$4 = 0;
+      var len$4 = $uI(array$4.length);
+      while ((i$4 < len$4)) {
+        var index$4 = i$4;
+        var arg1$4 = array$4[index$4];
+        var x$1$4 = $as_sc_Seq(arg1$4);
+        var elem$4 = x$1$4.toIndexedSeq__sci_IndexedSeq();
+        b$5.array$6.push(elem$4);
+        i$4 = ((1 + i$4) | 0)
+      };
+      var p0$33 = new $c_Lfastparse_parsers_Intrinsics$ElemIn().init___T__sc_Seq__Lfastparse_utils_ReprOps__Lfastparse_utils_ElemSetHelper("CharIn", b$5, this$100.implicitReprOps$1, $m_Lfastparse_utils_ElemSetHelper$CharBitSetHelper$());
+      var p0$34 = new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser(p0$33, this$103.WL$1).$$bang__Lfastparse_core_Parser();
+      var jsx$24 = new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser(p0$34, this$104.WL$1);
+      var jsx$23 = $m_Lcas_EquationParser$().expr1$1;
+      var this$105 = $m_Lfastparse_core_Implicits$Sequencer$();
+      var p0$35 = jsx$24.$$tilde$div__Lfastparse_core_Parser__Lfastparse_core_Implicits$Sequencer__Lfastparse_core_Parser(jsx$23, $as_Lfastparse_core_Implicits$Sequencer($f_Lfastparse_core_LowestPriSequencer__Sequencer1__O(this$105)));
+      var jsx$25 = new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser(p0$35, this$106.WL$1);
+      var this$107 = $m_Lfastparse_core_Implicits$Repeater$();
+      var jsx$22 = jsx$25.rep__Lfastparse_core_Implicits$Repeater__Lfastparse_core_Parser(new $c_Lfastparse_core_Implicits$LowPriRepeater$GenericRepeater().init___Lfastparse_core_Implicits$LowPriRepeater(this$107));
+      var this$108 = $m_Lfastparse_core_Implicits$Sequencer$();
+      return jsx$26.$$tilde__Lfastparse_core_Parser__Lfastparse_core_Implicits$Sequencer__Lfastparse_core_Parser(jsx$22, $as_Lfastparse_core_Implicits$Sequencer($f_Lfastparse_core_LowestPriSequencer__Sequencer1__O(this$108)))
     })
   })(this));
   var name$5 = new $c_Lsourcecode_Name().init___T("expr0");
-  var p0$28 = new $c_Lfastparse_parsers_Combinators$Rule().init___T__F0__Lfastparse_utils_ReprOps(name$5.value$2, p$6, this$81.implicitReprOps$1);
-  this.expr0$1 = new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser(p0$28, this$82.WL$1).map__F1__Lfastparse_core_Parser(new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function(this$10$1) {
+  var p0$36 = new $c_Lfastparse_parsers_Combinators$Rule().init___T__F0__Lfastparse_utils_ReprOps(name$5.value$2, p$6, this$109.implicitReprOps$1);
+  this.expr0$1 = new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser(p0$36, this$110.WL$1).map__F1__Lfastparse_core_Parser(new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function(this$10$1) {
     return (function(tree$3$2) {
       var tree$3 = $as_T2(tree$3$2);
       return $m_Lcas_EquationParser$().eval__T2__Lcas_Expression(tree$3)
     })
   })(this)));
-  var this$90 = $m_Lfastparse_noApi$();
+  var this$118 = $m_Lfastparse_noApi$();
   var p$7 = new $c_sjsr_AnonFunction0().init___sjs_js_Function0((function(this$11$1) {
     return (function() {
-      var this$88 = $m_Lcas_EquationParser$().White$1;
-      var this$85 = $m_Lcas_EquationParser$().White$1;
-      var this$84 = $m_Lcas_EquationParser$().White$1;
-      var this$83 = $m_Lcas_EquationParser$().White$1;
-      var p0$29 = new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser($m_Lfastparse_noApi$().LiteralStr__T__Lfastparse_core_Parser(" "), this$83.WL$1).rep__Lfastparse_core_Implicits$Repeater__Lfastparse_core_Parser($m_Lfastparse_core_Implicits$Repeater$UnitRepeater$());
-      var p0$30 = new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser(p0$29, this$84.WL$1).$$tilde__Lfastparse_core_Parser__Lfastparse_core_Implicits$Sequencer__Lfastparse_core_Parser($m_Lcas_EquationParser$().expr0$1, $m_Lfastparse_core_Implicits$Sequencer$().SingleSequencer__Lfastparse_core_Implicits$Sequencer());
-      var jsx$24 = new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser(p0$30, this$85.WL$1);
-      var this$86 = $m_Lcas_EquationParser$().White$1;
-      var jsx$23 = new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser($m_Lfastparse_noApi$().LiteralStr__T__Lfastparse_core_Parser(" "), this$86.WL$1).rep__Lfastparse_core_Implicits$Repeater__Lfastparse_core_Parser($m_Lfastparse_core_Implicits$Repeater$UnitRepeater$());
-      var this$87 = $m_Lfastparse_core_Implicits$Sequencer$();
-      var p0$31 = jsx$24.$$tilde__Lfastparse_core_Parser__Lfastparse_core_Implicits$Sequencer__Lfastparse_core_Parser(jsx$23, $f_Lfastparse_core_Implicits$LowPriSequencer__UnitSequencer__Lfastparse_core_Implicits$Sequencer(this$87));
-      var jsx$25 = new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser(p0$31, this$88.WL$1);
-      var jsx$22 = $m_Lfastparse_noApi$().End$1;
-      var this$89 = $m_Lfastparse_core_Implicits$Sequencer$();
-      return jsx$25.$$tilde__Lfastparse_core_Parser__Lfastparse_core_Implicits$Sequencer__Lfastparse_core_Parser(jsx$22, $f_Lfastparse_core_Implicits$LowPriSequencer__UnitSequencer__Lfastparse_core_Implicits$Sequencer(this$89))
+      var this$116 = $m_Lcas_EquationParser$().White$1;
+      var this$113 = $m_Lcas_EquationParser$().White$1;
+      var this$112 = $m_Lcas_EquationParser$().White$1;
+      var this$111 = $m_Lcas_EquationParser$().White$1;
+      var p0$37 = new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser($m_Lfastparse_noApi$().LiteralStr__T__Lfastparse_core_Parser(" "), this$111.WL$1).rep__Lfastparse_core_Implicits$Repeater__Lfastparse_core_Parser($m_Lfastparse_core_Implicits$Repeater$UnitRepeater$());
+      var p0$38 = new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser(p0$37, this$112.WL$1).$$tilde__Lfastparse_core_Parser__Lfastparse_core_Implicits$Sequencer__Lfastparse_core_Parser($m_Lcas_EquationParser$().expr0$1, $m_Lfastparse_core_Implicits$Sequencer$().SingleSequencer__Lfastparse_core_Implicits$Sequencer());
+      var jsx$29 = new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser(p0$38, this$113.WL$1);
+      var this$114 = $m_Lcas_EquationParser$().White$1;
+      var jsx$28 = new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser($m_Lfastparse_noApi$().LiteralStr__T__Lfastparse_core_Parser(" "), this$114.WL$1).rep__Lfastparse_core_Implicits$Repeater__Lfastparse_core_Parser($m_Lfastparse_core_Implicits$Repeater$UnitRepeater$());
+      var this$115 = $m_Lfastparse_core_Implicits$Sequencer$();
+      var p0$39 = jsx$29.$$tilde__Lfastparse_core_Parser__Lfastparse_core_Implicits$Sequencer__Lfastparse_core_Parser(jsx$28, $f_Lfastparse_core_Implicits$LowPriSequencer__UnitSequencer__Lfastparse_core_Implicits$Sequencer(this$115));
+      var jsx$30 = new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser(p0$39, this$116.WL$1);
+      var jsx$27 = $m_Lfastparse_noApi$().End$1;
+      var this$117 = $m_Lfastparse_core_Implicits$Sequencer$();
+      return jsx$30.$$tilde__Lfastparse_core_Parser__Lfastparse_core_Implicits$Sequencer__Lfastparse_core_Parser(jsx$27, $f_Lfastparse_core_Implicits$LowPriSequencer__UnitSequencer__Lfastparse_core_Implicits$Sequencer(this$117))
     })
   })(this));
   var name$6 = new $c_Lsourcecode_Name().init___T("expr");
-  this.expr$1 = new $c_Lfastparse_parsers_Combinators$Rule().init___T__F0__Lfastparse_utils_ReprOps(name$6.value$2, p$7, this$90.implicitReprOps$1);
+  this.expr$1 = new $c_Lfastparse_parsers_Combinators$Rule().init___T__F0__Lfastparse_utils_ReprOps(name$6.value$2, p$7, this$118.implicitReprOps$1);
   return this
 });
 $c_Lcas_EquationParser$.prototype.parseExpression__T__s_Option = (function(expressionString) {
@@ -5276,9 +5363,9 @@ $c_Lcas_EquationParser$.prototype.functionCall$lzycompute__p1__Lfastparse_core_P
         $m_Lfastparse_noApi$();
         var min = 1;
         var p0 = this$6.create__F1__I__Z__Lfastparse_parsers_Intrinsics$ElemsWhile(pred, min, true);
-        var qual$4 = new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser(p0, this$7.WL$1);
-        var x$18 = $m_Lfastparse_all$().Pass$1;
-        var p0$1 = qual$4.rep__I__Lfastparse_core_Parser__I__I__Lfastparse_core_Implicits$Repeater__Lfastparse_core_Parser(1, x$18, 2147483647, (-1), $m_Lfastparse_core_Implicits$Repeater$UnitRepeater$());
+        var qual$6 = new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser(p0, this$7.WL$1);
+        var x$26 = $m_Lfastparse_all$().Pass$1;
+        var p0$1 = qual$6.rep__I__Lfastparse_core_Parser__I__I__Lfastparse_core_Implicits$Repeater__Lfastparse_core_Parser(1, x$26, 2147483647, (-1), $m_Lfastparse_core_Implicits$Repeater$UnitRepeater$());
         var p0$2 = new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser(p0$1, this$8.WL$1).$$bang__Lfastparse_core_Parser();
         var jsx$4 = new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser(p0$2, this$9.WL$1);
         var jsx$3 = $m_Lfastparse_noApi$().LiteralStr__T__Lfastparse_core_Parser("(");
@@ -5287,10 +5374,10 @@ $c_Lcas_EquationParser$.prototype.functionCall$lzycompute__p1__Lfastparse_core_P
         var jsx$5 = new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser(p0$3, this$11.WL$1);
         var this$12 = $m_Lcas_EquationParser$().White$1;
         var p0$4 = $m_Lcas_EquationParser$().expr0$1;
-        var qual$5 = new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser(p0$4, this$12.WL$1);
-        var x$21 = $m_Lfastparse_noApi$().LiteralStr__T__Lfastparse_core_Parser(",");
+        var qual$7 = new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser(p0$4, this$12.WL$1);
+        var x$29 = $m_Lfastparse_noApi$().LiteralStr__T__Lfastparse_core_Parser(",");
         var this$13 = $m_Lfastparse_core_Implicits$Repeater$();
-        var jsx$2 = qual$5.rep__I__Lfastparse_core_Parser__I__I__Lfastparse_core_Implicits$Repeater__Lfastparse_core_Parser(0, x$21, 2147483647, (-1), new $c_Lfastparse_core_Implicits$LowPriRepeater$GenericRepeater().init___Lfastparse_core_Implicits$LowPriRepeater(this$13));
+        var jsx$2 = qual$7.rep__I__Lfastparse_core_Parser__I__I__Lfastparse_core_Implicits$Repeater__Lfastparse_core_Parser(0, x$29, 2147483647, (-1), new $c_Lfastparse_core_Implicits$LowPriRepeater$GenericRepeater().init___Lfastparse_core_Implicits$LowPriRepeater(this$13));
         var this$14 = $m_Lfastparse_core_Implicits$Sequencer$();
         var p0$5 = jsx$5.$$tilde__Lfastparse_core_Parser__Lfastparse_core_Implicits$Sequencer__Lfastparse_core_Parser(jsx$2, $as_Lfastparse_core_Implicits$Sequencer($f_Lfastparse_core_LowestPriSequencer__Sequencer1__O(this$14)));
         var jsx$6 = new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser(p0$5, this$15.WL$1);
@@ -5302,18 +5389,18 @@ $c_Lcas_EquationParser$.prototype.functionCall$lzycompute__p1__Lfastparse_core_P
     var name = new $c_Lsourcecode_Name().init___T("functionCall");
     var p0$6 = new $c_Lfastparse_parsers_Combinators$Rule().init___T__F0__Lfastparse_utils_ReprOps(name.value$2, p, this$17.implicitReprOps$1);
     this.functionCall$1 = new $c_Lfastparse_WhitespaceApi().init___Lfastparse_core_Parser__Lfastparse_core_Parser(p0$6, this$18.WL$1).map__F1__Lfastparse_core_Parser(new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function(this$2$1) {
-      return (function(x0$3$2) {
-        var x0$3 = $as_T2(x0$3$2);
-        if ((x0$3 !== null)) {
-          var name$1 = $as_T(x0$3.$$und1__O());
-          var args = $as_sc_Seq(x0$3.$$und2__O());
+      return (function(x0$4$2) {
+        var x0$4 = $as_T2(x0$4$2);
+        if ((x0$4 !== null)) {
+          var name$1 = $as_T(x0$4.$$und1__O());
+          var args = $as_sc_Seq(x0$4.$$und2__O());
           if ((name$1 !== null)) {
             if ((args !== null)) {
               return new $c_Lcas_SpecialFunction().init___T__sci_List(name$1, args.toList__sci_List())
             }
           }
         };
-        throw new $c_s_MatchError().init___O(x0$3)
+        throw new $c_s_MatchError().init___O(x0$4)
       })
     })(this)));
     this.bitmap$0$1 = (2 | this.bitmap$0$1)
@@ -24064,6 +24151,35 @@ $c_Lworkspace_Workspace.prototype.addNumber__Lworkspace_PhysicalNumber__Lworkspa
 $c_Lworkspace_Workspace.prototype.$$js$exported$meth$addNumber__Lworkspace_PhysicalNumber__O = (function(physicalNumber) {
   return this.addNumber__Lworkspace_PhysicalNumber__Lworkspace_Workspace(physicalNumber)
 });
+$c_Lworkspace_Workspace.prototype.diagramVarBuckTexJs__I__T__Lworkspace_BuckTex = (function(diagramId, diagramVarName) {
+  var rc10 = false;
+  var x2 = null;
+  var this$1 = this.diagrams$1;
+  var x1 = $as_Lworkspace_TriangleDiagram(this$1.map$1.apply__O__O(diagramId)).vars$1.get__O__s_Option(diagramVarName);
+  var x = $m_s_None$();
+  if ((x === x1)) {
+    return null
+  };
+  if ($is_s_Some(x1)) {
+    rc10 = true;
+    x2 = $as_s_Some(x1);
+    var p3 = $as_s_util_Either(x2.value$2);
+    if ($is_s_util_Left(p3)) {
+      var x4 = $as_s_util_Left(p3);
+      var varId = $as_Lworkspace_VarId(x4.value$2);
+      return this.getVariableBuckTex__Lworkspace_VarId__Lworkspace_BuckTex(varId)
+    }
+  };
+  if (rc10) {
+    var p6 = $as_s_util_Either(x2.value$2);
+    if ($is_s_util_Right(p6)) {
+      var x7 = $as_s_util_Right(p6);
+      var varName = $as_T(x7.value$2);
+      return $m_Lworkspace_CompileToBuckTex$().showVariable__Lworkspace_VarId__sci_Map__Lworkspace_BuckTex(new $c_Lworkspace_VarId().init___I__T((-1), varName), $as_sci_Map($m_s_Predef$().Map$2.apply__sc_Seq__sc_GenMap($m_sci_Nil$())))
+    }
+  };
+  throw new $c_s_MatchError().init___O(x1)
+});
 $c_Lworkspace_Workspace.prototype.deleteNumber__I__Lworkspace_Workspace = (function(numberId) {
   var x$59 = this.numbers$1.$delete__I__Lworkspace_MapWithIds(numberId);
   var x$60 = this.equations$1;
@@ -24129,6 +24245,9 @@ $c_Lworkspace_Workspace.prototype.$$js$exported$meth$getVariableBuckTex__Lworksp
 });
 $c_Lworkspace_Workspace.prototype.$$js$exported$prop$addableEqualitiesJs__O = (function() {
   return this.addableEqualitiesJs__sjs_js_Array()
+});
+$c_Lworkspace_Workspace.prototype.$$js$exported$meth$diagramVarBuckTexJs__I__T__O = (function(diagramId, diagramVarName) {
+  return this.diagramVarBuckTexJs__I__T__Lworkspace_BuckTex(diagramId, diagramVarName)
 });
 $c_Lworkspace_Workspace.prototype.$$js$exported$meth$deleteEquation__I__O = (function(id) {
   return this.deleteEquation__I__Lworkspace_Workspace(id)
@@ -24626,6 +24745,11 @@ $c_Lworkspace_Workspace.prototype.toJsObject__sjs_js_Object = (function() {
     "expressions": jsx$4,
     "numbers": jsx$1
   }
+});
+$c_Lworkspace_Workspace.prototype.diagramVarBuckTexJs = (function(arg$1, arg$2) {
+  var prep0 = $uI(arg$1);
+  var prep1 = $as_T(arg$2);
+  return this.$$js$exported$meth$diagramVarBuckTexJs__I__T__O(prep0, prep1)
 });
 $c_Lworkspace_Workspace.prototype.deleteDiagram = (function(arg$1) {
   var prep0 = $uI(arg$1);

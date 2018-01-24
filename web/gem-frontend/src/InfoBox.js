@@ -12,6 +12,7 @@ class InfoBox extends React.Component {
         el={ws.getEquationBuckTex(selectedId)}
       />
       <p>{equation.name}</p>
+      <p>{equation.description}</p>
       {equation.varsJs.map((varSymbol) => {
         const varId = Gem.VarId(selectedId, varSymbol);
         const varName = equation.varNameJs(varSymbol);
@@ -138,8 +139,15 @@ class TriangleInfoBox extends React.Component {
 
   render () {
     return <div className="info-box">
-      <p>Triangle!</p>
+      <p>Triangle</p>
 
+      {false && <div>
+      <div>H
+      </div> A O θ φ</div>}
+
+      <button className="btn btn-danger" onClick={() => {}}>
+        <i className="fa fa-trash" style={{marginRight: "10px"}}/>
+        Delete triangle</button>
     </div>
   }
 }

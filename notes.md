@@ -11,7 +11,7 @@
 - escape velocity
 - second rocket equation
     - also delete the spurious first one
-- E = 1 / (2* π * ε_0) * p/(z**3)
+- E = 1 / (2 * π * ε_0) * p/(z**3)
 
 ## Mistakes I've made
 
@@ -36,3 +36,11 @@
     each should come with its onClick handler etc.
 - Variable aliases
 - Solve trigonometric equations
+- It should keep track of the facts you've used in all your expressions and let you know when they're violated.
+
+## Conceptual problems
+
+- I don't know how to represent angles.
+  - I think the right answer might be to
+- I can't represent Newton-meters (for torque) apart from as Joules.
+- I sometimes get confused between the kind of equality that is "these variables are referring to the same thing" and "these variables have the same value"

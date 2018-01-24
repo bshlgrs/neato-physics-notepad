@@ -526,6 +526,8 @@ class Notepad extends Component {
             return <div key={id} style={{position: "absolute", top, left}}>
               <Triangle
                 triangle={triangle}
+                triangleId={id}
+                workspace={ws}
                 onMouseDown={(e) => {
                   const rel = {
                     x: e.pageX - left,

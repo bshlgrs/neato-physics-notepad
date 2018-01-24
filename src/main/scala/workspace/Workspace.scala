@@ -51,7 +51,7 @@ case class Workspace(equations: MapWithIds[Equation],
   def allVarIds: Set[VarId] = for {
     (equationId, equation) <- equations.toSet
     varName <- equation.vars
-  } yield VarId(equationId, varName)
+  } yield EquationVarId(equationId, varName)
 
   def allVarIdsJs: js.Array[VarId] = arr(allVarIds)
   def varIdStringToVarId(str: String): VarId = allVarIds.find(_.toString == str).get
@@ -59,7 +59,7 @@ case class Workspace(equations: MapWithIds[Equation],
   def addEquality(x: VarId, y: VarId): Workspace = this.copy(equalities = this.equalities.setEqual(x, y))
 
   def addExpression(varId: VarId): Workspace = varId match {
-    case VarId(eqId: Int, varName: String) => {
+    case EquationVarId(eqId: Int, varName: String) => {
       val newExpr = equations(eqId).solve(varName, eqId)
       this.copy(expressions = expressions + (varId -> newExpr))
     }
@@ -118,12 +118,12 @@ case class Workspace(equations: MapWithIds[Equation],
   }).map(_._1).orNull
 
   def attachNumber(numberId: Int, varId: VarId): Try[Workspace] = {
-    // I am kind of suspicious of this function
-    val VarId(eqIdx, varName) = varId
+    // TODO: generalize to work for diagram VarIDs
+    val EquationVarId(eqIdx, varName) = varId
     for {
       (number, currentAttachment) <- Try(numbers.get(numberId).get)
       eq: Equation <- Try(this.equations.get(eqIdx).get)
-      mbVariableDimension: Option[SiDimension] <- Try(getDimensionDirectly(VarId(eqIdx, varName)))
+      mbVariableDimension: Option[SiDimension] <- Try(getDimensionDirectly(varId))
       _ <- mbVariableDimension match {
         case Some(variableDimension) => Try(assert(variableDimension == number.siDimension), "var dimension does not match")
         case _ => Success()
@@ -148,8 +148,9 @@ case class Workspace(equations: MapWithIds[Equation],
     this.copy(numbers = numbers.delete(numberId))
   }
 
-  def getDimensionDirectly(varId: VarId): Option[SiDimension] = {
-    equations(varId.eqIdx).staticDimensions.get(varId.varName).orElse(getNumber(varId).map(_.siDimension))
+  def getDimensionDirectly(varId: VarId): Option[SiDimension] = varId match {
+    case EquationVarId(eqIdx, varName) => equations(eqIdx).staticDimensions.get(varName).orElse(getNumber(varId).map(_.siDimension))
+    case _ => ???
     // TODO: Also you can check it by looking for the dimensions of variables it's equated to, or its number.
   }
 
@@ -158,7 +159,7 @@ case class Workspace(equations: MapWithIds[Equation],
   lazy val allDimensions: Map[VarId, Option[SiDimension]] = allVarIds.map(varId => varId -> getDimensionCalc(varId)).toMap
 
   def getDimensionCalc(varId: VarId): Option[SiDimension] = {
-    val calculatedTypes = equalities.getSet(varId).flatMap({ case varId@VarId(eqIdx, varName) => {
+    val calculatedTypes = equalities.getSet(varId).flatMap({ case varId@EquationVarId(eqIdx, varName) => {
       val solutions = equations(eqIdx).solutions(varName, eqIdx)
       val types = solutions.map(_.calculateDimension((x) => DimensionInference.fromTopOption(getDimensionDirectly(x)))) ++
          Set(DimensionInference.fromTopOption(getDimensionDirectly(varId)))
@@ -187,7 +188,7 @@ case class Workspace(equations: MapWithIds[Equation],
 
   def checkRewriteAttemptIsValid(exprVarId: VarId, varToRemoveId: VarId, equationIdToUse: Int): Boolean = {
     val equation = equations(equationIdToUse)
-    val varIds = equation.vars.map(name => VarId(equationIdToUse, name))
+    val varIds = equation.vars.map(name => EquationVarId(equationIdToUse, name))
     varIds.exists(varId => equalities.testEqual(varId, varToRemoveId))
   }
 
@@ -198,7 +199,7 @@ case class Workspace(equations: MapWithIds[Equation],
   def getEquationBuckTex(idx: Int): BuckTex = {
     val equation = equations(idx)
     val varSubscripts: Map[String, Int] = equation.vars.map((varName) => {
-      varName -> getVarSubscript(VarId(idx, varName))
+      varName -> getVarSubscript(EquationVarId(idx, varName))
     }).toMap.collect({case (k, Some(v)) => k -> v})
     CompileToBuckTex.showEquation(equation, idx, varSubscripts)
   }
@@ -247,7 +248,7 @@ case class Workspace(equations: MapWithIds[Equation],
       None
     else {
       val relevantVarIds = allVarIds.filter(varId2 =>
-        varId.eqIdx > varId2.eqIdx && // We are counting variables from earlier equations
+        varId.sourceIsGreaterThan(varId2) && // We are counting variables from earlier equations
           varId.varName == varId2.varName && // that have the same name
           !equalities.testEqual(varId, varId2)) // and that aren't equal
       val groups = relevantVarIds.groupBy(equalities.getSet)
@@ -304,12 +305,20 @@ case class Workspace(equations: MapWithIds[Equation],
     setDiagramVar(diagramId, varName, None)
 
   def deleteDiagram(diagramId: Int): Workspace = this.copy(diagrams = this.diagrams.delete(diagramId))
+
+  def diagramVarBuckTexJs(diagramId: Int, diagramVarName: String): BuckTex = {
+    this.diagrams(diagramId).vars.get(diagramVarName) match {
+      case None => null
+      case Some(Left(varId)) => getVariableBuckTex(varId)
+      case Some(Right(varName)) => CompileToBuckTex.showVariable(DiagramVarId(diagramId, varName), Map())
+    }
+  }
 }
 
 @JSExportTopLevel("Gem.WorkspaceOps")
 @JSExportAll
 object Workspace {
-  def empty = Workspace(MapWithIds.empty, SetOfSets[VarId](Set()), Map(), MapWithIds.empty, MapWithIds.empty)
+  def empty: Workspace = Workspace(MapWithIds.empty, SetOfSets[VarId](Set()), Map(), MapWithIds.empty, MapWithIds.empty)
 }
 
 

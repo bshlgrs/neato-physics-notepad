@@ -5,7 +5,7 @@ import cas.{Expression, Variable}
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSExport
 
-case class TriangleDiagram(vars: Map[String, Either[VarId, String]]) {
+case class TriangleDiagram(vars: Map[String, VarId]) {
   // Triangle
   //
   //     C
@@ -35,18 +35,12 @@ case class TriangleDiagram(vars: Map[String, Either[VarId, String]]) {
       A -> O * cas.SpecialFunction.tan(phi),
     )
 
-    val varNames = vars.mapValues({
-      case Left(VarId(_, name)) => name
-      case Right(name) => name
-    })
-
     val varToEqualitiesMap: Map[String, (VarId, VarId)] = vars.map({
-      case (name, Left(varId)) => Some(name -> (VarId(nextEquationIdx, name), varId))
-      case (_, Right(name)) => None
+      case (name, varId) => Some(name -> (DiagramVarId(diagramIdx, name), varId))
     }).collect({ case Some(x) => x }).toMap
 
     identities
-      .filter({ case (lhs, rhs) => (lhs.vars ++ rhs.vars).forall(vars.contains) })
+      .filter({ case (lhs, rhs) => (lhs.vars ++ rhs.vars).count(vars.contains) >= 2 })
       .map({ case (lhs, rhs) => {
         val builtInEqualities = (lhs.vars ++ rhs.vars).map(varToEqualitiesMap.get)
                                                         .collect({ case Some(v) => v })
@@ -60,5 +54,5 @@ case class TriangleDiagram(vars: Map[String, Either[VarId, String]]) {
   def set(varName: String, mbSetting: Option[Either[VarId, String]]): TriangleDiagram = mbSetting match {
     case None => this.copy(vars - varName)
     case Some(setting) => this.copy(vars + (varName -> setting))
-  }                                     
+  }
 }
