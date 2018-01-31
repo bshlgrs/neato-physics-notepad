@@ -35,15 +35,11 @@ case class Workspace(equations: MapWithIds[Equation],
     arr(allVarIds.filter((varId) => equalities.getSet(varId).forall((varId2) => !expressions.contains(varId2))))
   }
 
+  // TODO, kill these
   def nextEqId: Int = equations.nextId
   def nextNumberId: Int = numbers.nextId
 
-  def addEquation(equation: Equation): Workspace = {
-    val equalitiesToAdd: Set[(VarId, VarId)] = equation match { case CustomEquation(_, _, e) => e; case _ => Set() }
-
-    val wsWithAddedEquation = this.copy(equations=this.equations.addWithNextId(equation))
-    equalitiesToAdd.foldLeft(wsWithAddedEquation) ((ws, eq) => ws.addEquality(eq._1, eq._2))
-  }
+  def addEquation(equation: Equation): Workspace = this.copy(equations=this.equations.addWithNextId(equation))
 
   def addNumber(physicalNumber: PhysicalNumber): Workspace = this.copy(numbers=this.numbers.addWithNextId((physicalNumber, None)))
   def addAndAttachNumber(varId: VarId, physicalNumber: PhysicalNumber): Workspace = this.addNumber(physicalNumber).attachNumber(this.nextNumberId, varId).get
@@ -291,26 +287,31 @@ case class Workspace(equations: MapWithIds[Equation],
   }
 
   def addDiagram: Workspace = this.copy(diagrams = this.diagrams.addWithNextId(TriangleDiagram(Map())))
-  def setDiagramVar(diagramId: Int, varName: String, newSetting: Option[Either[VarId, String]]): Workspace = {
+  def setDiagramVar(diagramId: Int, varName: String, newSetting: Option[VarId]): Workspace = {
     val d = diagrams(diagramId)
 
     this.copy(diagrams = this.diagrams.set(diagramId, d.set(varName, newSetting)))
   }
 
   def setDiagramVarToVarId(diagramId: Int, varName: String, newSetting: VarId): Workspace =
-    setDiagramVar(diagramId, varName, Some(Left(newSetting)))
-  def setDiagramVarToName(diagramId: Int, varName: String, newSetting: String): Workspace =
-    setDiagramVar(diagramId, varName, Some(Right(newSetting)))
+    setDiagramVar(diagramId, varName, Some(newSetting))
   def setDiagramVarToBlank(diagramId: Int, varName: String): Workspace =
     setDiagramVar(diagramId, varName, None)
 
   def deleteDiagram(diagramId: Int): Workspace = this.copy(diagrams = this.diagrams.delete(diagramId))
 
+  def addEquationFromDiagram(diagramId: Int, equation: CustomEquation): Workspace = {
+    val equalitiesToAdd = this.diagrams(diagramId).equalitiesToAddWithEquation(equation, this.equations.nextId)
+
+    equalitiesToAdd.foldLeft(this.addEquation(equation)) ({
+      case (ws, (varId1, varId2)) => ws.addEquality(varId1, varId2)
+    })
+  }
+
   def diagramVarBuckTexJs(diagramId: Int, diagramVarName: String): BuckTex = {
     this.diagrams(diagramId).vars.get(diagramVarName) match {
-      case None => null
-      case Some(Left(varId)) => getVariableBuckTex(varId)
-      case Some(Right(varName)) => CompileToBuckTex.showVariable(DiagramVarId(diagramId, varName), Map())
+      case None => getVariableBuckTex(DiagramVarId(diagramId, diagramVarName))
+      case Some(varId) => getVariableBuckTex(varId)
     }
   }
 }

@@ -528,6 +528,7 @@ class Notepad extends Component {
                 triangle={triangle}
                 triangleId={id}
                 workspace={ws}
+                registerVar={() => {}}
                 onMouseDown={(e) => {
                   const rel = {
                     x: e.pageX - left,

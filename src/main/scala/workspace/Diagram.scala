@@ -17,7 +17,7 @@ case class TriangleDiagram(vars: Map[String, VarId]) {
   // H is hypotenuse AC
   // A is AB
   // O is BC
-  def usableEquations(nextEquationIdx: Int): Set[CustomEquation] = {
+  def usableEquations: Set[CustomEquation] = {
     val O = Variable("O")
     val A = Variable("A")
     val H = Variable("H")
@@ -35,23 +35,30 @@ case class TriangleDiagram(vars: Map[String, VarId]) {
       A -> O * cas.SpecialFunction.tan(phi),
     )
 
-    val varToEqualitiesMap: Map[String, (VarId, VarId)] = vars.map({
-      case (name, varId) => Some(name -> (DiagramVarId(diagramIdx, name), varId))
-    }).collect({ case Some(x) => x }).toMap
+    def getOutputVarName(name: String): String = vars.get(name) match {
+      case None => name
+      case Some(varId) => varId.varName
+    }
 
     identities
       .filter({ case (lhs, rhs) => (lhs.vars ++ rhs.vars).count(vars.contains) >= 2 })
       .map({ case (lhs, rhs) => {
-        val builtInEqualities = (lhs.vars ++ rhs.vars).map(varToEqualitiesMap.get)
-                                                        .collect({ case Some(v) => v })
-        CustomEquation(lhs.mapVariables(varNames), rhs.mapVariables(varNames), builtInEqualities)
+
+        CustomEquation(lhs.mapVariables(getOutputVarName), rhs.mapVariables(getOutputVarName))
       }})
   }
 
-  @JSExport
-  def usableEquationsJs(nextEquationIdx: Int): js.Array[CustomEquation] = js.Array(usableEquations(nextEquationIdx).toSeq :_*)
+  def equalitiesToAddWithEquation(customEquation: CustomEquation, newEquationId: Int): Set[(VarId, VarId)] = {
+    (customEquation.lhs.vars ++ customEquation.rhs.vars).map((varName) => vars.get(varName) match {
+      case Some(varId) => Some((varId, EquationVarId(newEquationId, varId.varName)))
+      case None => None
+    }).collect({ case Some(x) => x })
+  }
 
-  def set(varName: String, mbSetting: Option[Either[VarId, String]]): TriangleDiagram = mbSetting match {
+  @JSExport
+  def usableEquationsJs(nextEquationIdx: Int): js.Array[CustomEquation] = js.Array(usableEquations.toSeq :_*)
+
+  def set(varName: String, mbSetting: Option[VarId]): TriangleDiagram = mbSetting match {
     case None => this.copy(vars - varName)
     case Some(setting) => this.copy(vars + (varName -> setting))
   }

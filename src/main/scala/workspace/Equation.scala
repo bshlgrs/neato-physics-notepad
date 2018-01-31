@@ -13,18 +13,18 @@ sealed trait Equation {
   def staticDimensions: Map[String, SiDimension]
   def varName(varSymbol: String): Option[String]
   def varNameJs(varSymbol: String): String = varName(varSymbol).orNull
-  def showNaked: BuckTex = display((varName: String) => CompileToBuckTex.makeVariableSpan(VarId(-1, varName), None))
+  def showNaked: BuckTex = display((varName: String) => CompileToBuckTex.makeVariableSpan(EquationVarId(-1, varName), None))
   def vars: Set[String] = expr.vars
   def varsJs: js.Array[String] = js.Array(vars.toList :_*)
   def solve(varName: String, selfEqId: Int): Expression[VarId] = {
     // TODO: check on the `head` here
-    expr.solve(varName).head.mapVariables((name) => VarId(selfEqId, name))
+    expr.solve(varName).head.mapVariables((name) => EquationVarId(selfEqId, name))
   }
 
   def solutions(varName: String, selfEqId: Int): Set[Expression[VarId]] = {
-    expr.solve(varName).map(_.mapVariables((name) => VarId(selfEqId, name)))
+    expr.solve(varName).map(_.mapVariables((name) => EquationVarId(selfEqId, name): VarId))
   }
-  def exprWithEquationId(id: Int): Expression[VarId] = expr.mapVariables((name) => VarId(id, name))
+  def exprWithEquationId(id: Int): Expression[VarId] = expr.mapVariables((name) => EquationVarId(id, name))
 
   def toJsObject: js.Object
 }
@@ -111,7 +111,7 @@ object LibraryEquationJs {
 }
 
 @JSExportAll
-case class CustomEquation(lhs: Expression[String], rhs: Expression[String], builtInEqualities: Set[(VarId, VarId)] = Set()) extends Equation {
+case class CustomEquation(lhs: Expression[String], rhs: Expression[String]) extends Equation {
   def expr: Expression[String] = lhs - rhs
 
   def varName(varSymbol: String): Option[String] = None

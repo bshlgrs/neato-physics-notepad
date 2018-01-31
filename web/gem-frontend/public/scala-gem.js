@@ -3617,10 +3617,10 @@ function $f_Lcas_Expression__toJsObject__sjs_js_Object($thiz) {
         "name": x2$2$1
       }
     } else if ($is_Lworkspace_VarId(x)) {
-      var x3$2$1 = $as_Lworkspace_VarId(x);
+      var this$18 = $as_Lworkspace_VarId(x);
       return {
         "className": "Variable",
-        "varId": x3$2$1.toJsObject__sjs_js_Object()
+        "varId": $f_Lworkspace_VarId__toJsObject__sjs_js_Object(this$18)
       }
     } else {
       throw $m_sjsr_package$().unwrapJavaScriptException__jl_Throwable__O(new $c_jl_RuntimeException().init___T(new $c_s_StringContext().init___sc_Seq(new $c_sjs_js_WrappedArray().init___sjs_js_Array(["Tried to turn ", " into JS object but cannot serialize"])).s__sc_Seq__T(new $c_sjs_js_WrappedArray().init___sjs_js_Array([$thiz]))))
@@ -3644,15 +3644,15 @@ function $f_Lcas_Expression__toJsObject__sjs_js_Object($thiz) {
     var x9 = $as_Lcas_SpecialFunction($thiz);
     var name$2 = x9.name$1;
     var args = x9.args$1;
-    var this$22 = $m_sjsr_package$();
+    var this$23 = $m_sjsr_package$();
     var f$2 = (function(this$3$1) {
       return (function(x$58$2) {
         var x$58 = $as_Lcas_Expression(x$58$2);
         return $f_Lcas_Expression__toJsObject__sjs_js_Object(x$58)
       })
     })($thiz);
-    var this$21 = $m_sci_List$();
-    var bf$2 = this$21.ReusableCBFInstance$2;
+    var this$22 = $m_sci_List$();
+    var bf$2 = this$22.ReusableCBFInstance$2;
     if ((bf$2 === $m_sci_List$().ReusableCBFInstance$2)) {
       if ((args === $m_sci_Nil$())) {
         var jsx$6 = $m_sci_Nil$()
@@ -3693,7 +3693,7 @@ function $f_Lcas_Expression__toJsObject__sjs_js_Object($thiz) {
         return (function(x$2$2) {
           return $uI(result$5.push(x$2$2))
         })
-      })(this$22, result$4)));
+      })(this$23, result$4)));
       var jsx$5 = result$4
     };
     return {
@@ -3902,7 +3902,7 @@ function $f_Lworkspace_Equation__solve__T__I__Lcas_Expression($thiz, varName, se
   var f = new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function($this, selfEqId$1) {
     return (function(name$2) {
       var name = $as_T(name$2);
-      return new $c_Lworkspace_VarId().init___I__T(selfEqId$1, name)
+      return new $c_Lworkspace_EquationVarId().init___I__T(selfEqId$1, name)
     })
   })($thiz, selfEqId));
   return $f_Lcas_Expression__mapVariables__F1__Lcas_Expression(this$1, f)
@@ -3915,7 +3915,7 @@ function $f_Lworkspace_Equation__showNaked__Lworkspace_BuckTex($thiz) {
   return $thiz.display__F1__Lworkspace_BuckTex(new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function($this) {
     return (function(varName$2) {
       var varName = $as_T(varName$2);
-      return $m_Lworkspace_CompileToBuckTex$().makeVariableSpan__Lworkspace_VarId__s_Option__Lworkspace_BuckTex(new $c_Lworkspace_VarId().init___I__T((-1), varName), $m_s_None$())
+      return $m_Lworkspace_CompileToBuckTex$().makeVariableSpan__Lworkspace_VarId__s_Option__Lworkspace_BuckTex(new $c_Lworkspace_EquationVarId().init___I__T((-1), varName), $m_s_None$())
     })
   })($thiz)))
 }
@@ -3929,7 +3929,7 @@ function $f_Lworkspace_Equation__solutions__T__I__sci_Set($thiz, varName, selfEq
       var f = new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function($this$1, selfEqId$2) {
         return (function(name$2) {
           var name = $as_T(name$2);
-          return new $c_Lworkspace_VarId().init___I__T(selfEqId$2, name)
+          return new $c_Lworkspace_EquationVarId().init___I__T(selfEqId$2, name)
         })
       })($this, selfEqId$1));
       return $f_Lcas_Expression__mapVariables__F1__Lcas_Expression(x$1, f)
@@ -3967,7 +3967,7 @@ function $f_Lworkspace_Equation__exprWithEquationId__I__Lcas_Expression($thiz, i
   var f = new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function($this, id$1) {
     return (function(name$2) {
       var name = $as_T(name$2);
-      return new $c_Lworkspace_VarId().init___I__T(id$1, name)
+      return new $c_Lworkspace_EquationVarId().init___I__T(id$1, name)
     })
   })($thiz, id));
   return $f_Lcas_Expression__mapVariables__F1__Lcas_Expression(this$1, f)
@@ -3996,6 +3996,77 @@ function $f_Lworkspace_UnitName__string__T($thiz) {
   } else {
     throw new $c_s_MatchError().init___O($thiz)
   }
+}
+function $f_Lworkspace_VarId__sourceIsGreaterThan__Lworkspace_VarId__Z($thiz, other) {
+  var x1 = new $c_T2().init___O__O($thiz, other);
+  var p2 = $as_Lworkspace_VarId(x1.$$und1$f);
+  var p3 = $as_Lworkspace_VarId(x1.$$und2$f);
+  if ($is_Lworkspace_EquationVarId(p2)) {
+    var x4 = $as_Lworkspace_EquationVarId(p2);
+    var x = x4.eqIdx$1;
+    if ($is_Lworkspace_EquationVarId(p3)) {
+      var x6 = $as_Lworkspace_EquationVarId(p3);
+      var y = x6.eqIdx$1;
+      return (x > y)
+    }
+  };
+  var p8 = $as_Lworkspace_VarId(x1.$$und1$f);
+  var p9 = $as_Lworkspace_VarId(x1.$$und2$f);
+  if ($is_Lworkspace_DiagramVarId(p8)) {
+    var x10 = $as_Lworkspace_DiagramVarId(p8);
+    var x$2 = x10.diagramIdx$1;
+    if ($is_Lworkspace_DiagramVarId(p9)) {
+      var x12 = $as_Lworkspace_DiagramVarId(p9);
+      var y$2 = x12.diagramIdx$1;
+      return (x$2 > y$2)
+    }
+  };
+  var p14 = $as_Lworkspace_VarId(x1.$$und1$f);
+  var p15 = $as_Lworkspace_VarId(x1.$$und2$f);
+  if (($is_Lworkspace_DiagramVarId(p14) && $is_Lworkspace_EquationVarId(p15))) {
+    return false
+  };
+  var p22 = $as_Lworkspace_VarId(x1.$$und1$f);
+  var p23 = $as_Lworkspace_VarId(x1.$$und2$f);
+  if (($is_Lworkspace_EquationVarId(p22) && $is_Lworkspace_DiagramVarId(p23))) {
+    return true
+  };
+  throw new $c_s_MatchError().init___O(x1)
+}
+function $f_Lworkspace_VarId__toJsObject__sjs_js_Object($thiz) {
+  if ($is_Lworkspace_EquationVarId($thiz)) {
+    var x2 = $as_Lworkspace_EquationVarId($thiz);
+    var eqIdx = x2.eqIdx$1;
+    var varName = x2.varName$1;
+    return {
+      "eqIdx": eqIdx,
+      "varName": varName,
+      "className": "EquationVarId"
+    }
+  } else if ($is_Lworkspace_DiagramVarId($thiz)) {
+    var x3 = $as_Lworkspace_DiagramVarId($thiz);
+    var diagramIdx = x3.diagramIdx$1;
+    var varName$2 = x3.varName$1;
+    return {
+      "diagramIdx": diagramIdx,
+      "varName": varName$2,
+      "className": "DiagramVarId"
+    }
+  } else {
+    throw new $c_s_MatchError().init___O($thiz)
+  }
+}
+function $is_Lworkspace_VarId(obj) {
+  return (!(!((obj && obj.$classData) && obj.$classData.ancestors.Lworkspace_VarId)))
+}
+function $as_Lworkspace_VarId(obj) {
+  return (($is_Lworkspace_VarId(obj) || (obj === null)) ? obj : $throwClassCastException(obj, "workspace.VarId"))
+}
+function $isArrayOf_Lworkspace_VarId(obj, depth) {
+  return (!(!(((obj && obj.$classData) && (obj.$classData.arrayDepth === depth)) && obj.$classData.arrayBase.ancestors.Lworkspace_VarId)))
+}
+function $asArrayOf_Lworkspace_VarId(obj, depth) {
+  return (($isArrayOf_Lworkspace_VarId(obj, depth) || (obj === null)) ? obj : $throwArrayCastException(obj, "Lworkspace.VarId;", depth))
 }
 function $f_Lworkspace_dimensions_DimensionInference__combineWithEquals__Lworkspace_dimensions_DimensionInference__Lworkspace_dimensions_DimensionInference($thiz, other) {
   var x1 = new $c_T2().init___O__O($thiz, other);
@@ -5331,7 +5402,7 @@ $c_Lcas_EquationParser$.prototype.parseEquation__T__s_Option = (function(equatio
       } else {
         var arg1$2 = this$12.get__O();
         var rhs = $as_Lcas_Expression(arg1$2);
-        return new $c_s_Some().init___O(new $c_Lworkspace_CustomEquation().init___Lcas_Expression__Lcas_Expression__sci_Set(lhs, rhs, $as_sci_Set($m_s_Predef$().Set$2.apply__sc_Seq__sc_GenTraversable($m_sci_Nil$()))))
+        return new $c_s_Some().init___O(new $c_Lworkspace_CustomEquation().init___Lcas_Expression__Lcas_Expression(lhs, rhs))
       }
     }
   }
@@ -6830,7 +6901,7 @@ $c_Lworkspace_CompileToBuckTex$.prototype.showEquation__Lworkspace_Equation__I__
   return equation.display__F1__Lworkspace_BuckTex(new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function($this, idx$1, varSubscripts$1) {
     return (function(varName$2) {
       var varName = $as_T(varName$2);
-      return $m_Lworkspace_CompileToBuckTex$().makeVariableSpan__Lworkspace_VarId__s_Option__Lworkspace_BuckTex(new $c_Lworkspace_VarId().init___I__T(idx$1, varName), varSubscripts$1.get__O__s_Option(varName))
+      return $m_Lworkspace_CompileToBuckTex$().makeVariableSpan__Lworkspace_VarId__s_Option__Lworkspace_BuckTex(new $c_Lworkspace_EquationVarId().init___I__T(idx$1, varName), varSubscripts$1.get__O__s_Option(varName))
     })
   })(this, idx, varSubscripts)))
 });
@@ -7089,7 +7160,7 @@ $c_Lworkspace_CompileToBuckTex$.prototype.compileExpressionWithBinding__Lcas_Exp
   throw new $c_s_MatchError().init___O(expr)
 });
 $c_Lworkspace_CompileToBuckTex$.prototype.makeVariableSpan__Lworkspace_VarId__s_Option__Lworkspace_BuckTex = (function(varId, mbNum) {
-  var name = varId.varName$1;
+  var name = varId.varName__T();
   if ($is_s_Some(mbNum)) {
     var x2 = $as_s_Some(mbNum);
     var num = $uI(x2.value$2);
@@ -7147,7 +7218,7 @@ $c_Lworkspace_EquationJs$.prototype.parse__Lworkspace_EquationJs__Lworkspace_Equ
     if ((value$2 === (void 0))) {
       throw new $c_ju_NoSuchElementException().init___T("undefined.get")
     };
-    return new $c_Lworkspace_CustomEquation().init___Lcas_Expression__Lcas_Expression__sci_Set(jsx$2, jsx$1.parseToStringExpr__Lcas_ExpressionJs__Lcas_Expression(value$2), $as_sci_Set($m_s_Predef$().Set$2.apply__sc_Seq__sc_GenTraversable($m_sci_Nil$())))
+    return new $c_Lworkspace_CustomEquation().init___Lcas_Expression__Lcas_Expression(jsx$2, jsx$1.parseToStringExpr__Lcas_ExpressionJs__Lcas_Expression(value$2))
   } else if ($is_s_Some(x1)) {
     var x2 = $as_s_Some(x1);
     var id = $uI(x2.value$2);
@@ -7517,7 +7588,22 @@ $c_Lworkspace_VarIdJs$.prototype.init___ = (function() {
   return this
 });
 $c_Lworkspace_VarIdJs$.prototype.parse__Lworkspace_VarIdJs__Lworkspace_VarId = (function(varIdJs) {
-  return new $c_Lworkspace_VarId().init___I__T($uI(varIdJs.eqIdx), $as_T(varIdJs.varName))
+  var x1 = $as_T(varIdJs.className);
+  if ((x1 === "EquationVarId")) {
+    var value = varIdJs.eqIdx;
+    if ((value === (void 0))) {
+      throw new $c_ju_NoSuchElementException().init___T("undefined.get")
+    };
+    return new $c_Lworkspace_EquationVarId().init___I__T($uI(value), $as_T(varIdJs.varName))
+  } else if ((x1 === "DiagramVarId")) {
+    var value$1 = varIdJs.diagramIdx;
+    if ((value$1 === (void 0))) {
+      throw new $c_ju_NoSuchElementException().init___T("undefined.get")
+    };
+    return new $c_Lworkspace_DiagramVarId().init___I__T($uI(value$1), $as_T(varIdJs.varName))
+  } else {
+    throw new $c_s_MatchError().init___O(x1)
+  }
 });
 var $d_Lworkspace_VarIdJs$ = new $TypeData().initClass({
   Lworkspace_VarIdJs$: 0
@@ -22737,7 +22823,124 @@ $h_Lworkspace_TriangleDiagram.prototype = $c_Lworkspace_TriangleDiagram.prototyp
 $c_Lworkspace_TriangleDiagram.prototype.productPrefix__T = (function() {
   return "TriangleDiagram"
 });
-$c_Lworkspace_TriangleDiagram.prototype.usableEquations__I__sci_Set = (function(nextEquationIdx) {
+$c_Lworkspace_TriangleDiagram.prototype.productArity__I = (function() {
+  return 1
+});
+$c_Lworkspace_TriangleDiagram.prototype.equals__O__Z = (function(x$1) {
+  if ((this === x$1)) {
+    return true
+  } else if ($is_Lworkspace_TriangleDiagram(x$1)) {
+    var TriangleDiagram$1 = $as_Lworkspace_TriangleDiagram(x$1);
+    var x = this.vars$1;
+    var x$2 = TriangleDiagram$1.vars$1;
+    return ((x === null) ? (x$2 === null) : $f_sc_GenMapLike__equals__O__Z(x, x$2))
+  } else {
+    return false
+  }
+});
+$c_Lworkspace_TriangleDiagram.prototype.equalitiesToAddWithEquation__Lworkspace_CustomEquation__I__sci_Set = (function(customEquation, newEquationId) {
+  var this$1 = customEquation.lhs$1;
+  var jsx$3 = $f_Lcas_Expression__vars__sci_Set(this$1);
+  var this$2 = customEquation.rhs$1;
+  var this$4 = jsx$3.$$plus$plus__sc_GenTraversableOnce__sc_Set($f_Lcas_Expression__vars__sci_Set(this$2));
+  var f = new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function($this, newEquationId$1) {
+    return (function(varName$2) {
+      var varName = $as_T(varName$2);
+      var x1 = $this.vars$1.get__O__s_Option(varName);
+      if ($is_s_Some(x1)) {
+        var x2 = $as_s_Some(x1);
+        var varId = $as_Lworkspace_VarId(x2.value$2);
+        return new $c_s_Some().init___O(new $c_T2().init___O__O(varId, new $c_Lworkspace_EquationVarId().init___I__T(newEquationId$1, varId.varName__T())))
+      } else {
+        var x = $m_s_None$();
+        if ((x === x1)) {
+          return $m_s_None$()
+        } else {
+          throw new $c_s_MatchError().init___O(x1)
+        }
+      }
+    })
+  })(this, newEquationId));
+  var this$3 = $m_sci_Set$();
+  var bf = new $c_scg_GenSetFactory$$anon$1().init___scg_GenSetFactory(this$3);
+  var jsx$2 = $as_sc_TraversableLike($f_sc_TraversableLike__map__F1__scg_CanBuildFrom__O(this$4, f, bf));
+  var jsx$1 = new $c_Lworkspace_TriangleDiagram$$anonfun$equalitiesToAddWithEquation$2().init___Lworkspace_TriangleDiagram(this);
+  var this$5 = $m_sci_Set$();
+  return $as_sci_Set(jsx$2.collect__s_PartialFunction__scg_CanBuildFrom__O(jsx$1, new $c_scg_GenSetFactory$$anon$1().init___scg_GenSetFactory(this$5)))
+});
+$c_Lworkspace_TriangleDiagram.prototype.productElement__I__O = (function(x$1) {
+  switch (x$1) {
+    case 0: {
+      return this.vars$1;
+      break
+    }
+    default: {
+      throw new $c_jl_IndexOutOfBoundsException().init___T(("" + x$1))
+    }
+  }
+});
+$c_Lworkspace_TriangleDiagram.prototype.init___sci_Map = (function(vars) {
+  this.vars$1 = vars;
+  return this
+});
+$c_Lworkspace_TriangleDiagram.prototype.toString__T = (function() {
+  return $m_sr_ScalaRunTime$().$$undtoString__s_Product__T(this)
+});
+$c_Lworkspace_TriangleDiagram.prototype.set__T__s_Option__Lworkspace_TriangleDiagram = (function(varName, mbSetting) {
+  var x = $m_s_None$();
+  if ((x === mbSetting)) {
+    var vars = $as_sci_Map(this.vars$1.$$minus__O__sc_Map(varName));
+    return new $c_Lworkspace_TriangleDiagram().init___sci_Map(vars)
+  } else if ($is_s_Some(mbSetting)) {
+    var x2 = $as_s_Some(mbSetting);
+    var setting = $as_Lworkspace_VarId(x2.value$2);
+    var vars$1 = this.vars$1.$$plus__T2__sci_Map(new $c_T2().init___O__O(varName, setting));
+    return new $c_Lworkspace_TriangleDiagram().init___sci_Map(vars$1)
+  } else {
+    throw new $c_s_MatchError().init___O(mbSetting)
+  }
+});
+$c_Lworkspace_TriangleDiagram.prototype.$$js$exported$meth$usableEquationsJs__I__O = (function(nextEquationIdx) {
+  return this.usableEquationsJs__I__sjs_js_Array(nextEquationIdx)
+});
+$c_Lworkspace_TriangleDiagram.prototype.getOutputVarName$1__p1__T__T = (function(name) {
+  var x1 = this.vars$1.get__O__s_Option(name);
+  var x = $m_s_None$();
+  if ((x === x1)) {
+    return name
+  } else if ($is_s_Some(x1)) {
+    var x2 = $as_s_Some(x1);
+    var varId = $as_Lworkspace_VarId(x2.value$2);
+    return varId.varName__T()
+  } else {
+    throw new $c_s_MatchError().init___O(x1)
+  }
+});
+$c_Lworkspace_TriangleDiagram.prototype.usableEquationsJs__I__sjs_js_Array = (function(nextEquationIdx) {
+  var this$2 = $m_sjsr_package$();
+  var this$1 = this.usableEquations__sci_Set();
+  var col = $f_sc_SetLike__toSeq__sc_Seq(this$1);
+  if ($is_sjs_js_ArrayOps(col)) {
+    var x2 = $as_sjs_js_ArrayOps(col);
+    return x2.scala$scalajs$js$ArrayOps$$array$f
+  } else if ($is_sjs_js_WrappedArray(col)) {
+    var x3 = $as_sjs_js_WrappedArray(col);
+    return x3.array$6
+  } else {
+    var result = [];
+    col.foreach__F1__V(new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function($this, result$1) {
+      return (function(x$2) {
+        return $uI(result$1.push(x$2))
+      })
+    })(this$2, result)));
+    return result
+  }
+});
+$c_Lworkspace_TriangleDiagram.prototype.hashCode__I = (function() {
+  var this$2 = $m_s_util_hashing_MurmurHash3$();
+  return this$2.productHash__s_Product__I__I(this, (-889275714))
+});
+$c_Lworkspace_TriangleDiagram.prototype.usableEquations__sci_Set = (function() {
   var O = new $c_Lcas_Variable().init___O("O");
   var A = new $c_Lcas_Variable().init___O("A");
   var H = new $c_Lcas_Variable().init___O("H");
@@ -22781,175 +22984,53 @@ $c_Lworkspace_TriangleDiagram.prototype.usableEquations__I__sci_Set = (function(
     var jsx$7 = b.elems$1
   };
   var identities = $as_sci_Set(jsx$7);
-  var this$17 = this.vars$1;
-  var f = new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function($this) {
+  var this$19 = $as_sc_SetLike(identities.filter__F1__O(new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function($this) {
     return (function(x0$1$2) {
-      var x0$1 = $as_s_util_Either(x0$1$2);
-      if ($is_s_util_Left(x0$1)) {
-        var x2 = $as_s_util_Left(x0$1);
-        var p3 = $as_Lworkspace_VarId(x2.value$2);
-        if ((p3 !== null)) {
-          var name = p3.varName$1;
-          return name
-        }
-      };
-      if ($is_s_util_Right(x0$1)) {
-        var x5 = $as_s_util_Right(x0$1);
-        var name$2 = $as_T(x5.value$2);
-        return name$2
-      };
-      throw new $c_s_MatchError().init___O(x0$1)
-    })
-  })(this));
-  var varNames = new $c_sci_MapLike$$anon$2().init___sci_MapLike__F1(this$17, f);
-  var this$21 = this.vars$1;
-  var f$1 = new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function(this$2$1, nextEquationIdx$1) {
-    return (function(x0$2$2) {
-      var x0$2 = $as_T2(x0$2$2);
-      if ((x0$2 !== null)) {
-        var name$1 = $as_T(x0$2.$$und1__O());
-        var p2 = $as_s_util_Either(x0$2.$$und2__O());
-        if ($is_s_util_Left(p2)) {
-          var x3 = $as_s_util_Left(p2);
-          var varId = $as_Lworkspace_VarId(x3.value$2);
-          var y$7 = new $c_T2().init___O__O(new $c_Lworkspace_VarId().init___I__T(nextEquationIdx$1, name$1), varId);
-          return new $c_s_Some().init___O(new $c_T2().init___O__O(name$1, y$7))
-        }
-      };
-      if ((x0$2 !== null)) {
-        var p5 = $as_s_util_Either(x0$2.$$und2__O());
-        if ($is_s_util_Right(p5)) {
-          return $m_s_None$()
-        }
-      };
-      throw new $c_s_MatchError().init___O(x0$2)
-    })
-  })(this, nextEquationIdx));
-  var this$20 = $m_sci_Iterable$();
-  var bf = this$20.ReusableCBFInstance$2;
-  var jsx$9 = $as_sc_TraversableLike($f_sc_TraversableLike__map__F1__scg_CanBuildFrom__O(this$21, f$1, bf));
-  var jsx$8 = new $c_Lworkspace_TriangleDiagram$$anonfun$1().init___Lworkspace_TriangleDiagram(this);
-  var this$22 = $m_sci_Iterable$();
-  var varToEqualitiesMap = $as_sc_TraversableOnce(jsx$9.collect__s_PartialFunction__scg_CanBuildFrom__O(jsx$8, this$22.ReusableCBFInstance$2)).toMap__s_Predef$$less$colon$less__sci_Map($m_s_Predef$().singleton$und$less$colon$less$2);
-  var this$27 = $as_sc_SetLike(identities.filter__F1__O(new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function(this$3$1) {
-    return (function(x0$3$2) {
-      var x0$3 = $as_T2(x0$3$2);
-      if ((x0$3 !== null)) {
-        var lhs = $as_Lcas_Expression(x0$3.$$und1__O());
-        var rhs = $as_Lcas_Expression(x0$3.$$und2__O());
-        return $f_Lcas_Expression__vars__sci_Set(lhs).$$plus$plus__sc_GenTraversableOnce__sc_Set($f_Lcas_Expression__vars__sci_Set(rhs)).forall__F1__Z(new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function($this$1) {
+      var x0$1 = $as_T2(x0$1$2);
+      if ((x0$1 !== null)) {
+        var lhs = $as_Lcas_Expression(x0$1.$$und1__O());
+        var rhs = $as_Lcas_Expression(x0$1.$$und2__O());
+        var this$17 = $f_Lcas_Expression__vars__sci_Set(lhs).$$plus$plus__sc_GenTraversableOnce__sc_Set($f_Lcas_Expression__vars__sci_Set(rhs));
+        var p = new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function($this$1) {
           return (function(key$2) {
             var key = $as_T(key$2);
             return $this$1.vars$1.contains__O__Z(key)
           })
-        })(this$3$1)))
+        })($this));
+        return ($f_sc_TraversableOnce__count__F1__I(this$17, p) >= 2)
       } else {
-        throw new $c_s_MatchError().init___O(x0$3)
+        throw new $c_s_MatchError().init___O(x0$1)
       }
     })
   })(this))));
-  var f$3 = new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function(this$4$1, varNames$1, varToEqualitiesMap$1) {
-    return (function(x0$4$2) {
-      var x0$4 = $as_T2(x0$4$2);
-      if ((x0$4 !== null)) {
-        var lhs$1 = $as_Lcas_Expression(x0$4.$$und1__O());
-        var rhs$1 = $as_Lcas_Expression(x0$4.$$und2__O());
-        var this$24 = $f_Lcas_Expression__vars__sci_Set(lhs$1).$$plus$plus__sc_GenTraversableOnce__sc_Set($f_Lcas_Expression__vars__sci_Set(rhs$1));
-        var f$2 = new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function($this$2, varToEqualitiesMap$1$1) {
-          return (function(key$2$1) {
-            var key$1 = $as_T(key$2$1);
-            return varToEqualitiesMap$1$1.get__O__s_Option(key$1)
+  var f$2 = new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function(this$2$1) {
+    return (function(x0$2$2) {
+      var x0$2 = $as_T2(x0$2$2);
+      if ((x0$2 !== null)) {
+        var lhs$1 = $as_Lcas_Expression(x0$2.$$und1__O());
+        var rhs$1 = $as_Lcas_Expression(x0$2.$$und2__O());
+        var f = new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function($this$2) {
+          return (function(name$2) {
+            var name = $as_T(name$2);
+            return $this$2.getOutputVarName$1__p1__T__T(name)
           })
-        })(this$4$1, varToEqualitiesMap$1));
-        var this$23 = $m_sci_Set$();
-        var bf$1 = new $c_scg_GenSetFactory$$anon$1().init___scg_GenSetFactory(this$23);
-        var jsx$11 = $as_sc_TraversableLike($f_sc_TraversableLike__map__F1__scg_CanBuildFrom__O(this$24, f$2, bf$1));
-        var jsx$10 = new $c_Lworkspace_TriangleDiagram$$anonfun$2().init___Lworkspace_TriangleDiagram(this$4$1);
-        var this$25 = $m_sci_Set$();
-        var builtInEqualities = $as_sci_Set(jsx$11.collect__s_PartialFunction__scg_CanBuildFrom__O(jsx$10, new $c_scg_GenSetFactory$$anon$1().init___scg_GenSetFactory(this$25)));
-        return new $c_Lworkspace_CustomEquation().init___Lcas_Expression__Lcas_Expression__sci_Set($f_Lcas_Expression__mapVariables__F1__Lcas_Expression(lhs$1, varNames$1), $f_Lcas_Expression__mapVariables__F1__Lcas_Expression(rhs$1, varNames$1), builtInEqualities)
+        })(this$2$1));
+        var jsx$8 = $f_Lcas_Expression__mapVariables__F1__Lcas_Expression(lhs$1, f);
+        var f$1 = new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function(this$2$2) {
+          return (function(name$3$2) {
+            var name$3 = $as_T(name$3$2);
+            return this$2$2.getOutputVarName$1__p1__T__T(name$3)
+          })
+        })(this$2$1));
+        return new $c_Lworkspace_CustomEquation().init___Lcas_Expression__Lcas_Expression(jsx$8, $f_Lcas_Expression__mapVariables__F1__Lcas_Expression(rhs$1, f$1))
       } else {
-        throw new $c_s_MatchError().init___O(x0$4)
+        throw new $c_s_MatchError().init___O(x0$2)
       }
     })
-  })(this, varNames, varToEqualitiesMap));
-  var this$26 = $m_sci_Set$();
-  var bf$2 = new $c_scg_GenSetFactory$$anon$1().init___scg_GenSetFactory(this$26);
-  return $as_sci_Set($f_sc_TraversableLike__map__F1__scg_CanBuildFrom__O(this$27, f$3, bf$2))
-});
-$c_Lworkspace_TriangleDiagram.prototype.productArity__I = (function() {
-  return 1
-});
-$c_Lworkspace_TriangleDiagram.prototype.equals__O__Z = (function(x$1) {
-  if ((this === x$1)) {
-    return true
-  } else if ($is_Lworkspace_TriangleDiagram(x$1)) {
-    var TriangleDiagram$1 = $as_Lworkspace_TriangleDiagram(x$1);
-    var x = this.vars$1;
-    var x$2 = TriangleDiagram$1.vars$1;
-    return ((x === null) ? (x$2 === null) : $f_sc_GenMapLike__equals__O__Z(x, x$2))
-  } else {
-    return false
-  }
-});
-$c_Lworkspace_TriangleDiagram.prototype.productElement__I__O = (function(x$1) {
-  switch (x$1) {
-    case 0: {
-      return this.vars$1;
-      break
-    }
-    default: {
-      throw new $c_jl_IndexOutOfBoundsException().init___T(("" + x$1))
-    }
-  }
-});
-$c_Lworkspace_TriangleDiagram.prototype.init___sci_Map = (function(vars) {
-  this.vars$1 = vars;
-  return this
-});
-$c_Lworkspace_TriangleDiagram.prototype.toString__T = (function() {
-  return $m_sr_ScalaRunTime$().$$undtoString__s_Product__T(this)
-});
-$c_Lworkspace_TriangleDiagram.prototype.set__T__s_Option__Lworkspace_TriangleDiagram = (function(varName, mbSetting) {
-  var x = $m_s_None$();
-  if ((x === mbSetting)) {
-    var vars = $as_sci_Map(this.vars$1.$$minus__O__sc_Map(varName));
-    return new $c_Lworkspace_TriangleDiagram().init___sci_Map(vars)
-  } else if ($is_s_Some(mbSetting)) {
-    var x2 = $as_s_Some(mbSetting);
-    var setting = $as_s_util_Either(x2.value$2);
-    var vars$1 = this.vars$1.$$plus__T2__sci_Map(new $c_T2().init___O__O(varName, setting));
-    return new $c_Lworkspace_TriangleDiagram().init___sci_Map(vars$1)
-  } else {
-    throw new $c_s_MatchError().init___O(mbSetting)
-  }
-});
-$c_Lworkspace_TriangleDiagram.prototype.$$js$exported$meth$usableEquationsJs__I__O = (function(nextEquationIdx) {
-  return this.usableEquationsJs__I__sjs_js_Array(nextEquationIdx)
-});
-$c_Lworkspace_TriangleDiagram.prototype.usableEquationsJs__I__sjs_js_Array = (function(nextEquationIdx) {
-  var this$2 = $m_sjsr_package$();
-  var this$1 = this.usableEquations__I__sci_Set(nextEquationIdx);
-  var col = $f_sc_SetLike__toSeq__sc_Seq(this$1);
-  if ($is_sjs_js_ArrayOps(col)) {
-    var x2 = $as_sjs_js_ArrayOps(col);
-    return x2.scala$scalajs$js$ArrayOps$$array$f
-  } else if ($is_sjs_js_WrappedArray(col)) {
-    var x3 = $as_sjs_js_WrappedArray(col);
-    return x3.array$6
-  } else {
-    var result = [];
-    col.foreach__F1__V(new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function($this, result$1) {
-      return (function(x$2) {
-        return $uI(result$1.push(x$2))
-      })
-    })(this$2, result)));
-    return result
-  }
-});
-$c_Lworkspace_TriangleDiagram.prototype.hashCode__I = (function() {
-  var this$2 = $m_s_util_hashing_MurmurHash3$();
-  return this$2.productHash__s_Product__I__I(this, (-889275714))
+  })(this));
+  var this$18 = $m_sci_Set$();
+  var bf = new $c_scg_GenSetFactory$$anon$1().init___scg_GenSetFactory(this$18);
+  return $as_sci_Set($f_sc_TraversableLike__map__F1__scg_CanBuildFrom__O(this$19, f$2, bf))
 });
 $c_Lworkspace_TriangleDiagram.prototype.productIterator__sc_Iterator = (function() {
   return new $c_sr_ScalaRunTime$$anon$1().init___s_Product(this)
@@ -22981,125 +23062,6 @@ var $d_Lworkspace_TriangleDiagram = new $TypeData().initClass({
   Ljava_io_Serializable: 1
 });
 $c_Lworkspace_TriangleDiagram.prototype.$classData = $d_Lworkspace_TriangleDiagram;
-/** @constructor */
-function $c_Lworkspace_VarId() {
-  $c_O.call(this);
-  this.eqIdx$1 = 0;
-  this.varName$1 = null
-}
-$c_Lworkspace_VarId.prototype = new $h_O();
-$c_Lworkspace_VarId.prototype.constructor = $c_Lworkspace_VarId;
-/** @constructor */
-function $h_Lworkspace_VarId() {
-  /*<skip>*/
-}
-$h_Lworkspace_VarId.prototype = $c_Lworkspace_VarId.prototype;
-$c_Lworkspace_VarId.prototype.productPrefix__T = (function() {
-  return "VarId"
-});
-$c_Lworkspace_VarId.prototype.$$js$exported$prop$toJsObject__O = (function() {
-  return this.toJsObject__sjs_js_Object()
-});
-$c_Lworkspace_VarId.prototype.productArity__I = (function() {
-  return 2
-});
-$c_Lworkspace_VarId.prototype.equals__O__Z = (function(x$1) {
-  if ((this === x$1)) {
-    return true
-  } else if ($is_Lworkspace_VarId(x$1)) {
-    var VarId$1 = $as_Lworkspace_VarId(x$1);
-    return ((this.eqIdx$1 === VarId$1.eqIdx$1) && (this.varName$1 === VarId$1.varName$1))
-  } else {
-    return false
-  }
-});
-$c_Lworkspace_VarId.prototype.productElement__I__O = (function(x$1) {
-  switch (x$1) {
-    case 0: {
-      return this.eqIdx$1;
-      break
-    }
-    case 1: {
-      return this.varName$1;
-      break
-    }
-    default: {
-      throw new $c_jl_IndexOutOfBoundsException().init___T(("" + x$1))
-    }
-  }
-});
-$c_Lworkspace_VarId.prototype.toString__T = (function() {
-  return $m_sr_ScalaRunTime$().$$undtoString__s_Product__T(this)
-});
-$c_Lworkspace_VarId.prototype.$$js$exported$prop$varName__O = (function() {
-  return this.varName$1
-});
-$c_Lworkspace_VarId.prototype.init___I__T = (function(eqIdx, varName) {
-  this.eqIdx$1 = eqIdx;
-  this.varName$1 = varName;
-  return this
-});
-$c_Lworkspace_VarId.prototype.$$js$exported$prop$eqIdx__O = (function() {
-  return this.eqIdx$1
-});
-$c_Lworkspace_VarId.prototype.hashCode__I = (function() {
-  var acc = (-889275714);
-  acc = $m_sr_Statics$().mix__I__I__I(acc, this.eqIdx$1);
-  acc = $m_sr_Statics$().mix__I__I__I(acc, $m_sr_Statics$().anyHash__O__I(this.varName$1));
-  return $m_sr_Statics$().finalizeHash__I__I__I(acc, 2)
-});
-$c_Lworkspace_VarId.prototype.productIterator__sc_Iterator = (function() {
-  return new $c_sr_ScalaRunTime$$anon$1().init___s_Product(this)
-});
-$c_Lworkspace_VarId.prototype.toJsObject__sjs_js_Object = (function() {
-  var value = this.eqIdx$1;
-  var s = this.varName$1;
-  return {
-    "eqIdx": value,
-    "varName": s
-  }
-});
-Object.defineProperty($c_Lworkspace_VarId.prototype, "toJsObject", {
-  "get": (function() {
-    return this.$$js$exported$prop$toJsObject__O()
-  }),
-  "configurable": true
-});
-Object.defineProperty($c_Lworkspace_VarId.prototype, "varName", {
-  "get": (function() {
-    return this.$$js$exported$prop$varName__O()
-  }),
-  "configurable": true
-});
-Object.defineProperty($c_Lworkspace_VarId.prototype, "eqIdx", {
-  "get": (function() {
-    return this.$$js$exported$prop$eqIdx__O()
-  }),
-  "configurable": true
-});
-function $is_Lworkspace_VarId(obj) {
-  return (!(!((obj && obj.$classData) && obj.$classData.ancestors.Lworkspace_VarId)))
-}
-function $as_Lworkspace_VarId(obj) {
-  return (($is_Lworkspace_VarId(obj) || (obj === null)) ? obj : $throwClassCastException(obj, "workspace.VarId"))
-}
-function $isArrayOf_Lworkspace_VarId(obj, depth) {
-  return (!(!(((obj && obj.$classData) && (obj.$classData.arrayDepth === depth)) && obj.$classData.arrayBase.ancestors.Lworkspace_VarId)))
-}
-function $asArrayOf_Lworkspace_VarId(obj, depth) {
-  return (($isArrayOf_Lworkspace_VarId(obj, depth) || (obj === null)) ? obj : $throwArrayCastException(obj, "Lworkspace.VarId;", depth))
-}
-var $d_Lworkspace_VarId = new $TypeData().initClass({
-  Lworkspace_VarId: 0
-}, false, "workspace.VarId", {
-  Lworkspace_VarId: 1,
-  O: 1,
-  s_Product: 1,
-  s_Equals: 1,
-  s_Serializable: 1,
-  Ljava_io_Serializable: 1
-});
-$c_Lworkspace_VarId.prototype.$classData = $d_Lworkspace_VarId;
 /** @constructor */
 function $c_Lworkspace_Workspace() {
   $c_O.call(this);
@@ -23156,7 +23118,7 @@ $c_Lworkspace_Workspace.prototype.allVarIds__sci_Set = (function() {
         var f = new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function($this$1, equationId$1) {
           return (function(varName$2) {
             var varName = $as_T(varName$2);
-            return new $c_Lworkspace_VarId().init___I__T(equationId$1, varName)
+            return new $c_Lworkspace_EquationVarId().init___I__T(equationId$1, varName)
           })
         })(this$2$1, equationId));
         var this$6 = $m_sci_Set$();
@@ -23193,6 +23155,27 @@ $c_Lworkspace_Workspace.prototype.getVarIdOfNumber__I__Lworkspace_VarId = (funct
 });
 $c_Lworkspace_Workspace.prototype.$$js$exported$prop$addDiagram__O = (function() {
   return this.addDiagram__Lworkspace_Workspace()
+});
+$c_Lworkspace_Workspace.prototype.addEquationFromDiagram__I__Lworkspace_CustomEquation__Lworkspace_Workspace = (function(diagramId, equation) {
+  var this$1 = this.diagrams$1;
+  var equalitiesToAdd = $as_Lworkspace_TriangleDiagram(this$1.map$1.apply__O__O(diagramId)).equalitiesToAddWithEquation__Lworkspace_CustomEquation__I__sci_Set(equation, this.equations$1.nextId$1);
+  var z = this.addEquation__Lworkspace_Equation__Lworkspace_Workspace(equation);
+  var op = new $c_sjsr_AnonFunction2().init___sjs_js_Function2((function($this) {
+    return (function(x0$9$2, x1$1$2) {
+      var x0$9 = $as_Lworkspace_Workspace(x0$9$2);
+      var x1$1 = $as_T2(x1$1$2);
+      var x1 = new $c_T2().init___O__O(x0$9, x1$1);
+      var ws = $as_Lworkspace_Workspace(x1.$$und1$f);
+      var p2 = $as_T2(x1.$$und2$f);
+      if ((p2 !== null)) {
+        var varId1 = $as_Lworkspace_VarId(p2.$$und1__O());
+        var varId2 = $as_Lworkspace_VarId(p2.$$und2__O());
+        return ws.addEquality__Lworkspace_VarId__Lworkspace_VarId__Lworkspace_Workspace(varId1, varId2)
+      };
+      throw new $c_s_MatchError().init___O(x1)
+    })
+  })(this));
+  return $as_Lworkspace_Workspace($f_sc_TraversableOnce__foldLeft__O__F2__O(equalitiesToAdd, z, op))
 });
 $c_Lworkspace_Workspace.prototype.$$js$exported$meth$setDiagramVar__I__T__s_Option__O = (function(diagramId, varName, newSetting) {
   return this.setDiagramVar__I__T__s_Option__Lworkspace_Workspace(diagramId, varName, newSetting)
@@ -23240,7 +23223,7 @@ $c_Lworkspace_Workspace.prototype.getVarSubscript__Lworkspace_VarId__s_Option = 
   })(this, varId)))).count__F1__I(new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function(this$2, varId$2) {
     return (function(x$20$2) {
       var x$20 = $as_Lworkspace_VarId(x$20$2);
-      return (x$20.varName$1 === varId$2.varName$1)
+      return (x$20.varName__T() === varId$2.varName__T())
     })
   })(this, varId))) === 0)) {
     return $m_s_None$()
@@ -23248,7 +23231,7 @@ $c_Lworkspace_Workspace.prototype.getVarSubscript__Lworkspace_VarId__s_Option = 
     var relevantVarIds = $as_sci_Set(this.allVarIds__sci_Set().filter__F1__O(new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function(this$3, varId$3) {
       return (function(varId2$2) {
         var varId2 = $as_Lworkspace_VarId(varId2$2);
-        return (((varId$3.eqIdx$1 > varId2.eqIdx$1) && (varId$3.varName$1 === varId2.varName$1)) && (!this$3.equalities$1.testEqual__O__O__Z(varId$3, varId2)))
+        return (($f_Lworkspace_VarId__sourceIsGreaterThan__Lworkspace_VarId__Z(varId$3, varId2) && (varId$3.varName__T() === varId2.varName__T())) && (!this$3.equalities$1.testEqual__O__O__Z(varId$3, varId2)))
       })
     })(this, varId))));
     var f = new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function(this$4) {
@@ -23292,17 +23275,15 @@ $c_Lworkspace_Workspace.prototype.$$js$exported$prop$equationIds__O = (function(
 $c_Lworkspace_Workspace.prototype.$$js$exported$meth$getNumber__Lworkspace_VarId__O = (function(varId) {
   return this.getNumber__Lworkspace_VarId__s_Option(varId)
 });
-$c_Lworkspace_Workspace.prototype.setDiagramVarToName__I__T__T__Lworkspace_Workspace = (function(diagramId, varName, newSetting) {
-  return this.setDiagramVar__I__T__s_Option__Lworkspace_Workspace(diagramId, varName, new $c_s_Some().init___O(($m_s_package$(), new $c_s_util_Right().init___O(newSetting))))
-});
 $c_Lworkspace_Workspace.prototype.getDimensionCalc__Lworkspace_VarId__s_Option = (function(varId) {
   var this$6 = this.equalities$1.getSet__O__sci_Set(varId);
   var f$1 = new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function($this) {
     return (function(x0$6$2) {
       var x0$6 = $as_Lworkspace_VarId(x0$6$2);
-      if ((x0$6 !== null)) {
-        var eqIdx = x0$6.eqIdx$1;
-        var varName = x0$6.varName$1;
+      if ($is_Lworkspace_EquationVarId(x0$6)) {
+        var x2 = $as_Lworkspace_EquationVarId(x0$6);
+        var eqIdx = x2.eqIdx$1;
+        var varName = x2.varName$1;
         var this$1 = $this.equations$1;
         var this$2 = $as_Lworkspace_Equation(this$1.map$1.apply__O__O(eqIdx));
         var solutions = $f_Lworkspace_Equation__solutions__T__I__sci_Set(this$2, varName, eqIdx);
@@ -23321,7 +23302,7 @@ $c_Lworkspace_Workspace.prototype.getDimensionCalc__Lworkspace_VarId__s_Option =
         var this$3 = $m_sci_Set$();
         var bf = new $c_scg_GenSetFactory$$anon$1().init___scg_GenSetFactory(this$3);
         var jsx$2 = $as_sc_SetLike($f_sc_TraversableLike__map__F1__scg_CanBuildFrom__O(solutions, f, bf));
-        var array = [$m_Lworkspace_dimensions_DimensionInference$().fromTopOption__s_Option__Lworkspace_dimensions_DimensionInference($this.getDimensionDirectly__Lworkspace_VarId__s_Option(x0$6))];
+        var array = [$m_Lworkspace_dimensions_DimensionInference$().fromTopOption__s_Option__Lworkspace_dimensions_DimensionInference($this.getDimensionDirectly__Lworkspace_VarId__s_Option(x2))];
         if (($uI(array.length) === 0)) {
           var jsx$1 = $m_sci_Set$EmptySet$()
         } else {
@@ -23363,8 +23344,8 @@ $c_Lworkspace_Workspace.prototype.getDimensionCalc__Lworkspace_VarId__s_Option =
     if ((x$3 === x1)) {
       return $m_s_None$()
     } else if ($is_Lworkspace_dimensions_ConcreteDimensionInference(x1)) {
-      var x2 = $as_Lworkspace_dimensions_ConcreteDimensionInference(x1);
-      var dim = x2.dim$1;
+      var x2$1 = $as_Lworkspace_dimensions_ConcreteDimensionInference(x1);
+      var dim = x2$1.dim$1;
       return new $c_s_Some().init___O(dim)
     } else {
       throw new $c_s_MatchError().init___O(x1)
@@ -23375,9 +23356,10 @@ $c_Lworkspace_Workspace.prototype.$$js$exported$prop$expressions__O = (function(
   return this.expressions$1
 });
 $c_Lworkspace_Workspace.prototype.addExpression__Lworkspace_VarId__Lworkspace_Workspace = (function(varId) {
-  if ((varId !== null)) {
-    var eqId = varId.eqIdx$1;
-    var varName = varId.varName$1;
+  if ($is_Lworkspace_EquationVarId(varId)) {
+    var x2 = $as_Lworkspace_EquationVarId(varId);
+    var eqId = x2.eqIdx$1;
+    var varName = x2.varName$1;
     if ((varName !== null)) {
       var this$1 = this.equations$1;
       var this$2 = $as_Lworkspace_Equation(this$1.map$1.apply__O__O(eqId));
@@ -23516,11 +23498,11 @@ $c_Lworkspace_Workspace.prototype.$$js$exported$meth$consistentUnitsWithDimensio
   return this.consistentUnitsWithDimension__Lworkspace_VarId__Lworkspace_dimensions_SiDimension__Z(varId1, dimension)
 });
 $c_Lworkspace_Workspace.prototype.attachNumber__I__Lworkspace_VarId__s_util_Try = (function(numberId, varId) {
-  if ((varId === null)) {
+  if ((!$is_Lworkspace_EquationVarId(varId))) {
     throw new $c_s_MatchError().init___O(varId)
   };
-  var eqIdx = varId.eqIdx$1;
-  var varName = varId.varName$1;
+  var x2 = $as_Lworkspace_EquationVarId(varId);
+  var eqIdx = x2.eqIdx$1;
   try {
     var this$2 = this.numbers$1;
     var this$3 = new $c_s_util_Success().init___O($as_T2(this$2.map$1.get__O__s_Option(numberId).get__O()))
@@ -23548,7 +23530,7 @@ $c_Lworkspace_Workspace.prototype.attachNumber__I__Lworkspace_VarId__s_util_Try 
       return (check$ifrefutable$2 !== null)
     })
   })(this));
-  return new $c_s_util_Try$WithFilter().init___s_util_Try__F1(this$3, p).flatMap__F1__s_util_Try(new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function(this$3$1, numberId$1, varId$1, eqIdx$2, varName$2) {
+  return new $c_s_util_Try$WithFilter().init___s_util_Try__F1(this$3, p).flatMap__F1__s_util_Try(new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function(this$3$1, numberId$1, varId$1, eqIdx$2) {
     return (function(x$10$2) {
       var x$10 = $as_T2(x$10$2);
       if ((x$10 !== null)) {
@@ -23580,11 +23562,11 @@ $c_Lworkspace_Workspace.prototype.attachNumber__I__Lworkspace_VarId__s_util_Try 
             return (check$ifrefutable$3 !== null)
           })
         })(this$3$1));
-        return new $c_s_util_Try$WithFilter().init___s_util_Try__F1(this$6, p$1).flatMap__F1__s_util_Try(new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function(this$3$2, numberId$1$1, varId$1$1, eqIdx$1, varName$1, number$1) {
+        return new $c_s_util_Try$WithFilter().init___s_util_Try__F1(this$6, p$1).flatMap__F1__s_util_Try(new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function(this$3$2, numberId$1$1, varId$1$1, number$1) {
           return (function(eq$2) {
             $as_Lworkspace_Equation(eq$2);
             try {
-              var this$8 = new $c_s_util_Success().init___O(this$3$2.getDimensionDirectly__Lworkspace_VarId__s_Option(new $c_Lworkspace_VarId().init___I__T(eqIdx$1, varName$1)))
+              var this$8 = new $c_s_util_Success().init___O(this$3$2.getDimensionDirectly__Lworkspace_VarId__s_Option(varId$1$1))
             } catch (e$4) {
               var e$2$2 = $m_sjsr_package$().wrapJavaScriptException__O__jl_Throwable(e$4);
               if ((e$2$2 !== null)) {
@@ -23613,8 +23595,8 @@ $c_Lworkspace_Workspace.prototype.attachNumber__I__Lworkspace_VarId__s_util_Try 
               return (function(mbVariableDimension$2) {
                 var mbVariableDimension = $as_s_Option(mbVariableDimension$2);
                 if ($is_s_Some(mbVariableDimension)) {
-                  var x2 = $as_s_Some(mbVariableDimension);
-                  var variableDimension = $as_Lworkspace_dimensions_SiDimension(x2.value$2);
+                  var x2$1 = $as_s_Some(mbVariableDimension);
+                  var variableDimension = $as_Lworkspace_dimensions_SiDimension(x2$1.value$2);
                   try {
                     var jsx$2 = $m_s_Predef$();
                     var x$2 = number$1$1.siDimension$1;
@@ -23645,8 +23627,8 @@ $c_Lworkspace_Workspace.prototype.attachNumber__I__Lworkspace_VarId__s_util_Try 
                   return (function(_$2) {
                     var x1 = this$2$4.getNumberIdOfVar__Lworkspace_VarId__O(varId$1$3);
                     if ($isInt(x1)) {
-                      var x2$1 = $uI(x1);
-                      var detachedWorkspace = this$2$4.detachNumber__I__Lworkspace_Workspace(x2$1)
+                      var x2$2 = $uI(x1);
+                      var detachedWorkspace = this$2$4.detachNumber__I__Lworkspace_Workspace(x2$2)
                     } else {
                       var detachedWorkspace = this$2$4
                     };
@@ -23663,12 +23645,12 @@ $c_Lworkspace_Workspace.prototype.attachNumber__I__Lworkspace_VarId__s_util_Try 
               })
             })(this$3$2, numberId$1$1, varId$1$1, number$1)))
           })
-        })(this$3$1, numberId$1, varId$1, eqIdx$2, varName$2, number)))
+        })(this$3$1, numberId$1, varId$1, number)))
       } else {
         throw new $c_s_MatchError().init___O(x$10)
       }
     })
-  })(this, numberId, varId, eqIdx, varName)))
+  })(this, numberId, varId, eqIdx)))
 });
 $c_Lworkspace_Workspace.prototype.$$js$exported$meth$detachNumber__I__O = (function(numberId) {
   return this.detachNumber__I__Lworkspace_Workspace(numberId)
@@ -23680,7 +23662,7 @@ $c_Lworkspace_Workspace.prototype.varIdStringToVarId__T__Lworkspace_VarId = (fun
   return $as_Lworkspace_VarId(this.allVarIds__sci_Set().find__F1__s_Option(new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function($this, str$1) {
     return (function(x$5$2) {
       var x$5 = $as_Lworkspace_VarId(x$5$2);
-      return ($m_sr_ScalaRunTime$().$$undtoString__s_Product__T(x$5) === str$1)
+      return (x$5.toString__T() === str$1)
     })
   })(this, str))).get__O())
 });
@@ -23770,7 +23752,7 @@ $c_Lworkspace_Workspace.prototype.checkRewriteAttemptIsValid__Lworkspace_VarId__
   var f = new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function($this, equationIdToUse$1) {
     return (function(name$2) {
       var name = $as_T(name$2);
-      return new $c_Lworkspace_VarId().init___I__T(equationIdToUse$1, name)
+      return new $c_Lworkspace_EquationVarId().init___I__T(equationIdToUse$1, name)
     })
   })(this, equationIdToUse));
   var this$3 = $m_sci_Set$();
@@ -23778,7 +23760,7 @@ $c_Lworkspace_Workspace.prototype.checkRewriteAttemptIsValid__Lworkspace_VarId__
   var varIds = $as_sci_Set($f_sc_TraversableLike__map__F1__scg_CanBuildFrom__O(this$4, f, bf));
   return varIds.exists__F1__Z(new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function(this$2$1, varToRemoveId$1) {
     return (function(varId$2) {
-      var varId = $as_Lworkspace_VarId(varId$2);
+      var varId = $as_Lworkspace_EquationVarId(varId$2);
       return this$2$1.equalities$1.testEqual__O__O__Z(varId, varToRemoveId$1)
     })
   })(this, varToRemoveId)))
@@ -23866,6 +23848,9 @@ $c_Lworkspace_Workspace.prototype.evalNumbers$1__p1__sci_Map__sci_Map = (functio
 $c_Lworkspace_Workspace.prototype.$$js$exported$meth$possibleRewritesForExprJs__Lworkspace_VarId__O = (function(varId) {
   return this.possibleRewritesForExprJs__Lworkspace_VarId__sjs_js_Array(varId)
 });
+$c_Lworkspace_Workspace.prototype.$$js$exported$meth$addEquationFromDiagram__I__Lworkspace_CustomEquation__O = (function(diagramId, equation) {
+  return this.addEquationFromDiagram__I__Lworkspace_CustomEquation__Lworkspace_Workspace(diagramId, equation)
+});
 $c_Lworkspace_Workspace.prototype.$$js$exported$meth$setDiagramVarToVarId__I__T__Lworkspace_VarId__O = (function(diagramId, varName, newSetting) {
   return this.setDiagramVarToVarId__I__T__Lworkspace_VarId__Lworkspace_Workspace(diagramId, varName, newSetting)
 });
@@ -23929,27 +23914,12 @@ $c_Lworkspace_Workspace.prototype.addDiagram__Lworkspace_Workspace = (function()
   return new $c_Lworkspace_Workspace().init___Lworkspace_MapWithIds__Lworkspace_SetOfSets__sci_Map__Lworkspace_MapWithIds__Lworkspace_MapWithIds(x$75, x$76, x$77, x$78, x$74)
 });
 $c_Lworkspace_Workspace.prototype.addEquation__Lworkspace_Equation__Lworkspace_Workspace = (function(equation) {
-  if ($is_Lworkspace_CustomEquation(equation)) {
-    var x2 = $as_Lworkspace_CustomEquation(equation);
-    var e = x2.builtInEqualities$1;
-    var equalitiesToAdd = e
-  } else {
-    var equalitiesToAdd = $as_sci_Set($m_s_Predef$().Set$2.apply__sc_Seq__sc_GenTraversable($m_sci_Nil$()))
-  };
   var equations = this.equations$1.addWithNextId__O__Lworkspace_MapWithIds(equation);
   var equalities = this.equalities$1;
   var expressions = this.expressions$1;
   var numbers = this.numbers$1;
   var diagrams = this.diagrams$1;
-  var wsWithAddedEquation = new $c_Lworkspace_Workspace().init___Lworkspace_MapWithIds__Lworkspace_SetOfSets__sci_Map__Lworkspace_MapWithIds__Lworkspace_MapWithIds(equations, equalities, expressions, numbers, diagrams);
-  var op = new $c_sjsr_AnonFunction2().init___sjs_js_Function2((function($this) {
-    return (function(ws$2, eq$2) {
-      var ws = $as_Lworkspace_Workspace(ws$2);
-      var eq = $as_T2(eq$2);
-      return ws.addEquality__Lworkspace_VarId__Lworkspace_VarId__Lworkspace_Workspace($as_Lworkspace_VarId(eq.$$und1__O()), $as_Lworkspace_VarId(eq.$$und2__O()))
-    })
-  })(this));
-  return $as_Lworkspace_Workspace($f_sc_TraversableOnce__foldLeft__O__F2__O(equalitiesToAdd, wsWithAddedEquation, op))
+  return new $c_Lworkspace_Workspace().init___Lworkspace_MapWithIds__Lworkspace_SetOfSets__sci_Map__Lworkspace_MapWithIds__Lworkspace_MapWithIds(equations, equalities, expressions, numbers, diagrams)
 });
 $c_Lworkspace_Workspace.prototype.$$js$exported$meth$deleteDiagram__I__O = (function(diagramId) {
   return this.deleteDiagram__I__Lworkspace_Workspace(diagramId)
@@ -24001,9 +23971,6 @@ $c_Lworkspace_Workspace.prototype.$$js$exported$meth$getNumberForExpressionJs__L
 $c_Lworkspace_Workspace.prototype.$$js$exported$meth$getVarSubscript__Lworkspace_VarId__O = (function(varId) {
   return this.getVarSubscript__Lworkspace_VarId__s_Option(varId)
 });
-$c_Lworkspace_Workspace.prototype.$$js$exported$meth$setDiagramVarToName__I__T__T__O = (function(diagramId, varName, newSetting) {
-  return this.setDiagramVarToName__I__T__T__Lworkspace_Workspace(diagramId, varName, newSetting)
-});
 $c_Lworkspace_Workspace.prototype.$$js$exported$prop$recursivelyEvaluatedNumbers__O = (function() {
   return this.recursivelyEvaluatedNumbers__sci_Map()
 });
@@ -24014,7 +23981,7 @@ $c_Lworkspace_Workspace.prototype.$$js$exported$prop$equalities__O = (function()
   return this.equalities$1
 });
 $c_Lworkspace_Workspace.prototype.setDiagramVarToVarId__I__T__Lworkspace_VarId__Lworkspace_Workspace = (function(diagramId, varName, newSetting) {
-  return this.setDiagramVar__I__T__s_Option__Lworkspace_Workspace(diagramId, varName, new $c_s_Some().init___O(($m_s_package$(), new $c_s_util_Left().init___O(newSetting))))
+  return this.setDiagramVar__I__T__s_Option__Lworkspace_Workspace(diagramId, varName, new $c_s_Some().init___O(newSetting))
 });
 $c_Lworkspace_Workspace.prototype.addableEqualities__sci_Set = (function() {
   var this$9 = this.allVarIds__sci_Set();
@@ -24041,9 +24008,9 @@ $c_Lworkspace_Workspace.prototype.addableEqualities__sci_Set = (function() {
       var p$2 = new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function(this$3$1, var1$4) {
         return (function(var2$4$2) {
           var var2$4 = $as_Lworkspace_VarId(var2$4$2);
-          var x$1 = $m_sr_ScalaRunTime$().$$undtoString__s_Product__T(var1$4);
+          var x$1 = var1$4.toString__T();
           var this$5 = new $c_sci_StringOps().init___T(x$1);
-          var that = $m_sr_ScalaRunTime$().$$undtoString__s_Product__T(var2$4);
+          var that = var2$4.toString__T();
           return $f_s_math_Ordered__$$greater__O__Z(this$5, that)
         })
       })($this, var1));
@@ -24152,33 +24119,18 @@ $c_Lworkspace_Workspace.prototype.$$js$exported$meth$addNumber__Lworkspace_Physi
   return this.addNumber__Lworkspace_PhysicalNumber__Lworkspace_Workspace(physicalNumber)
 });
 $c_Lworkspace_Workspace.prototype.diagramVarBuckTexJs__I__T__Lworkspace_BuckTex = (function(diagramId, diagramVarName) {
-  var rc10 = false;
-  var x2 = null;
   var this$1 = this.diagrams$1;
   var x1 = $as_Lworkspace_TriangleDiagram(this$1.map$1.apply__O__O(diagramId)).vars$1.get__O__s_Option(diagramVarName);
   var x = $m_s_None$();
   if ((x === x1)) {
-    return null
-  };
-  if ($is_s_Some(x1)) {
-    rc10 = true;
-    x2 = $as_s_Some(x1);
-    var p3 = $as_s_util_Either(x2.value$2);
-    if ($is_s_util_Left(p3)) {
-      var x4 = $as_s_util_Left(p3);
-      var varId = $as_Lworkspace_VarId(x4.value$2);
-      return this.getVariableBuckTex__Lworkspace_VarId__Lworkspace_BuckTex(varId)
-    }
-  };
-  if (rc10) {
-    var p6 = $as_s_util_Either(x2.value$2);
-    if ($is_s_util_Right(p6)) {
-      var x7 = $as_s_util_Right(p6);
-      var varName = $as_T(x7.value$2);
-      return $m_Lworkspace_CompileToBuckTex$().showVariable__Lworkspace_VarId__sci_Map__Lworkspace_BuckTex(new $c_Lworkspace_VarId().init___I__T((-1), varName), $as_sci_Map($m_s_Predef$().Map$2.apply__sc_Seq__sc_GenMap($m_sci_Nil$())))
-    }
-  };
-  throw new $c_s_MatchError().init___O(x1)
+    return this.getVariableBuckTex__Lworkspace_VarId__Lworkspace_BuckTex(new $c_Lworkspace_DiagramVarId().init___I__T(diagramId, diagramVarName))
+  } else if ($is_s_Some(x1)) {
+    var x2 = $as_s_Some(x1);
+    var varId = $as_Lworkspace_VarId(x2.value$2);
+    return this.getVariableBuckTex__Lworkspace_VarId__Lworkspace_BuckTex(varId)
+  } else {
+    throw new $c_s_MatchError().init___O(x1)
+  }
 });
 $c_Lworkspace_Workspace.prototype.deleteNumber__I__Lworkspace_Workspace = (function(numberId) {
   var x$59 = this.numbers$1.$delete__I__Lworkspace_MapWithIds(numberId);
@@ -24198,20 +24150,26 @@ $c_Lworkspace_Workspace.prototype.$$js$exported$meth$getExpressionBuckTex__Lwork
   return this.getExpressionBuckTex__Lworkspace_VarId__Lworkspace_BuckTex(exprVarId)
 });
 $c_Lworkspace_Workspace.prototype.getDimensionDirectly__Lworkspace_VarId__s_Option = (function(varId) {
-  var this$1 = this.equations$1;
-  var key = varId.eqIdx$1;
-  var this$2 = $as_Lworkspace_Equation(this$1.map$1.apply__O__O(key)).staticDimensions__sci_Map().get__O__s_Option(varId.varName$1);
-  if (this$2.isEmpty__Z()) {
-    var this$3 = this.getNumber__Lworkspace_VarId__s_Option(varId);
-    if (this$3.isEmpty__Z()) {
-      return $m_s_None$()
+  if ($is_Lworkspace_EquationVarId(varId)) {
+    var x2 = $as_Lworkspace_EquationVarId(varId);
+    var eqIdx = x2.eqIdx$1;
+    var varName = x2.varName$1;
+    var this$1 = this.equations$1;
+    var this$2 = $as_Lworkspace_Equation(this$1.map$1.apply__O__O(eqIdx)).staticDimensions__sci_Map().get__O__s_Option(varName);
+    if (this$2.isEmpty__Z()) {
+      var this$3 = this.getNumber__Lworkspace_VarId__s_Option(varId);
+      if (this$3.isEmpty__Z()) {
+        return $m_s_None$()
+      } else {
+        var arg1 = this$3.get__O();
+        var x$11 = $as_Lworkspace_PhysicalNumber(arg1);
+        return new $c_s_Some().init___O(x$11.siDimension$1)
+      }
     } else {
-      var arg1 = this$3.get__O();
-      var x$11 = $as_Lworkspace_PhysicalNumber(arg1);
-      return new $c_s_Some().init___O(x$11.siDimension$1)
+      return this$2
     }
   } else {
-    return this$2
+    $m_s_Predef$().$$qmark$qmark$qmark__sr_Nothing$()
   }
 });
 $c_Lworkspace_Workspace.prototype.getEquation__I__Lworkspace_Equation = (function(id) {
@@ -24227,7 +24185,7 @@ $c_Lworkspace_Workspace.prototype.getEquationBuckTex__I__Lworkspace_BuckTex = (f
   var f = new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function($this, idx$1) {
     return (function(varName$2) {
       var varName = $as_T(varName$2);
-      var y = $this.getVarSubscript__Lworkspace_VarId__s_Option(new $c_Lworkspace_VarId().init___I__T(idx$1, varName));
+      var y = $this.getVarSubscript__Lworkspace_VarId__s_Option(new $c_Lworkspace_EquationVarId().init___I__T(idx$1, varName));
       return new $c_T2().init___O__O(varName, y)
     })
   })(this, idx));
@@ -24302,7 +24260,7 @@ $c_Lworkspace_Workspace.prototype.rewriteExpression__Lworkspace_VarId__Lworkspac
   var f = new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function($this) {
     return (function(x$6$2) {
       var x$6 = $as_Lworkspace_VarId(x$6$2);
-      return $m_sr_ScalaRunTime$().$$undtoString__s_Product__T(x$6)
+      return x$6.toString__T()
     })
   })(this));
   var cmp = $m_s_math_Ordering$String$();
@@ -24558,7 +24516,7 @@ $c_Lworkspace_Workspace.prototype.toJsObject__sjs_js_Object = (function() {
       var f = (function($this$2) {
         return (function(x$1$2) {
           var x$1 = $as_Lworkspace_VarId(x$1$2);
-          return x$1.toJsObject__sjs_js_Object()
+          return $f_Lworkspace_VarId__toJsObject__sjs_js_Object(x$1)
         })
       })(this$2$1);
       var this$9 = $m_sci_List$();
@@ -24664,7 +24622,7 @@ $c_Lworkspace_Workspace.prototype.toJsObject__sjs_js_Object = (function() {
         var y$1 = $as_Lcas_Expression(x0$2.$$und2__O());
         if ((x$3 !== null)) {
           if ((y$1 !== null)) {
-            var _1 = x$3.toJsObject__sjs_js_Object();
+            var _1 = $f_Lworkspace_VarId__toJsObject__sjs_js_Object(x$3);
             var _2$1 = $f_Lcas_Expression__toJsObject__sjs_js_Object(y$1);
             return [_1, _2$1]
           }
@@ -24710,7 +24668,7 @@ $c_Lworkspace_Workspace.prototype.toJsObject__sjs_js_Object = (function() {
               } else {
                 var arg1$6 = v.get__O();
                 var x$2$4 = $as_Lworkspace_VarId(arg1$6);
-                var this$20 = new $c_s_Some().init___O(x$2$4.toJsObject__sjs_js_Object())
+                var this$20 = new $c_s_Some().init___O($f_Lworkspace_VarId__toJsObject__sjs_js_Object(x$2$4))
               };
               var _3 = (this$20.isEmpty__Z() ? null : this$20.get__O());
               return [id, _2$2, _3]
@@ -24751,6 +24709,11 @@ $c_Lworkspace_Workspace.prototype.diagramVarBuckTexJs = (function(arg$1, arg$2) 
   var prep1 = $as_T(arg$2);
   return this.$$js$exported$meth$diagramVarBuckTexJs__I__T__O(prep0, prep1)
 });
+$c_Lworkspace_Workspace.prototype.addEquationFromDiagram = (function(arg$1, arg$2) {
+  var prep0 = $uI(arg$1);
+  var prep1 = $as_Lworkspace_CustomEquation(arg$2);
+  return this.$$js$exported$meth$addEquationFromDiagram__I__Lworkspace_CustomEquation__O(prep0, prep1)
+});
 $c_Lworkspace_Workspace.prototype.deleteDiagram = (function(arg$1) {
   var prep0 = $uI(arg$1);
   return this.$$js$exported$meth$deleteDiagram__I__O(prep0)
@@ -24759,12 +24722,6 @@ $c_Lworkspace_Workspace.prototype.setDiagramVarToBlank = (function(arg$1, arg$2)
   var prep0 = $uI(arg$1);
   var prep1 = $as_T(arg$2);
   return this.$$js$exported$meth$setDiagramVarToBlank__I__T__O(prep0, prep1)
-});
-$c_Lworkspace_Workspace.prototype.setDiagramVarToName = (function(arg$1, arg$2, arg$3) {
-  var prep0 = $uI(arg$1);
-  var prep1 = $as_T(arg$2);
-  var prep2 = $as_T(arg$3);
-  return this.$$js$exported$meth$setDiagramVarToName__I__T__T__O(prep0, prep1, prep2)
 });
 $c_Lworkspace_Workspace.prototype.setDiagramVarToVarId = (function(arg$1, arg$2, arg$3) {
   var prep0 = $uI(arg$1);
@@ -26556,18 +26513,6 @@ function $h_s_util_Either() {
   /*<skip>*/
 }
 $h_s_util_Either.prototype = $c_s_util_Either.prototype;
-function $is_s_util_Either(obj) {
-  return (!(!((obj && obj.$classData) && obj.$classData.ancestors.s_util_Either)))
-}
-function $as_s_util_Either(obj) {
-  return (($is_s_util_Either(obj) || (obj === null)) ? obj : $throwClassCastException(obj, "scala.util.Either"))
-}
-function $isArrayOf_s_util_Either(obj, depth) {
-  return (!(!(((obj && obj.$classData) && (obj.$classData.arrayDepth === depth)) && obj.$classData.arrayBase.ancestors.s_util_Either)))
-}
-function $asArrayOf_s_util_Either(obj, depth) {
-  return (($isArrayOf_s_util_Either(obj, depth) || (obj === null)) ? obj : $throwArrayCastException(obj, "Lscala.util.Either;", depth))
-}
 /** @constructor */
 function $c_s_util_Try() {
   $c_O.call(this)
@@ -29691,8 +29636,7 @@ $c_Lworkspace_CompileToBuckTex$$anonfun$4.prototype.$classData = $d_Lworkspace_C
 function $c_Lworkspace_CustomEquation() {
   $c_O.call(this);
   this.lhs$1 = null;
-  this.rhs$1 = null;
-  this.builtInEqualities$1 = null
+  this.rhs$1 = null
 }
 $c_Lworkspace_CustomEquation.prototype = new $h_O();
 $c_Lworkspace_CustomEquation.prototype.constructor = $c_Lworkspace_CustomEquation;
@@ -29722,7 +29666,7 @@ $c_Lworkspace_CustomEquation.prototype.expr__Lcas_Expression = (function() {
   return $f_Lcas_Expression__$$minus__Lcas_Expression__Lcas_Expression(this$1, other)
 });
 $c_Lworkspace_CustomEquation.prototype.productArity__I = (function() {
-  return 3
+  return 2
 });
 $c_Lworkspace_CustomEquation.prototype.$$js$exported$meth$varName__T__O = (function(varSymbol) {
   return $m_s_None$()
@@ -29737,14 +29681,7 @@ $c_Lworkspace_CustomEquation.prototype.equals__O__Z = (function(x$1) {
     if (((x === null) ? (x$2 === null) : x.equals__O__Z(x$2))) {
       var x$3 = this.rhs$1;
       var x$4 = CustomEquation$1.rhs$1;
-      var jsx$1 = ((x$3 === null) ? (x$4 === null) : x$3.equals__O__Z(x$4))
-    } else {
-      var jsx$1 = false
-    };
-    if (jsx$1) {
-      var x$5 = this.builtInEqualities$1;
-      var x$6 = CustomEquation$1.builtInEqualities$1;
-      return ((x$5 === null) ? (x$6 === null) : $f_sc_GenSetLike__equals__O__Z(x$5, x$6))
+      return ((x$3 === null) ? (x$4 === null) : x$3.equals__O__Z(x$4))
     } else {
       return false
     }
@@ -29766,10 +29703,6 @@ $c_Lworkspace_CustomEquation.prototype.productElement__I__O = (function(x$1) {
     }
     case 1: {
       return this.rhs$1;
-      break
-    }
-    case 2: {
-      return this.builtInEqualities$1;
       break
     }
     default: {
@@ -29804,12 +29737,6 @@ $c_Lworkspace_CustomEquation.prototype.display__F1__Lworkspace_BuckTex = (functi
 $c_Lworkspace_CustomEquation.prototype.$$js$exported$prop$rhs__O = (function() {
   return this.rhs$1
 });
-$c_Lworkspace_CustomEquation.prototype.init___Lcas_Expression__Lcas_Expression__sci_Set = (function(lhs, rhs, builtInEqualities) {
-  this.lhs$1 = lhs;
-  this.rhs$1 = rhs;
-  this.builtInEqualities$1 = builtInEqualities;
-  return this
-});
 $c_Lworkspace_CustomEquation.prototype.$$js$exported$meth$varNameJs__T__O = (function(varSymbol) {
   return $f_Lworkspace_Equation__varNameJs__T__T(this, varSymbol)
 });
@@ -29818,9 +29745,6 @@ $c_Lworkspace_CustomEquation.prototype.$$js$exported$meth$exprWithEquationId__I_
 });
 $c_Lworkspace_CustomEquation.prototype.$$js$exported$meth$solve__T__I__O = (function(varName, selfEqId) {
   return $f_Lworkspace_Equation__solve__T__I__Lcas_Expression(this, varName, selfEqId)
-});
-$c_Lworkspace_CustomEquation.prototype.$$js$exported$prop$builtInEqualities__O = (function() {
-  return this.builtInEqualities$1
 });
 $c_Lworkspace_CustomEquation.prototype.hashCode__I = (function() {
   var this$2 = $m_s_util_hashing_MurmurHash3$();
@@ -29831,6 +29755,11 @@ $c_Lworkspace_CustomEquation.prototype.$$js$exported$prop$showNaked__O = (functi
 });
 $c_Lworkspace_CustomEquation.prototype.productIterator__sc_Iterator = (function() {
   return new $c_sr_ScalaRunTime$$anon$1().init___s_Product(this)
+});
+$c_Lworkspace_CustomEquation.prototype.init___Lcas_Expression__Lcas_Expression = (function(lhs, rhs) {
+  this.lhs$1 = lhs;
+  this.rhs$1 = rhs;
+  return this
 });
 $c_Lworkspace_CustomEquation.prototype.$$js$exported$prop$staticDimensions__O = (function() {
   return $as_sci_Map($m_s_Predef$().Map$2.apply__sc_Seq__sc_GenMap($m_sci_Nil$()))
@@ -29916,12 +29845,6 @@ Object.defineProperty($c_Lworkspace_CustomEquation.prototype, "expr", {
   }),
   "configurable": true
 });
-Object.defineProperty($c_Lworkspace_CustomEquation.prototype, "builtInEqualities", {
-  "get": (function() {
-    return this.$$js$exported$prop$builtInEqualities__O()
-  }),
-  "configurable": true
-});
 Object.defineProperty($c_Lworkspace_CustomEquation.prototype, "rhs", {
   "get": (function() {
     return this.$$js$exported$prop$rhs__O()
@@ -29958,6 +29881,218 @@ var $d_Lworkspace_CustomEquation = new $TypeData().initClass({
   Ljava_io_Serializable: 1
 });
 $c_Lworkspace_CustomEquation.prototype.$classData = $d_Lworkspace_CustomEquation;
+/** @constructor */
+function $c_Lworkspace_DiagramVarId() {
+  $c_O.call(this);
+  this.diagramIdx$1 = 0;
+  this.varName$1 = null
+}
+$c_Lworkspace_DiagramVarId.prototype = new $h_O();
+$c_Lworkspace_DiagramVarId.prototype.constructor = $c_Lworkspace_DiagramVarId;
+/** @constructor */
+function $h_Lworkspace_DiagramVarId() {
+  /*<skip>*/
+}
+$h_Lworkspace_DiagramVarId.prototype = $c_Lworkspace_DiagramVarId.prototype;
+$c_Lworkspace_DiagramVarId.prototype.productPrefix__T = (function() {
+  return "DiagramVarId"
+});
+$c_Lworkspace_DiagramVarId.prototype.productArity__I = (function() {
+  return 2
+});
+$c_Lworkspace_DiagramVarId.prototype.equals__O__Z = (function(x$1) {
+  if ((this === x$1)) {
+    return true
+  } else if ($is_Lworkspace_DiagramVarId(x$1)) {
+    var DiagramVarId$1 = $as_Lworkspace_DiagramVarId(x$1);
+    return ((this.diagramIdx$1 === DiagramVarId$1.diagramIdx$1) && (this.varName$1 === DiagramVarId$1.varName$1))
+  } else {
+    return false
+  }
+});
+$c_Lworkspace_DiagramVarId.prototype.productElement__I__O = (function(x$1) {
+  switch (x$1) {
+    case 0: {
+      return this.diagramIdx$1;
+      break
+    }
+    case 1: {
+      return this.varName$1;
+      break
+    }
+    default: {
+      throw new $c_jl_IndexOutOfBoundsException().init___T(("" + x$1))
+    }
+  }
+});
+$c_Lworkspace_DiagramVarId.prototype.$$js$exported$prop$varName__O = (function() {
+  return this.varName$1
+});
+$c_Lworkspace_DiagramVarId.prototype.toString__T = (function() {
+  return $m_sr_ScalaRunTime$().$$undtoString__s_Product__T(this)
+});
+$c_Lworkspace_DiagramVarId.prototype.$$js$exported$prop$diagramIdx__O = (function() {
+  return this.diagramIdx$1
+});
+$c_Lworkspace_DiagramVarId.prototype.init___I__T = (function(diagramIdx, varName) {
+  this.diagramIdx$1 = diagramIdx;
+  this.varName$1 = varName;
+  return this
+});
+$c_Lworkspace_DiagramVarId.prototype.varName__T = (function() {
+  return this.varName$1
+});
+$c_Lworkspace_DiagramVarId.prototype.hashCode__I = (function() {
+  var acc = (-889275714);
+  acc = $m_sr_Statics$().mix__I__I__I(acc, this.diagramIdx$1);
+  acc = $m_sr_Statics$().mix__I__I__I(acc, $m_sr_Statics$().anyHash__O__I(this.varName$1));
+  return $m_sr_Statics$().finalizeHash__I__I__I(acc, 2)
+});
+$c_Lworkspace_DiagramVarId.prototype.productIterator__sc_Iterator = (function() {
+  return new $c_sr_ScalaRunTime$$anon$1().init___s_Product(this)
+});
+Object.defineProperty($c_Lworkspace_DiagramVarId.prototype, "varName", {
+  "get": (function() {
+    return this.$$js$exported$prop$varName__O()
+  }),
+  "configurable": true
+});
+Object.defineProperty($c_Lworkspace_DiagramVarId.prototype, "diagramIdx", {
+  "get": (function() {
+    return this.$$js$exported$prop$diagramIdx__O()
+  }),
+  "configurable": true
+});
+function $is_Lworkspace_DiagramVarId(obj) {
+  return (!(!((obj && obj.$classData) && obj.$classData.ancestors.Lworkspace_DiagramVarId)))
+}
+function $as_Lworkspace_DiagramVarId(obj) {
+  return (($is_Lworkspace_DiagramVarId(obj) || (obj === null)) ? obj : $throwClassCastException(obj, "workspace.DiagramVarId"))
+}
+function $isArrayOf_Lworkspace_DiagramVarId(obj, depth) {
+  return (!(!(((obj && obj.$classData) && (obj.$classData.arrayDepth === depth)) && obj.$classData.arrayBase.ancestors.Lworkspace_DiagramVarId)))
+}
+function $asArrayOf_Lworkspace_DiagramVarId(obj, depth) {
+  return (($isArrayOf_Lworkspace_DiagramVarId(obj, depth) || (obj === null)) ? obj : $throwArrayCastException(obj, "Lworkspace.DiagramVarId;", depth))
+}
+var $d_Lworkspace_DiagramVarId = new $TypeData().initClass({
+  Lworkspace_DiagramVarId: 0
+}, false, "workspace.DiagramVarId", {
+  Lworkspace_DiagramVarId: 1,
+  O: 1,
+  Lworkspace_VarId: 1,
+  s_Product: 1,
+  s_Equals: 1,
+  s_Serializable: 1,
+  Ljava_io_Serializable: 1
+});
+$c_Lworkspace_DiagramVarId.prototype.$classData = $d_Lworkspace_DiagramVarId;
+/** @constructor */
+function $c_Lworkspace_EquationVarId() {
+  $c_O.call(this);
+  this.eqIdx$1 = 0;
+  this.varName$1 = null
+}
+$c_Lworkspace_EquationVarId.prototype = new $h_O();
+$c_Lworkspace_EquationVarId.prototype.constructor = $c_Lworkspace_EquationVarId;
+/** @constructor */
+function $h_Lworkspace_EquationVarId() {
+  /*<skip>*/
+}
+$h_Lworkspace_EquationVarId.prototype = $c_Lworkspace_EquationVarId.prototype;
+$c_Lworkspace_EquationVarId.prototype.productPrefix__T = (function() {
+  return "EquationVarId"
+});
+$c_Lworkspace_EquationVarId.prototype.productArity__I = (function() {
+  return 2
+});
+$c_Lworkspace_EquationVarId.prototype.equals__O__Z = (function(x$1) {
+  if ((this === x$1)) {
+    return true
+  } else if ($is_Lworkspace_EquationVarId(x$1)) {
+    var EquationVarId$1 = $as_Lworkspace_EquationVarId(x$1);
+    return ((this.eqIdx$1 === EquationVarId$1.eqIdx$1) && (this.varName$1 === EquationVarId$1.varName$1))
+  } else {
+    return false
+  }
+});
+$c_Lworkspace_EquationVarId.prototype.productElement__I__O = (function(x$1) {
+  switch (x$1) {
+    case 0: {
+      return this.eqIdx$1;
+      break
+    }
+    case 1: {
+      return this.varName$1;
+      break
+    }
+    default: {
+      throw new $c_jl_IndexOutOfBoundsException().init___T(("" + x$1))
+    }
+  }
+});
+$c_Lworkspace_EquationVarId.prototype.$$js$exported$prop$varName__O = (function() {
+  return this.varName$1
+});
+$c_Lworkspace_EquationVarId.prototype.toString__T = (function() {
+  return $m_sr_ScalaRunTime$().$$undtoString__s_Product__T(this)
+});
+$c_Lworkspace_EquationVarId.prototype.init___I__T = (function(eqIdx, varName) {
+  this.eqIdx$1 = eqIdx;
+  this.varName$1 = varName;
+  return this
+});
+$c_Lworkspace_EquationVarId.prototype.$$js$exported$prop$eqIdx__O = (function() {
+  return this.eqIdx$1
+});
+$c_Lworkspace_EquationVarId.prototype.varName__T = (function() {
+  return this.varName$1
+});
+$c_Lworkspace_EquationVarId.prototype.hashCode__I = (function() {
+  var acc = (-889275714);
+  acc = $m_sr_Statics$().mix__I__I__I(acc, this.eqIdx$1);
+  acc = $m_sr_Statics$().mix__I__I__I(acc, $m_sr_Statics$().anyHash__O__I(this.varName$1));
+  return $m_sr_Statics$().finalizeHash__I__I__I(acc, 2)
+});
+$c_Lworkspace_EquationVarId.prototype.productIterator__sc_Iterator = (function() {
+  return new $c_sr_ScalaRunTime$$anon$1().init___s_Product(this)
+});
+Object.defineProperty($c_Lworkspace_EquationVarId.prototype, "varName", {
+  "get": (function() {
+    return this.$$js$exported$prop$varName__O()
+  }),
+  "configurable": true
+});
+Object.defineProperty($c_Lworkspace_EquationVarId.prototype, "eqIdx", {
+  "get": (function() {
+    return this.$$js$exported$prop$eqIdx__O()
+  }),
+  "configurable": true
+});
+function $is_Lworkspace_EquationVarId(obj) {
+  return (!(!((obj && obj.$classData) && obj.$classData.ancestors.Lworkspace_EquationVarId)))
+}
+function $as_Lworkspace_EquationVarId(obj) {
+  return (($is_Lworkspace_EquationVarId(obj) || (obj === null)) ? obj : $throwClassCastException(obj, "workspace.EquationVarId"))
+}
+function $isArrayOf_Lworkspace_EquationVarId(obj, depth) {
+  return (!(!(((obj && obj.$classData) && (obj.$classData.arrayDepth === depth)) && obj.$classData.arrayBase.ancestors.Lworkspace_EquationVarId)))
+}
+function $asArrayOf_Lworkspace_EquationVarId(obj, depth) {
+  return (($isArrayOf_Lworkspace_EquationVarId(obj, depth) || (obj === null)) ? obj : $throwArrayCastException(obj, "Lworkspace.EquationVarId;", depth))
+}
+var $d_Lworkspace_EquationVarId = new $TypeData().initClass({
+  Lworkspace_EquationVarId: 0
+}, false, "workspace.EquationVarId", {
+  Lworkspace_EquationVarId: 1,
+  O: 1,
+  Lworkspace_VarId: 1,
+  s_Product: 1,
+  s_Equals: 1,
+  s_Serializable: 1,
+  Ljava_io_Serializable: 1
+});
+$c_Lworkspace_EquationVarId.prototype.$classData = $d_Lworkspace_EquationVarId;
 /** @constructor */
 function $c_Lworkspace_FlexBox() {
   $c_O.call(this);
@@ -31346,17 +31481,17 @@ var $d_Lworkspace_Text = new $TypeData().initClass({
 });
 $c_Lworkspace_Text.prototype.$classData = $d_Lworkspace_Text;
 /** @constructor */
-function $c_Lworkspace_TriangleDiagram$$anonfun$1() {
+function $c_Lworkspace_TriangleDiagram$$anonfun$equalitiesToAddWithEquation$2() {
   $c_sr_AbstractPartialFunction.call(this)
 }
-$c_Lworkspace_TriangleDiagram$$anonfun$1.prototype = new $h_sr_AbstractPartialFunction();
-$c_Lworkspace_TriangleDiagram$$anonfun$1.prototype.constructor = $c_Lworkspace_TriangleDiagram$$anonfun$1;
+$c_Lworkspace_TriangleDiagram$$anonfun$equalitiesToAddWithEquation$2.prototype = new $h_sr_AbstractPartialFunction();
+$c_Lworkspace_TriangleDiagram$$anonfun$equalitiesToAddWithEquation$2.prototype.constructor = $c_Lworkspace_TriangleDiagram$$anonfun$equalitiesToAddWithEquation$2;
 /** @constructor */
-function $h_Lworkspace_TriangleDiagram$$anonfun$1() {
+function $h_Lworkspace_TriangleDiagram$$anonfun$equalitiesToAddWithEquation$2() {
   /*<skip>*/
 }
-$h_Lworkspace_TriangleDiagram$$anonfun$1.prototype = $c_Lworkspace_TriangleDiagram$$anonfun$1.prototype;
-$c_Lworkspace_TriangleDiagram$$anonfun$1.prototype.applyOrElse__s_Option__F1__O = (function(x1, $default) {
+$h_Lworkspace_TriangleDiagram$$anonfun$equalitiesToAddWithEquation$2.prototype = $c_Lworkspace_TriangleDiagram$$anonfun$equalitiesToAddWithEquation$2.prototype;
+$c_Lworkspace_TriangleDiagram$$anonfun$equalitiesToAddWithEquation$2.prototype.applyOrElse__s_Option__F1__O = (function(x1, $default) {
   if ($is_s_Some(x1)) {
     var x2 = $as_s_Some(x1);
     var x = $as_T2(x2.value$2);
@@ -31365,22 +31500,22 @@ $c_Lworkspace_TriangleDiagram$$anonfun$1.prototype.applyOrElse__s_Option__F1__O 
     return $default.apply__O__O(x1)
   }
 });
-$c_Lworkspace_TriangleDiagram$$anonfun$1.prototype.init___Lworkspace_TriangleDiagram = (function($$outer) {
+$c_Lworkspace_TriangleDiagram$$anonfun$equalitiesToAddWithEquation$2.prototype.init___Lworkspace_TriangleDiagram = (function($$outer) {
   return this
 });
-$c_Lworkspace_TriangleDiagram$$anonfun$1.prototype.isDefinedAt__O__Z = (function(x) {
+$c_Lworkspace_TriangleDiagram$$anonfun$equalitiesToAddWithEquation$2.prototype.isDefinedAt__O__Z = (function(x) {
   return this.isDefinedAt__s_Option__Z($as_s_Option(x))
 });
-$c_Lworkspace_TriangleDiagram$$anonfun$1.prototype.applyOrElse__O__F1__O = (function(x, $default) {
+$c_Lworkspace_TriangleDiagram$$anonfun$equalitiesToAddWithEquation$2.prototype.applyOrElse__O__F1__O = (function(x, $default) {
   return this.applyOrElse__s_Option__F1__O($as_s_Option(x), $default)
 });
-$c_Lworkspace_TriangleDiagram$$anonfun$1.prototype.isDefinedAt__s_Option__Z = (function(x1) {
+$c_Lworkspace_TriangleDiagram$$anonfun$equalitiesToAddWithEquation$2.prototype.isDefinedAt__s_Option__Z = (function(x1) {
   return $is_s_Some(x1)
 });
-var $d_Lworkspace_TriangleDiagram$$anonfun$1 = new $TypeData().initClass({
-  Lworkspace_TriangleDiagram$$anonfun$1: 0
-}, false, "workspace.TriangleDiagram$$anonfun$1", {
-  Lworkspace_TriangleDiagram$$anonfun$1: 1,
+var $d_Lworkspace_TriangleDiagram$$anonfun$equalitiesToAddWithEquation$2 = new $TypeData().initClass({
+  Lworkspace_TriangleDiagram$$anonfun$equalitiesToAddWithEquation$2: 0
+}, false, "workspace.TriangleDiagram$$anonfun$equalitiesToAddWithEquation$2", {
+  Lworkspace_TriangleDiagram$$anonfun$equalitiesToAddWithEquation$2: 1,
   sr_AbstractPartialFunction: 1,
   O: 1,
   F1: 1,
@@ -31388,51 +31523,7 @@ var $d_Lworkspace_TriangleDiagram$$anonfun$1 = new $TypeData().initClass({
   s_Serializable: 1,
   Ljava_io_Serializable: 1
 });
-$c_Lworkspace_TriangleDiagram$$anonfun$1.prototype.$classData = $d_Lworkspace_TriangleDiagram$$anonfun$1;
-/** @constructor */
-function $c_Lworkspace_TriangleDiagram$$anonfun$2() {
-  $c_sr_AbstractPartialFunction.call(this)
-}
-$c_Lworkspace_TriangleDiagram$$anonfun$2.prototype = new $h_sr_AbstractPartialFunction();
-$c_Lworkspace_TriangleDiagram$$anonfun$2.prototype.constructor = $c_Lworkspace_TriangleDiagram$$anonfun$2;
-/** @constructor */
-function $h_Lworkspace_TriangleDiagram$$anonfun$2() {
-  /*<skip>*/
-}
-$h_Lworkspace_TriangleDiagram$$anonfun$2.prototype = $c_Lworkspace_TriangleDiagram$$anonfun$2.prototype;
-$c_Lworkspace_TriangleDiagram$$anonfun$2.prototype.applyOrElse__s_Option__F1__O = (function(x2, $default) {
-  if ($is_s_Some(x2)) {
-    var x2$2 = $as_s_Some(x2);
-    var v = $as_T2(x2$2.value$2);
-    return v
-  } else {
-    return $default.apply__O__O(x2)
-  }
-});
-$c_Lworkspace_TriangleDiagram$$anonfun$2.prototype.init___Lworkspace_TriangleDiagram = (function($$outer) {
-  return this
-});
-$c_Lworkspace_TriangleDiagram$$anonfun$2.prototype.isDefinedAt__O__Z = (function(x) {
-  return this.isDefinedAt__s_Option__Z($as_s_Option(x))
-});
-$c_Lworkspace_TriangleDiagram$$anonfun$2.prototype.applyOrElse__O__F1__O = (function(x, $default) {
-  return this.applyOrElse__s_Option__F1__O($as_s_Option(x), $default)
-});
-$c_Lworkspace_TriangleDiagram$$anonfun$2.prototype.isDefinedAt__s_Option__Z = (function(x2) {
-  return $is_s_Some(x2)
-});
-var $d_Lworkspace_TriangleDiagram$$anonfun$2 = new $TypeData().initClass({
-  Lworkspace_TriangleDiagram$$anonfun$2: 0
-}, false, "workspace.TriangleDiagram$$anonfun$2", {
-  Lworkspace_TriangleDiagram$$anonfun$2: 1,
-  sr_AbstractPartialFunction: 1,
-  O: 1,
-  F1: 1,
-  s_PartialFunction: 1,
-  s_Serializable: 1,
-  Ljava_io_Serializable: 1
-});
-$c_Lworkspace_TriangleDiagram$$anonfun$2.prototype.$classData = $d_Lworkspace_TriangleDiagram$$anonfun$2;
+$c_Lworkspace_TriangleDiagram$$anonfun$equalitiesToAddWithEquation$2.prototype.$classData = $d_Lworkspace_TriangleDiagram$$anonfun$equalitiesToAddWithEquation$2;
 /** @constructor */
 function $c_Lworkspace_VariableWrapper() {
   $c_O.call(this);
@@ -56086,16 +56177,6 @@ $e.Gem.EquationLibrary = (function(arg$1) {
 $e.Gem.EquationLibrary.prototype = $c_Lworkspace_EquationLibrary.prototype;
 $e.Gem = ($e.Gem || {});
 /** @constructor */
-$e.Gem.VarId = (function(arg$1, arg$2) {
-  var $thiz = new $c_Lworkspace_VarId();
-  var prep0 = $uI(arg$1);
-  var prep1 = $as_T(arg$2);
-  $c_Lworkspace_VarId.prototype.init___I__T.call($thiz, prep0, prep1);
-  return $thiz
-});
-$e.Gem.VarId.prototype = $c_Lworkspace_VarId.prototype;
-$e.Gem = ($e.Gem || {});
-/** @constructor */
 $e.Gem.Workspace = (function(arg$1, arg$2, arg$3, arg$4, arg$5) {
   var $thiz = new $c_Lworkspace_Workspace();
   var prep0 = $as_Lworkspace_MapWithIds(arg$1);
@@ -56107,5 +56188,25 @@ $e.Gem.Workspace = (function(arg$1, arg$2, arg$3, arg$4, arg$5) {
   return $thiz
 });
 $e.Gem.Workspace.prototype = $c_Lworkspace_Workspace.prototype;
+$e.Gem = ($e.Gem || {});
+/** @constructor */
+$e.Gem.DiagramVarId = (function(arg$1, arg$2) {
+  var $thiz = new $c_Lworkspace_DiagramVarId();
+  var prep0 = $uI(arg$1);
+  var prep1 = $as_T(arg$2);
+  $c_Lworkspace_DiagramVarId.prototype.init___I__T.call($thiz, prep0, prep1);
+  return $thiz
+});
+$e.Gem.DiagramVarId.prototype = $c_Lworkspace_DiagramVarId.prototype;
+$e.Gem = ($e.Gem || {});
+/** @constructor */
+$e.Gem.EquationVarId = (function(arg$1, arg$2) {
+  var $thiz = new $c_Lworkspace_EquationVarId();
+  var prep0 = $uI(arg$1);
+  var prep1 = $as_T(arg$2);
+  $c_Lworkspace_EquationVarId.prototype.init___I__T.call($thiz, prep0, prep1);
+  return $thiz
+});
+$e.Gem.EquationVarId.prototype = $c_Lworkspace_EquationVarId.prototype;
 }).call(this);
 //# sourceMappingURL=scala-gem-fastopt.js.map

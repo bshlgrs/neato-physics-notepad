@@ -101,7 +101,7 @@ object CompileToBuckTex {
 
   def showEquation(equation: Equation, idx: Int, varSubscripts: Map[String, Int]): BuckTex = {
     equation.display((varName: String) =>
-      makeVariableSpan(VarId(idx, varName), varSubscripts.get(varName)))
+      makeVariableSpan(EquationVarId(idx, varName), varSubscripts.get(varName)))
   }
 
   def showVariable(varId: VarId, varSubscripts: Map[VarId, Int]): BuckTex = {

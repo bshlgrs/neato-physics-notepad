@@ -37,6 +37,9 @@
 - Variable aliases
 - Solve trigonometric equations
 - It should keep track of the facts you've used in all your expressions and let you know when they're violated.
+- Better parsing of equations. Eg, sqrt.
+- Parse floating point numbers
+
 
 ## Conceptual problems
 
@@ -44,3 +47,10 @@
   - I think the right answer might be to
 - I can't represent Newton-meters (for torque) apart from as Joules.
 - I sometimes get confused between the kind of equality that is "these variables are referring to the same thing" and "these variables have the same value"
+
+## Notes from user study
+
+- User really wanted to drag the equations
+- Wanted to drag to select multiple equations at once
+- Confused by the rules of how you drag things
+

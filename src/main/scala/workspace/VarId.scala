@@ -3,7 +3,7 @@ package workspace
 import scala.scalajs.js
 import scala.scalajs.js.annotation.{JSExport, JSExportAll, JSExportTopLevel}
 
-@JSExportTopLevel("Gem.VarId")
+
 trait VarId {
   @JSExport
   def varName: String
@@ -25,11 +25,13 @@ trait VarId {
 }
 
 
+@JSExportTopLevel("Gem.EquationVarId")
 @JSExportAll
 case class EquationVarId(eqIdx: Int, varName: String) extends VarId {
 
 }
 
+@JSExportTopLevel("Gem.DiagramVarId")
 @JSExportAll
 case class DiagramVarId(diagramIdx: Int, varName: String) extends VarId {
 
