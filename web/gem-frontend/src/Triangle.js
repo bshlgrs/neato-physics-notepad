@@ -15,7 +15,7 @@ class Triangle extends React.Component {
       (varName) => this.props.workspace.diagramVarBuckTexJs(triangleId, varName)
     );
 
-    debugger;
+    // debugger;
 
     return <div position="relative">
       <div ref={(ref) => registerVar("H", ref)} style={{position: "absolute", top: "70px", left: "50px", fontSize: "24px"}}>

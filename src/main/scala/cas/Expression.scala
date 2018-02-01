@@ -456,6 +456,11 @@ object SpecialFunction {
   def asin[A](thing: Expression[A]): Expression[A] = SpecialFunction("asin", List(thing))
   def acos[A](thing: Expression[A]): Expression[A] = SpecialFunction("acos", List(thing))
   def atan[A](thing: Expression[A]): Expression[A] = SpecialFunction("atan", List(thing))
+
+  def build[A](name: String, args: List[Expression[A]]): Expression[A] = name match {
+    case "sqrt" => args.head.sqrt
+    case _ => SpecialFunction(name, args)
+  }
 }
 
 object RationalNumber {
