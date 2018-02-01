@@ -449,6 +449,13 @@ case class NamedNumber[A](value: Double, name: String, dimension: SiDimension) e
 
 case class SpecialFunction[A](name: String, args: List[Expression[A]]) extends Expression[A]
 
+object SpecialFunction {
+  def build[A](name: String, args: List[Expression[A]]): Expression[A] = name match {
+    case "sqrt" => args.head.sqrt
+    case _ => SpecialFunction(name, args)
+  }
+}
+
 object RationalNumber {
   def zero = RationalNumber(0)
   def one = RationalNumber(1)

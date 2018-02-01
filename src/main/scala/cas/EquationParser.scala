@@ -40,8 +40,8 @@ object EquationParser {
   }
 
   val number: P[Expression[String]] = P(
-      CharIn('0'to'9').rep(1).!.map(str => RationalNumber[String](str.toInt))
-    | (CharIn('0'to'9').rep(1).! ~ "." ~ CharIn('0'to'9').rep(1).!).map({ case (a, b) => RealNumber(s"$a.$b".toFloat) })
+      (CharIn('0'to'9').rep(1).! ~ "." ~ CharIn('0'to'9').rep(1).!).map({ case (a, b) => RealNumber[String](s"$a.$b".toFloat) })
+    | CharIn('0'to'9').rep(1).!.map(str => RationalNumber(str.toInt))
   )
 
   val variable: P[Expression[String]] = P(
@@ -54,12 +54,12 @@ object EquationParser {
 //    case (name: String, args: Seq[Expression[String]]) => SpecialFunction(name, args.toList)
 //  })
   lazy val functionCall: P[Expression[String]] = P(CharsWhile(_.isLetter).rep(1).! ~ "(" ~ expr0.rep(sep=",") ~ ")").map({
-    case (name: String, args: Seq[Expression[_]]) => SpecialFunction(name, args.toList)
+    case (name: String, args: Seq[Expression[_]]) => SpecialFunction.build(name, args.toList)
   })
 
   val atom: P[Expression[String]] = P( number | functionCall | variable | parens )
 
-  val expr2: P[Expression[String]] = P("-".!.? ~ (atom ~ "**" ~ atom | atom)).map({
+  val expr2: P[Expression[String]] = P("-".!.? ~ (atom ~ ("**"|"^") ~ atom | atom)).map({
     case (mbMinus: Option[String], x: Expression[_]) =>
        x.asInstanceOf[Expression[String]] * (if (mbMinus.isDefined) -1 else 1)
     case (mbMinus: Option[String], (x: Expression[_], y: Expression[_])) =>
