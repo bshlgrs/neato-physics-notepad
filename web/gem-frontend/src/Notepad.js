@@ -79,8 +79,6 @@ class Notepad extends Component {
     this.equationRefs = {};
     this.numberRefs = {};
     this.numberPositions = {};
-    this.diagramVarRefs = {};
-    this.diagramVarPositions = {};
     this.needsPositionRefresh = false;
   }
   reset () {
@@ -105,16 +103,6 @@ class Notepad extends Component {
       if (this.varRefs[varRefString]) {
         const varCenter = getCenterOfElement(this.varRefs[varRefString]);
         this.varPositions[varRefString] = {
-          left: varCenter.left - parentPos.left,
-          top: varCenter.top - parentPos.top
-        };
-      }
-    });
-
-    Object.keys(this.diagramVarRefs).forEach((varRefString) => {
-      if (this.diagramVarRefs[varRefString]) {
-        const varCenter = getCenterOfElement(this.diagramVarRefs[varRefString]);
-        this.diagramVarPositions[varRefString] = {
           left: varCenter.left - parentPos.left,
           top: varCenter.top - parentPos.top
         };
@@ -255,18 +243,6 @@ class Notepad extends Component {
       }
     });
 
-    if (draggedOntoVarId) {
-      return draggedOntoVarId;
-    }
-
-    debugger;
-
-    Object.keys(this.diagramVarRefs).forEach((diagramVarIdStr) => {
-      if (checkCollisionWithRef(this.diagramVarRefs[diagramVarIdStr], pageX, pageY)) {
-        draggedOntoVarId = this.props.workspace.varIdStringToVarId(diagramVarIdStr);
-      }
-    });
-
     return draggedOntoVarId;
   }
   getDraggedOntoNumberId(pageX, pageY) {
@@ -371,7 +347,7 @@ class Notepad extends Component {
 
     const result = ws.allVarsGroupedByEquality.map((list, idx) => {
       const positionList = list.map((varId) => {
-        const pos = this.varPositions[varId] || this.diagramVarPositions[varId];
+        const pos = this.varPositions[varId];
         if (!pos) {
           console.log("not pos!");
           shouldForceUpdate = true;
@@ -561,7 +537,7 @@ class Notepad extends Component {
                 triangle={triangle}
                 triangleId={id}
                 workspace={ws}
-                registerVar={(varId, ref) => { this.diagramVarRefs[varId] = ref; }}
+                registerVar={(varId, ref) => { this.varRefs[varId] = ref; }}
                 onMouseDown={(e) => {
                   const rel = {
                     x: e.pageX - left,
