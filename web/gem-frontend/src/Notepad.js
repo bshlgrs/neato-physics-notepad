@@ -79,6 +79,8 @@ class Notepad extends Component {
     this.equationRefs = {};
     this.numberRefs = {};
     this.numberPositions = {};
+    this.diagramVarRefs = {};
+    this.diagramVarPositions = {};
     this.needsPositionRefresh = false;
   }
   reset () {
@@ -103,6 +105,16 @@ class Notepad extends Component {
       if (this.varRefs[varRefString]) {
         const varCenter = getCenterOfElement(this.varRefs[varRefString]);
         this.varPositions[varRefString] = {
+          left: varCenter.left - parentPos.left,
+          top: varCenter.top - parentPos.top
+        };
+      }
+    });
+
+    Object.keys(this.diagramVarRefs).forEach((varRefString) => {
+      if (this.diagramVarRefs[varRefString]) {
+        const varCenter = getCenterOfElement(this.diagramVarRefs[varRefString]);
+        this.diagramVarPositions[varRefString] = {
           left: varCenter.left - parentPos.left,
           top: varCenter.top - parentPos.top
         };
@@ -242,6 +254,19 @@ class Notepad extends Component {
         draggedOntoVarId = this.props.workspace.varIdStringToVarId(varIdStr);
       }
     });
+
+    if (draggedOntoVarId) {
+      return draggedOntoVarId;
+    }
+
+    debugger;
+
+    Object.keys(this.diagramVarRefs).forEach((diagramVarIdStr) => {
+      if (checkCollisionWithRef(this.diagramVarRefs[diagramVarIdStr], pageX, pageY)) {
+        draggedOntoVarId = this.props.workspace.varIdStringToVarId(diagramVarIdStr);
+      }
+    });
+
     return draggedOntoVarId;
   }
   getDraggedOntoNumberId(pageX, pageY) {
@@ -338,16 +363,18 @@ class Notepad extends Component {
   }
   renderVarEqualityLines () {
     const ws = this.props.workspace;
+    let shouldForceUpdate = false;
 
     if (!this.varPositions) {
       return null;
     }
 
-    return ws.allVarsGroupedByEquality.map((list, idx) => {
+    const result = ws.allVarsGroupedByEquality.map((list, idx) => {
       const positionList = list.map((varId) => {
-        const pos = this.varPositions[varId];
+        const pos = this.varPositions[varId] || this.diagramVarPositions[varId];
         if (!pos) {
-          setTimeout(() => this.forceUpdate(), 10);
+          console.log("not pos!");
+          shouldForceUpdate = true;
         }
         return pos ? [pos.left, pos.top] : null;
       }).filter((x) => x);
@@ -379,6 +406,12 @@ class Notepad extends Component {
         })}
       </g>
     });
+
+    if (shouldForceUpdate) {
+      setTimeout(() => this.forceUpdate(), 10);
+    }
+
+    return result;
   }
   handleSearchBarSubmit () {
     const num = Gem.PhysicalNumber.parsePhysicalNumber(this.state.searchBarText.trim());
@@ -441,7 +474,7 @@ class Notepad extends Component {
     return (
       <div className="main-app-div">
         <div className="equation-space" ref={(div) => { this.equationSpaceDiv = div; }}
-          style={currentAction === DRAGGING_FROM_VAR ? {cursor: 'crosshair'} : {}}>
+          style={currentAction === DRAGGING_FROM_VAR ? {cursor: 'crosshair'} : {}} >
           <svg style={{position: 'absolute', left: 0, top: 0, height: "100%", width: "100%"}}>
             {(currentAction === DRAGGING_FROM_VAR || currentAction === DRAGGING_FROM_EXPR_VAR) &&
               this.renderVarDragLine()}
@@ -528,7 +561,7 @@ class Notepad extends Component {
                 triangle={triangle}
                 triangleId={id}
                 workspace={ws}
-                registerVar={() => {}}
+                registerVar={(varId, ref) => { this.diagramVarRefs[varId] = ref; }}
                 onMouseDown={(e) => {
                   const rel = {
                     x: e.pageX - left,

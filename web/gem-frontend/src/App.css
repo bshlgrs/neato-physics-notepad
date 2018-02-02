@@ -83,6 +83,14 @@
   cursor: crosshair;
 }
 
+.diagram-variable {
+  color: green;
+  font-size: 36px;
+  cursor: crosshair;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
 .search-div {
   padding: 20px;

@@ -14,7 +14,7 @@ class InfoBox extends React.Component {
       <p>{equation.name}</p>
       <p>{equation.description}</p>
       {equation.varsJs.map((varSymbol) => {
-        const varId = Gem.VarId(selectedId, varSymbol);
+        const varId = Gem.EquationVarId(selectedId, varSymbol);
         const varName = equation.varNameJs(varSymbol);
         const dimension = ws.getDimensionJs(varId);
 

@@ -17,12 +17,15 @@ case class TriangleDiagram(vars: Map[String, VarId]) {
   // H is hypotenuse AC
   // A is AB
   // O is BC
+
+  def diagramVarNames: Set[String] = Set("H", "A", "O", "θ", "φ")
+
   def usableEquations: Set[CustomEquation] = {
     val O = Variable("O")
     val A = Variable("A")
     val H = Variable("H")
-    val theta = Variable("theta")
-    val phi = Variable("phi")
+    val theta = Variable("θ")
+    val phi = Variable("φ")
 
     val identities = Set[(Expression[String], Expression[String])](
       (O**2) + (A**2) -> (H**2),

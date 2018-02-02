@@ -54,3 +54,6 @@
 - Wanted to drag to select multiple equations at once
 - Confused by the rules of how you drag things
 
+## Things to ask a Scala expert about
+
+- Should my Expression type be covariant?  

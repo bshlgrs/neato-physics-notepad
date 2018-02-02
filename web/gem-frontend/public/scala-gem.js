@@ -22916,6 +22916,24 @@ $c_Lworkspace_TriangleDiagram.prototype.set__T__s_Option__Lworkspace_TriangleDia
 $c_Lworkspace_TriangleDiagram.prototype.$$js$exported$meth$usableEquationsJs__I__O = (function(nextEquationIdx) {
   return this.usableEquationsJs__I__sjs_js_Array(nextEquationIdx)
 });
+$c_Lworkspace_TriangleDiagram.prototype.diagramVarNames__sci_Set = (function() {
+  var array = ["H", "A", "O", "\u03b8", "\u03c6"];
+  if (($uI(array.length) === 0)) {
+    var jsx$1 = $m_sci_Set$EmptySet$()
+  } else {
+    var b = new $c_scm_SetBuilder().init___sc_Set($m_sci_Set$EmptySet$());
+    var i = 0;
+    var len = $uI(array.length);
+    while ((i < len)) {
+      var index = i;
+      var arg1 = array[index];
+      b.$$plus$eq__O__scm_SetBuilder(arg1);
+      i = ((1 + i) | 0)
+    };
+    var jsx$1 = b.elems$1
+  };
+  return $as_sci_Set(jsx$1)
+});
 $c_Lworkspace_TriangleDiagram.prototype.getOutputVarName$1__p1__T__T = (function(name) {
   var x1 = this.vars$1.get__O__s_Option(name);
   var x = $m_s_None$();
@@ -22957,8 +22975,8 @@ $c_Lworkspace_TriangleDiagram.prototype.usableEquations__sci_Set = (function() {
   var O = new $c_Lcas_Variable().init___O("O");
   var A = new $c_Lcas_Variable().init___O("A");
   var H = new $c_Lcas_Variable().init___O("H");
-  var theta = new $c_Lcas_Variable().init___O("theta");
-  var phi = new $c_Lcas_Variable().init___O("phi");
+  var theta = new $c_Lcas_Variable().init___O("\u03b8");
+  var phi = new $c_Lcas_Variable().init___O("\u03c6");
   var this$1 = $f_Lcas_Expression__$$times$times__I__Lcas_Expression(O, 2);
   var other = $f_Lcas_Expression__$$times$times__I__Lcas_Expression(A, 2);
   var self = $f_Lcas_Expression__$$plus__Lcas_Expression__Lcas_Expression(this$1, other);
@@ -23119,8 +23137,8 @@ $c_Lworkspace_Workspace.prototype.allVarIds__sci_Set = (function() {
       return (check$ifrefutable$1 !== null)
     })
   })(this));
-  var jsx$2 = new $c_sc_TraversableLike$WithFilter().init___sc_TraversableLike__F1(this$4, p);
-  var jsx$1 = new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function(this$2$1) {
+  var jsx$4 = new $c_sc_TraversableLike$WithFilter().init___sc_TraversableLike__F1(this$4, p);
+  var jsx$3 = new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function(this$2$1) {
     return (function(x$4$2) {
       var x$4 = $as_T2(x$4$2);
       if ((x$4 !== null)) {
@@ -23143,7 +23161,32 @@ $c_Lworkspace_Workspace.prototype.allVarIds__sci_Set = (function() {
     })
   })(this));
   var this$8 = $m_sci_Set$();
-  return $as_sci_Set(jsx$2.flatMap__F1__scg_CanBuildFrom__O(jsx$1, new $c_scg_GenSetFactory$$anon$1().init___scg_GenSetFactory(this$8)))
+  var jsx$2 = $as_sc_TraversableLike(jsx$4.flatMap__F1__scg_CanBuildFrom__O(jsx$3, new $c_scg_GenSetFactory$$anon$1().init___scg_GenSetFactory(this$8)));
+  var this$9 = this.diagrams$1;
+  var this$10 = this$9.map$1;
+  var this$12 = new $c_sci_MapLike$ImmutableDefaultKeySet().init___sci_MapLike(this$10);
+  $m_sc_Iterable$();
+  var b = new $c_scm_SetBuilder().init___sc_Set($m_sci_Set$EmptySet$());
+  var this$14 = this$12.$$outer$4.keysIterator__sc_Iterator();
+  while (this$14.hasNext__Z()) {
+    var arg1 = this$14.next__O();
+    var diagramId = $uI(arg1);
+    var this$15 = this.diagrams$1;
+    var this$17 = $as_Lworkspace_TriangleDiagram(this$15.map$1.apply__O__O(diagramId)).diagramVarNames__sci_Set();
+    var f$1 = new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function($this$2, diagramId$1) {
+      return (function(varName$2$1) {
+        var varName$1 = $as_T(varName$2$1);
+        return new $c_Lworkspace_DiagramVarId().init___I__T(diagramId$1, varName$1)
+      })
+    })(this, diagramId));
+    var this$16 = $m_sci_Set$();
+    var bf$2 = new $c_scg_GenSetFactory$$anon$1().init___scg_GenSetFactory(this$16);
+    var this$18 = $as_sci_Set($f_sc_TraversableLike__map__F1__scg_CanBuildFrom__O(this$17, f$1, bf$2));
+    $as_scm_Builder($f_scg_Growable__$$plus$plus$eq__sc_TraversableOnce__scg_Growable(b, this$18))
+  };
+  var jsx$1 = b.elems$1;
+  var this$19 = $m_sci_Set$();
+  return $as_sci_Set(jsx$2.$$plus$plus__sc_GenTraversableOnce__scg_CanBuildFrom__O(jsx$1, new $c_scg_GenSetFactory$$anon$1().init___scg_GenSetFactory(this$19)))
 });
 $c_Lworkspace_Workspace.prototype.productPrefix__T = (function() {
   return "Workspace"
@@ -23332,6 +23375,8 @@ $c_Lworkspace_Workspace.prototype.getDimensionCalc__Lworkspace_VarId__s_Option =
         };
         var types = $as_sci_Set(jsx$2.$$plus$plus__sc_GenTraversableOnce__sc_Set(jsx$1));
         return types
+      } else if ($is_Lworkspace_DiagramVarId(x0$6)) {
+        return $as_sci_Set($m_s_Predef$().Set$2.apply__sc_Seq__sc_GenTraversable($m_sci_Nil$()))
       } else {
         throw new $c_s_MatchError().init___O(x0$6)
       }
@@ -23672,12 +23717,13 @@ $c_Lworkspace_Workspace.prototype.$$js$exported$prop$allVarIds__O = (function() 
   return this.allVarIds__sci_Set()
 });
 $c_Lworkspace_Workspace.prototype.varIdStringToVarId__T__Lworkspace_VarId = (function(str) {
-  return $as_Lworkspace_VarId(this.allVarIds__sci_Set().find__F1__s_Option(new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function($this, str$1) {
+  var this$1 = this.allVarIds__sci_Set().find__F1__s_Option(new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function($this, str$1) {
     return (function(x$5$2) {
       var x$5 = $as_Lworkspace_VarId(x$5$2);
       return (x$5.toString__T() === str$1)
     })
-  })(this, str))).get__O())
+  })(this, str)));
+  return $as_Lworkspace_VarId((this$1.isEmpty__Z() ? null : this$1.get__O()))
 });
 $c_Lworkspace_Workspace.prototype.varIsEqualToAnything__Lworkspace_VarId__Z = (function(varId) {
   return (this.equalities$1.getSet__O__sci_Set(varId).size__I() > 1)
@@ -24181,8 +24227,10 @@ $c_Lworkspace_Workspace.prototype.getDimensionDirectly__Lworkspace_VarId__s_Opti
     } else {
       return this$2
     }
+  } else if ($is_Lworkspace_DiagramVarId(varId)) {
+    return $m_s_None$()
   } else {
-    $m_s_Predef$().$$qmark$qmark$qmark__sr_Nothing$()
+    throw new $c_s_MatchError().init___O(varId)
   }
 });
 $c_Lworkspace_Workspace.prototype.getEquation__I__Lworkspace_Equation = (function(id) {
@@ -43208,6 +43256,9 @@ $c_sci_StringOps.prototype.mkString__T = (function() {
   var $$this = this.repr$1;
   return $$this
 });
+$c_sci_StringOps.prototype.$$plus$plus__sc_GenTraversableOnce__scg_CanBuildFrom__O = (function(that, bf) {
+  return $f_sc_TraversableLike__$$plus$plus__sc_GenTraversableOnce__scg_CanBuildFrom__O(this, that, bf)
+});
 $c_sci_StringOps.prototype.length__I = (function() {
   var $$this = this.repr$1;
   return $uI($$this.length)
@@ -43559,6 +43610,9 @@ $c_scm_ArrayOps$ofBoolean.prototype.iterator__sc_Iterator = (function() {
 $c_scm_ArrayOps$ofBoolean.prototype.mkString__T = (function() {
   return $f_sc_TraversableOnce__mkString__T__T__T__T(this, "", "", "")
 });
+$c_scm_ArrayOps$ofBoolean.prototype.$$plus$plus__sc_GenTraversableOnce__scg_CanBuildFrom__O = (function(that, bf) {
+  return $f_sc_TraversableLike__$$plus$plus__sc_GenTraversableOnce__scg_CanBuildFrom__O(this, that, bf)
+});
 $c_scm_ArrayOps$ofBoolean.prototype.length__I = (function() {
   var $$this = this.repr$1;
   return $$this.u.length
@@ -43807,6 +43861,9 @@ $c_scm_ArrayOps$ofByte.prototype.iterator__sc_Iterator = (function() {
 });
 $c_scm_ArrayOps$ofByte.prototype.mkString__T = (function() {
   return $f_sc_TraversableOnce__mkString__T__T__T__T(this, "", "", "")
+});
+$c_scm_ArrayOps$ofByte.prototype.$$plus$plus__sc_GenTraversableOnce__scg_CanBuildFrom__O = (function(that, bf) {
+  return $f_sc_TraversableLike__$$plus$plus__sc_GenTraversableOnce__scg_CanBuildFrom__O(this, that, bf)
 });
 $c_scm_ArrayOps$ofByte.prototype.length__I = (function() {
   var $$this = this.repr$1;
@@ -44057,6 +44114,9 @@ $c_scm_ArrayOps$ofChar.prototype.iterator__sc_Iterator = (function() {
 });
 $c_scm_ArrayOps$ofChar.prototype.mkString__T = (function() {
   return $f_sc_TraversableOnce__mkString__T__T__T__T(this, "", "", "")
+});
+$c_scm_ArrayOps$ofChar.prototype.$$plus$plus__sc_GenTraversableOnce__scg_CanBuildFrom__O = (function(that, bf) {
+  return $f_sc_TraversableLike__$$plus$plus__sc_GenTraversableOnce__scg_CanBuildFrom__O(this, that, bf)
 });
 $c_scm_ArrayOps$ofChar.prototype.length__I = (function() {
   var $$this = this.repr$1;
@@ -44309,6 +44369,9 @@ $c_scm_ArrayOps$ofDouble.prototype.iterator__sc_Iterator = (function() {
 $c_scm_ArrayOps$ofDouble.prototype.mkString__T = (function() {
   return $f_sc_TraversableOnce__mkString__T__T__T__T(this, "", "", "")
 });
+$c_scm_ArrayOps$ofDouble.prototype.$$plus$plus__sc_GenTraversableOnce__scg_CanBuildFrom__O = (function(that, bf) {
+  return $f_sc_TraversableLike__$$plus$plus__sc_GenTraversableOnce__scg_CanBuildFrom__O(this, that, bf)
+});
 $c_scm_ArrayOps$ofDouble.prototype.length__I = (function() {
   var $$this = this.repr$1;
   return $$this.u.length
@@ -44557,6 +44620,9 @@ $c_scm_ArrayOps$ofFloat.prototype.init___AF = (function(repr) {
 });
 $c_scm_ArrayOps$ofFloat.prototype.mkString__T = (function() {
   return $f_sc_TraversableOnce__mkString__T__T__T__T(this, "", "", "")
+});
+$c_scm_ArrayOps$ofFloat.prototype.$$plus$plus__sc_GenTraversableOnce__scg_CanBuildFrom__O = (function(that, bf) {
+  return $f_sc_TraversableLike__$$plus$plus__sc_GenTraversableOnce__scg_CanBuildFrom__O(this, that, bf)
 });
 $c_scm_ArrayOps$ofFloat.prototype.length__I = (function() {
   var $$this = this.repr$1;
@@ -44807,6 +44873,9 @@ $c_scm_ArrayOps$ofInt.prototype.init___AI = (function(repr) {
 $c_scm_ArrayOps$ofInt.prototype.mkString__T = (function() {
   return $f_sc_TraversableOnce__mkString__T__T__T__T(this, "", "", "")
 });
+$c_scm_ArrayOps$ofInt.prototype.$$plus$plus__sc_GenTraversableOnce__scg_CanBuildFrom__O = (function(that, bf) {
+  return $f_sc_TraversableLike__$$plus$plus__sc_GenTraversableOnce__scg_CanBuildFrom__O(this, that, bf)
+});
 $c_scm_ArrayOps$ofInt.prototype.length__I = (function() {
   var $$this = this.repr$1;
   return $$this.u.length
@@ -45055,6 +45124,9 @@ $c_scm_ArrayOps$ofLong.prototype.iterator__sc_Iterator = (function() {
 });
 $c_scm_ArrayOps$ofLong.prototype.mkString__T = (function() {
   return $f_sc_TraversableOnce__mkString__T__T__T__T(this, "", "", "")
+});
+$c_scm_ArrayOps$ofLong.prototype.$$plus$plus__sc_GenTraversableOnce__scg_CanBuildFrom__O = (function(that, bf) {
+  return $f_sc_TraversableLike__$$plus$plus__sc_GenTraversableOnce__scg_CanBuildFrom__O(this, that, bf)
 });
 $c_scm_ArrayOps$ofLong.prototype.length__I = (function() {
   var $$this = this.repr$1;
@@ -45307,6 +45379,9 @@ $c_scm_ArrayOps$ofRef.prototype.iterator__sc_Iterator = (function() {
 $c_scm_ArrayOps$ofRef.prototype.mkString__T = (function() {
   return $f_sc_TraversableOnce__mkString__T__T__T__T(this, "", "", "")
 });
+$c_scm_ArrayOps$ofRef.prototype.$$plus$plus__sc_GenTraversableOnce__scg_CanBuildFrom__O = (function(that, bf) {
+  return $f_sc_TraversableLike__$$plus$plus__sc_GenTraversableOnce__scg_CanBuildFrom__O(this, that, bf)
+});
 $c_scm_ArrayOps$ofRef.prototype.length__I = (function() {
   var $$this = this.repr$1;
   return $$this.u.length
@@ -45557,6 +45632,9 @@ $c_scm_ArrayOps$ofShort.prototype.iterator__sc_Iterator = (function() {
 $c_scm_ArrayOps$ofShort.prototype.mkString__T = (function() {
   return $f_sc_TraversableOnce__mkString__T__T__T__T(this, "", "", "")
 });
+$c_scm_ArrayOps$ofShort.prototype.$$plus$plus__sc_GenTraversableOnce__scg_CanBuildFrom__O = (function(that, bf) {
+  return $f_sc_TraversableLike__$$plus$plus__sc_GenTraversableOnce__scg_CanBuildFrom__O(this, that, bf)
+});
 $c_scm_ArrayOps$ofShort.prototype.length__I = (function() {
   var $$this = this.repr$1;
   return $$this.u.length
@@ -45800,6 +45878,9 @@ $c_scm_ArrayOps$ofUnit.prototype.iterator__sc_Iterator = (function() {
 });
 $c_scm_ArrayOps$ofUnit.prototype.mkString__T = (function() {
   return $f_sc_TraversableOnce__mkString__T__T__T__T(this, "", "", "")
+});
+$c_scm_ArrayOps$ofUnit.prototype.$$plus$plus__sc_GenTraversableOnce__scg_CanBuildFrom__O = (function(that, bf) {
+  return $f_sc_TraversableLike__$$plus$plus__sc_GenTraversableOnce__scg_CanBuildFrom__O(this, that, bf)
 });
 $c_scm_ArrayOps$ofUnit.prototype.length__I = (function() {
   var $$this = this.repr$1;
@@ -46099,6 +46180,9 @@ $c_sjs_js_ArrayOps.prototype.sizeHintBounded__I__sc_TraversableLike__V = (functi
 });
 $c_sjs_js_ArrayOps.prototype.mkString__T = (function() {
   return $f_sc_TraversableOnce__mkString__T__T__T__T(this, "", "", "")
+});
+$c_sjs_js_ArrayOps.prototype.$$plus$plus__sc_GenTraversableOnce__scg_CanBuildFrom__O = (function(that, bf) {
+  return $f_sc_TraversableLike__$$plus$plus__sc_GenTraversableOnce__scg_CanBuildFrom__O(this, that, bf)
 });
 $c_sjs_js_ArrayOps.prototype.length__I = (function() {
   return $uI(this.scala$scalajs$js$ArrayOps$$array$f.length)

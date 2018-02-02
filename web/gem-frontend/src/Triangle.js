@@ -1,5 +1,6 @@
 import React from 'react';
 import BuckTex from './BuckTex';
+import Gem from './Gem';
 
 class Triangle extends React.Component {
   render () {
@@ -9,30 +10,28 @@ class Triangle extends React.Component {
       // Variables can be unspecified, custom, or made equal to something else.
     // Triangles should have a flippable orientation
 
-    const vars = ["H", "A", "O", "theta", "phi"];
-
-    const buckTexForVars = vars.map(
-      (varName) => this.props.workspace.diagramVarBuckTexJs(triangleId, varName)
-    );
+    const vars = {
+      "H": { top: "60px", left: "40px" },
+      "A": { top: "200px", left: "70px" },
+      "O": { top: "90px", left: "160px" },
+      "θ": { top: "155px", left: "30px" },
+      "φ": { top: "25px", left: "120px" }
+    }
 
     // debugger;
 
     return <div position="relative">
-      <div ref={(ref) => registerVar("H", ref)} style={{position: "absolute", top: "70px", left: "50px", fontSize: "24px"}}>
-        {buckTexForVars[0] ? <BuckTex el={buckTexForVars[0]} /> : "H"}
-      </div>
-      <div ref={(ref) => registerVar("A", ref)} style={{position: "absolute", top: "200px", left: "70px", fontSize: "24px"}}>
-        {buckTexForVars[1] ? <BuckTex el={buckTexForVars[1]} /> : "A"}
-      </div>
-      <div ref={(ref) => registerVar("O", ref)} style={{position: "absolute", top: "90px", left: "160px", fontSize: "24px"}}>
-        {buckTexForVars[2] ? <BuckTex el={buckTexForVars[2]} /> : "O"}
-      </div>
-      <div ref={(ref) => registerVar("theta", ref)} style={{position: "absolute", top: "160px", left: "30px", fontSize: "24px"}}>
-        {buckTexForVars[3] ? <BuckTex el={buckTexForVars[3]} /> : "θ"}
-      </div>
-      <div ref={(ref) => registerVar("phi", ref)} style={{position: "absolute", top: "25px", left: "130px", fontSize: "24px"}}>
-        {buckTexForVars[4] ? <BuckTex el={buckTexForVars[4]} /> : "φ"}
-      </div>
+      {Object.keys(vars).map((varName) => {
+        const { top, left } = vars[varName];
+        const varId = Gem.DiagramVarId(triangleId, varName);
+        const el = this.props.workspace.diagramVarBuckTexJs(triangleId, varName);
+        return <div className="diagram-variable"
+          ref={(ref) => registerVar(varId, ref)}
+          style={{position: "absolute", top, left}}
+          key={varName}>
+          {el ? <BuckTex el={el} /> : varName}
+        </div>
+      })}
       <svg height="210" width="160" >
         <polygon points="150,200 150,0 0,200"
           style={{strokeWidth: 1, fill: "#c1c1c1", stroke: "black", cursor: 'move'}}
