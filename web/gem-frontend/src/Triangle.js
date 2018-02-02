@@ -35,7 +35,7 @@ class Triangle extends React.Component {
       })}
       <svg height="210" width="160" >
         <polygon points="150,200 150,0 0,200"
-          style={{strokeWidth: 1, fill: "#c1c1c1", stroke: "black", cursor: 'move'}}
+          style={{strokeWidth: 1, fill: "rgba(193, 193, 193, 0.58)", stroke: "black", cursor: 'move'}}
           onMouseDown={this.props.onMouseDown}/>
         <path d="M 130,200 L 130,180 L 150,180"
           fill='transparent'

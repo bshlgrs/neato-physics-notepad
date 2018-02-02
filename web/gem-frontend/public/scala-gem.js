@@ -23272,14 +23272,14 @@ $c_Lworkspace_Workspace.prototype.$$js$exported$prop$addableExpressionIds__O = (
 });
 $c_Lworkspace_Workspace.prototype.getVarSubscript__Lworkspace_VarId__s_Option = (function(varId) {
   if (($as_sc_TraversableOnce(this.allVarIds__sci_Set().filter__F1__O(new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function($this, varId$1) {
-    return (function(x$19$2) {
-      var x$19 = $as_Lworkspace_VarId(x$19$2);
-      return (!$this.equalities$1.testEqual__O__O__Z(x$19, varId$1))
+    return (function(x$18$2) {
+      var x$18 = $as_Lworkspace_VarId(x$18$2);
+      return (!$this.equalities$1.testEqual__O__O__Z(x$18, varId$1))
     })
   })(this, varId)))).count__F1__I(new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function(this$2, varId$2) {
-    return (function(x$20$2) {
-      var x$20 = $as_Lworkspace_VarId(x$20$2);
-      return (x$20.varName__T() === varId$2.varName__T())
+    return (function(x$19$2) {
+      var x$19 = $as_Lworkspace_VarId(x$19$2);
+      return (x$19.varName__T() === varId$2.varName__T())
     })
   })(this, varId))) === 0)) {
     return $m_s_None$()
@@ -23344,15 +23344,15 @@ $c_Lworkspace_Workspace.prototype.getDimensionCalc__Lworkspace_VarId__s_Option =
         var this$2 = $as_Lworkspace_Equation(this$1.map$1.apply__O__O(eqIdx));
         var solutions = $f_Lworkspace_Equation__solutions__T__I__sci_Set(this$2, varName, eqIdx);
         var f = new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function($this$1) {
-          return (function(x$12$2) {
-            var x$12 = $as_Lcas_Expression(x$12$2);
+          return (function(x$11$2) {
+            var x$11 = $as_Lcas_Expression(x$11$2);
             var getDimensionDirectly = new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function($this$2) {
               return (function(x$2) {
                 var x = $as_Lworkspace_VarId(x$2);
                 return $m_Lworkspace_dimensions_DimensionInference$().fromTopOption__s_Option__Lworkspace_dimensions_DimensionInference($this$2.getDimensionDirectly__Lworkspace_VarId__s_Option(x))
               })
             })($this$1));
-            return $f_Lcas_Expression__calculateDimension__F1__Lworkspace_dimensions_DimensionInference(x$12, getDimensionDirectly)
+            return $f_Lcas_Expression__calculateDimension__F1__Lworkspace_dimensions_DimensionInference(x$11, getDimensionDirectly)
           })
         })($this));
         var this$3 = $m_sci_Set$();
@@ -23386,10 +23386,10 @@ $c_Lworkspace_Workspace.prototype.getDimensionCalc__Lworkspace_VarId__s_Option =
   var bf$1 = new $c_scg_GenSetFactory$$anon$1().init___scg_GenSetFactory(this$5);
   var calculatedTypes = $as_sci_Set($f_sc_TraversableLike__flatMap__F1__scg_CanBuildFrom__O(this$6, f$1, bf$1));
   var op = new $c_sjsr_AnonFunction2().init___sjs_js_Function2((function(this$2$1) {
-    return (function(x$13$2, x$14$2) {
+    return (function(x$12$2, x$13$2) {
+      var x$12 = $as_Lworkspace_dimensions_DimensionInference(x$12$2);
       var x$13 = $as_Lworkspace_dimensions_DimensionInference(x$13$2);
-      var x$14 = $as_Lworkspace_dimensions_DimensionInference(x$14$2);
-      return $f_Lworkspace_dimensions_DimensionInference__combineWithEquals__Lworkspace_dimensions_DimensionInference__Lworkspace_dimensions_DimensionInference(x$13, x$14)
+      return $f_Lworkspace_dimensions_DimensionInference__combineWithEquals__Lworkspace_dimensions_DimensionInference__Lworkspace_dimensions_DimensionInference(x$12, x$13)
     })
   })(this));
   var this$7 = $f_sc_TraversableOnce__reduceLeftOption__F2__s_Option(calculatedTypes, op);
@@ -23556,159 +23556,41 @@ $c_Lworkspace_Workspace.prototype.$$js$exported$meth$consistentUnitsWithDimensio
   return this.consistentUnitsWithDimension__Lworkspace_VarId__Lworkspace_dimensions_SiDimension__Z(varId1, dimension)
 });
 $c_Lworkspace_Workspace.prototype.attachNumber__I__Lworkspace_VarId__s_util_Try = (function(numberId, varId) {
-  if ((!$is_Lworkspace_EquationVarId(varId))) {
-    throw new $c_s_MatchError().init___O(varId)
+  var this$1 = this.numbers$1;
+  var x1 = $as_T2(this$1.map$1.apply__O__O(numberId));
+  if ((x1 === null)) {
+    throw new $c_s_MatchError().init___O(x1)
   };
-  var x2 = $as_Lworkspace_EquationVarId(varId);
-  var eqIdx = x2.eqIdx$1;
-  try {
-    var this$2 = this.numbers$1;
-    var this$3 = new $c_s_util_Success().init___O($as_T2(this$2.map$1.get__O__s_Option(numberId).get__O()))
-  } catch (e) {
-    var e$2 = $m_sjsr_package$().wrapJavaScriptException__O__jl_Throwable(e);
-    if ((e$2 !== null)) {
-      matchEnd8: {
-        var this$3;
-        var o11 = $m_s_util_control_NonFatal$().unapply__jl_Throwable__s_Option(e$2);
-        if ((!o11.isEmpty__Z())) {
-          var e$3 = $as_jl_Throwable(o11.get__O());
-          var this$3 = new $c_s_util_Failure().init___jl_Throwable(e$3);
-          break matchEnd8
-        };
-        throw $m_sjsr_package$().unwrapJavaScriptException__jl_Throwable__O(e$2)
-      }
-    } else {
-      var this$3;
-      throw e
-    }
+  var number = $as_Lworkspace_PhysicalNumber(x1.$$und1__O());
+  $as_s_Option(x1.$$und2__O());
+  var x1$2 = this.getDimension__Lworkspace_VarId__s_Option(varId);
+  var x = $m_s_None$();
+  if ((x === x1$2)) {
+    var dimsMatch = true
+  } else {
+    if ((!$is_s_Some(x1$2))) {
+      throw new $c_s_MatchError().init___O(x1$2)
+    };
+    var x2 = $as_s_Some(x1$2);
+    var dim = $as_Lworkspace_dimensions_SiDimension(x2.value$2);
+    var x$4 = number.siDimension$1;
+    var dimsMatch = ((dim === null) ? (x$4 === null) : dim.equals__O__Z(x$4))
   };
-  var p = new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function(this$2$1) {
-    return (function(check$ifrefutable$2$2) {
-      var check$ifrefutable$2 = $as_T2(check$ifrefutable$2$2);
-      return (check$ifrefutable$2 !== null)
-    })
-  })(this));
-  return new $c_s_util_Try$WithFilter().init___s_util_Try__F1(this$3, p).flatMap__F1__s_util_Try(new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function(this$3$1, numberId$1, varId$1, eqIdx$2) {
-    return (function(x$10$2) {
-      var x$10 = $as_T2(x$10$2);
-      if ((x$10 !== null)) {
-        var number = $as_Lworkspace_PhysicalNumber(x$10.$$und1__O());
-        try {
-          var this$5 = this$3$1.equations$1;
-          var this$6 = new $c_s_util_Success().init___O($as_Lworkspace_Equation(this$5.map$1.get__O__s_Option(eqIdx$2).get__O()))
-        } catch (e$1) {
-          var e$2$1 = $m_sjsr_package$().wrapJavaScriptException__O__jl_Throwable(e$1);
-          if ((e$2$1 !== null)) {
-            matchEnd8$1: {
-              var this$6;
-              var o11$1 = $m_s_util_control_NonFatal$().unapply__jl_Throwable__s_Option(e$2$1);
-              if ((!o11$1.isEmpty__Z())) {
-                var e$3$1 = $as_jl_Throwable(o11$1.get__O());
-                var this$6 = new $c_s_util_Failure().init___jl_Throwable(e$3$1);
-                break matchEnd8$1
-              };
-              throw $m_sjsr_package$().unwrapJavaScriptException__jl_Throwable__O(e$2$1)
-            }
-          } else {
-            var this$6;
-            throw e$1
-          }
-        };
-        var p$1 = new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function(this$2$2) {
-          return (function(check$ifrefutable$3$2) {
-            var check$ifrefutable$3 = $as_Lworkspace_Equation(check$ifrefutable$3$2);
-            return (check$ifrefutable$3 !== null)
-          })
-        })(this$3$1));
-        return new $c_s_util_Try$WithFilter().init___s_util_Try__F1(this$6, p$1).flatMap__F1__s_util_Try(new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function(this$3$2, numberId$1$1, varId$1$1, number$1) {
-          return (function(eq$2) {
-            $as_Lworkspace_Equation(eq$2);
-            try {
-              var this$8 = new $c_s_util_Success().init___O(this$3$2.getDimensionDirectly__Lworkspace_VarId__s_Option(varId$1$1))
-            } catch (e$4) {
-              var e$2$2 = $m_sjsr_package$().wrapJavaScriptException__O__jl_Throwable(e$4);
-              if ((e$2$2 !== null)) {
-                matchEnd8$2: {
-                  var this$8;
-                  var o11$2 = $m_s_util_control_NonFatal$().unapply__jl_Throwable__s_Option(e$2$2);
-                  if ((!o11$2.isEmpty__Z())) {
-                    var e$3$2 = $as_jl_Throwable(o11$2.get__O());
-                    var this$8 = new $c_s_util_Failure().init___jl_Throwable(e$3$2);
-                    break matchEnd8$2
-                  };
-                  throw $m_sjsr_package$().unwrapJavaScriptException__jl_Throwable__O(e$2$2)
-                }
-              } else {
-                var this$8;
-                throw e$4
-              }
-            };
-            var p$2 = new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function(this$2$3) {
-              return (function(check$ifrefutable$4$2) {
-                var check$ifrefutable$4 = $as_s_Option(check$ifrefutable$4$2);
-                return (check$ifrefutable$4 !== null)
-              })
-            })(this$3$2));
-            return new $c_s_util_Try$WithFilter().init___s_util_Try__F1(this$8, p$2).flatMap__F1__s_util_Try(new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function(this$3$3, numberId$1$2, varId$1$2, number$1$1) {
-              return (function(mbVariableDimension$2) {
-                var mbVariableDimension = $as_s_Option(mbVariableDimension$2);
-                if ($is_s_Some(mbVariableDimension)) {
-                  var x2$1 = $as_s_Some(mbVariableDimension);
-                  var variableDimension = $as_Lworkspace_dimensions_SiDimension(x2$1.value$2);
-                  try {
-                    var jsx$2 = $m_s_Predef$();
-                    var x$2 = number$1$1.siDimension$1;
-                    jsx$2.assert__Z__V(((variableDimension === null) ? (x$2 === null) : variableDimension.equals__O__Z(x$2)));
-                    var jsx$1 = new $c_s_util_Success().init___O(new $c_T2().init___O__O((void 0), "var dimension does not match"))
-                  } catch (e$5) {
-                    var e$2$3 = $m_sjsr_package$().wrapJavaScriptException__O__jl_Throwable(e$5);
-                    if ((e$2$3 !== null)) {
-                      matchEnd8$3: {
-                        var jsx$1;
-                        var o11$3 = $m_s_util_control_NonFatal$().unapply__jl_Throwable__s_Option(e$2$3);
-                        if ((!o11$3.isEmpty__Z())) {
-                          var e$3$3 = $as_jl_Throwable(o11$3.get__O());
-                          var jsx$1 = new $c_s_util_Failure().init___jl_Throwable(e$3$3);
-                          break matchEnd8$3
-                        };
-                        throw $m_sjsr_package$().unwrapJavaScriptException__jl_Throwable__O(e$2$3)
-                      }
-                    } else {
-                      var jsx$1;
-                      throw e$5
-                    }
-                  }
-                } else {
-                  var jsx$1 = new $c_s_util_Success().init___O((void 0))
-                };
-                return jsx$1.map__F1__s_util_Try(new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function(this$2$4, numberId$1$3, varId$1$3, number$1$2) {
-                  return (function(_$2) {
-                    var x1 = this$2$4.getNumberIdOfVar__Lworkspace_VarId__O(varId$1$3);
-                    if ($isInt(x1)) {
-                      var x2$2 = $uI(x1);
-                      var detachedWorkspace = this$2$4.detachNumber__I__Lworkspace_Workspace(x2$2)
-                    } else {
-                      var detachedWorkspace = this$2$4
-                    };
-                    var jsx$3 = detachedWorkspace.numbers$1;
-                    var y = new $c_s_Some().init___O(varId$1$3);
-                    var x$49 = jsx$3.set__I__O__Lworkspace_MapWithIds(numberId$1$3, new $c_T2().init___O__O(number$1$2, y));
-                    var x$50 = detachedWorkspace.equations$1;
-                    var x$51 = detachedWorkspace.equalities$1;
-                    var x$52 = detachedWorkspace.expressions$1;
-                    var x$53 = detachedWorkspace.diagrams$1;
-                    return new $c_Lworkspace_Workspace().init___Lworkspace_MapWithIds__Lworkspace_SetOfSets__sci_Map__Lworkspace_MapWithIds__Lworkspace_MapWithIds(x$50, x$51, x$52, x$49, x$53)
-                  })
-                })(this$3$3, numberId$1$2, varId$1$2, number$1$1)))
-              })
-            })(this$3$2, numberId$1$1, varId$1$1, number$1)))
-          })
-        })(this$3$1, numberId$1, varId$1, number)))
-      } else {
-        throw new $c_s_MatchError().init___O(x$10)
-      }
-    })
-  })(this, numberId, varId, eqIdx)))
+  if (dimsMatch) {
+    var detachedWs = this.detachNumber__I__Lworkspace_Workspace(numberId);
+    var jsx$1 = detachedWs.numbers$1;
+    var y = new $c_s_Some().init___O(varId);
+    var x$49 = jsx$1.set__I__O__Lworkspace_MapWithIds(numberId, new $c_T2().init___O__O(number, y));
+    var x$50 = detachedWs.equations$1;
+    var x$51 = detachedWs.equalities$1;
+    var x$52 = detachedWs.expressions$1;
+    var x$53 = detachedWs.diagrams$1;
+    return new $c_s_util_Success().init___O(new $c_Lworkspace_Workspace().init___Lworkspace_MapWithIds__Lworkspace_SetOfSets__sci_Map__Lworkspace_MapWithIds__Lworkspace_MapWithIds(x$50, x$51, x$52, x$49, x$53))
+  } else {
+    var jsx$2;
+    throw $m_sjsr_package$().unwrapJavaScriptException__jl_Throwable__O(new $c_jl_RuntimeException().init___T(new $c_s_StringContext().init___sc_Seq(new $c_sjs_js_WrappedArray().init___sjs_js_Array(["Dimensions did not match: ", ", ", ""])).s__sc_Seq__T(new $c_sjs_js_WrappedArray().init___sjs_js_Array([this.getDimension__Lworkspace_VarId__s_Option(varId), number.siDimension$1]))));
+    return new $c_s_util_Failure().init___jl_Throwable(jsx$2)
+  }
 });
 $c_Lworkspace_Workspace.prototype.$$js$exported$meth$detachNumber__I__O = (function(numberId) {
   return this.detachNumber__I__Lworkspace_Workspace(numberId)
@@ -23734,9 +23616,9 @@ $c_Lworkspace_Workspace.prototype.addableEqualitiesJs__sjs_js_Array = (function(
   var cbf = this$2.ReusableCBFInstance$2;
   var this$3 = $as_sci_List($f_sc_TraversableLike__to__scg_CanBuildFrom__O(this$1, cbf));
   var f = new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function($this) {
-    return (function(x$21$2) {
-      var x$21 = $as_T2(x$21$2);
-      return x$21.toString__T()
+    return (function(x$20$2) {
+      var x$20 = $as_T2(x$20$2);
+      return x$20.toString__T()
     })
   })(this));
   var ord = $m_s_math_Ordering$String$();
@@ -23885,9 +23767,9 @@ $c_Lworkspace_Workspace.prototype.evalNumbers$1__p1__sci_Map__sci_Map = (functio
     var bf = new $c_scg_GenMapFactory$MapCanBuildFrom().init___scg_GenMapFactory(this$3);
     var this$5 = $as_sci_MapLike($f_sc_TraversableLike__map__F1__scg_CanBuildFrom__O(this$4, f$1, bf));
     var f$2 = new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function(this$2$1) {
-      return (function(x$15$2) {
-        var x$15 = $as_Lcas_Expression(x$15$2);
-        return $f_Lcas_Expression__evaluate__s_Option(x$15)
+      return (function(x$14$2) {
+        var x$14 = $as_Lcas_Expression(x$14$2);
+        return $f_Lcas_Expression__evaluate__s_Option(x$14)
       })
     })(this));
     var this$7 = new $c_sci_MapLike$$anon$2().init___sci_MapLike__F1(this$5, f$2);
@@ -23999,15 +23881,15 @@ $c_Lworkspace_Workspace.prototype.getVariableBuckTex__Lworkspace_VarId__Lworkspa
     i = ((1 + i) | 0)
   };
   var this$5 = $as_sci_MapLike($as_sc_TraversableLike(this$4.elems$1).filter__F1__O(new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function($this) {
-    return (function(x$17$2) {
-      var x$17 = $as_T2(x$17$2);
-      return $as_s_Option(x$17.$$und2__O()).isDefined__Z()
+    return (function(x$16$2) {
+      var x$16 = $as_T2(x$16$2);
+      return $as_s_Option(x$16.$$und2__O()).isDefined__Z()
     })
   })(this))));
   var f = new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function(this$2$1) {
-    return (function(x$18$2) {
-      var x$18 = $as_s_Option(x$18$2);
-      return $uI(x$18.get__O())
+    return (function(x$17$2) {
+      var x$17 = $as_s_Option(x$17$2);
+      return $uI(x$17.get__O())
     })
   })(this));
   var subscripts = new $c_sci_MapLike$$anon$2().init___sci_MapLike__F1(this$5, f);
@@ -24182,11 +24064,27 @@ $c_Lworkspace_Workspace.prototype.diagramVarBuckTexJs__I__T__Lworkspace_BuckTex 
   var x1 = $as_Lworkspace_TriangleDiagram(this$1.map$1.apply__O__O(diagramId)).vars$1.get__O__s_Option(diagramVarName);
   var x = $m_s_None$();
   if ((x === x1)) {
-    return this.getVariableBuckTex__Lworkspace_VarId__Lworkspace_BuckTex(new $c_Lworkspace_DiagramVarId().init___I__T(diagramId, diagramVarName))
+    var varId = new $c_Lworkspace_DiagramVarId().init___I__T(diagramId, diagramVarName);
+    var x1$2 = this.equalities$1.getSet__O__sci_Set(varId).find__F1__s_Option(new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function($this, varId$1) {
+      return (function(x$22$2) {
+        var x$22 = $as_Lworkspace_VarId(x$22$2);
+        return (!((x$22 === null) ? (varId$1 === null) : x$22.equals__O__Z(varId$1)))
+      })
+    })(this, varId)));
+    var x$3 = $m_s_None$();
+    if ((x$3 === x1$2)) {
+      return this.getVariableBuckTex__Lworkspace_VarId__Lworkspace_BuckTex(varId)
+    } else if ($is_s_Some(x1$2)) {
+      var x2 = $as_s_Some(x1$2);
+      var equivalentVarId = $as_Lworkspace_VarId(x2.value$2);
+      return this.getVariableBuckTex__Lworkspace_VarId__Lworkspace_BuckTex(equivalentVarId)
+    } else {
+      throw new $c_s_MatchError().init___O(x1$2)
+    }
   } else if ($is_s_Some(x1)) {
-    var x2 = $as_s_Some(x1);
-    var varId = $as_Lworkspace_VarId(x2.value$2);
-    return this.getVariableBuckTex__Lworkspace_VarId__Lworkspace_BuckTex(varId)
+    var x2$2 = $as_s_Some(x1);
+    var varId$2 = $as_Lworkspace_VarId(x2$2.value$2);
+    return this.getVariableBuckTex__Lworkspace_VarId__Lworkspace_BuckTex(varId$2)
   } else {
     throw new $c_s_MatchError().init___O(x1)
   }
@@ -24221,8 +24119,8 @@ $c_Lworkspace_Workspace.prototype.getDimensionDirectly__Lworkspace_VarId__s_Opti
         return $m_s_None$()
       } else {
         var arg1 = this$3.get__O();
-        var x$11 = $as_Lworkspace_PhysicalNumber(arg1);
-        return new $c_s_Some().init___O(x$11.siDimension$1)
+        var x$10 = $as_Lworkspace_PhysicalNumber(arg1);
+        return new $c_s_Some().init___O(x$10.siDimension$1)
       }
     } else {
       return this$2
@@ -24439,9 +24337,9 @@ $c_Lworkspace_Workspace.prototype.recursivelyEvaluatedNumbers$lzycompute__p1__sc
           var setVarId = $as_sci_Set(x0$8.$$und1__O());
           var value = x0$8.$$und2$mcD$sp__D();
           var f = new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function($this$1, value$1) {
-            return (function(x$16$2) {
-              var x$16 = $as_Lworkspace_VarId(x$16$2);
-              return new $c_T2().init___O__O(x$16, value$1)
+            return (function(x$15$2) {
+              var x$15 = $as_Lworkspace_VarId(x$15$2);
+              return new $c_T2().init___O__O(x$15, value$1)
             })
           })($this, value));
           var this$5 = $m_sci_Set$();

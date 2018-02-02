@@ -119,22 +119,17 @@ case class Workspace(equations: MapWithIds[Equation],
   }).map(_._1).orNull
 
   def attachNumber(numberId: Int, varId: VarId): Try[Workspace] = {
-    // TODO: generalize to work for diagram VarIDs
-    val EquationVarId(eqIdx, varName) = varId
-    for {
-      (number, currentAttachment) <- Try(numbers.get(numberId).get)
-      eq: Equation <- Try(this.equations.get(eqIdx).get)
-      mbVariableDimension: Option[SiDimension] <- Try(getDimensionDirectly(varId))
-      _ <- mbVariableDimension match {
-        case Some(variableDimension) => Try(assert(variableDimension == number.siDimension), "var dimension does not match")
-        case _ => Success()
-      }
-    } yield {
-      val detachedWorkspace: Workspace = getNumberIdOfVar(varId) match {
-        case numId: Int => this.detachNumber(numId); case _ => this
-      }
+    val (number, mbCurrentAttachedVar) = numbers(numberId)
+    val dimsMatch: Boolean = this.getDimension(varId) match {
+      case None => true
+      case Some(dim) => dim == number.siDimension
+    }
 
-      detachedWorkspace.copy(numbers = detachedWorkspace.numbers.set(numberId, number -> Some(varId)))
+    if (dimsMatch) {
+      val detachedWs = this.detachNumber(numberId)
+      Success(detachedWs.copy(numbers = detachedWs.numbers.set(numberId, number -> Some(varId))))
+    } else {
+      Failure({throw new RuntimeException(s"Dimensions did not match: ${this.getDimension(varId)}, ${number.siDimension}")})
     }
   }
 
@@ -321,7 +316,14 @@ case class Workspace(equations: MapWithIds[Equation],
 
   def diagramVarBuckTexJs(diagramId: Int, diagramVarName: String): BuckTex = {
     this.diagrams(diagramId).vars.get(diagramVarName) match {
-      case None => getVariableBuckTex(DiagramVarId(diagramId, diagramVarName))
+      case None => {
+        val varId = DiagramVarId(diagramId, diagramVarName)
+//
+        this.equalities.getSet(varId).find(_ != varId) match {
+          case None => getVariableBuckTex(varId)
+          case Some(equivalentVarId) => getVariableBuckTex(equivalentVarId)
+        }
+      }
       case Some(varId) => getVariableBuckTex(varId)
     }
   }
