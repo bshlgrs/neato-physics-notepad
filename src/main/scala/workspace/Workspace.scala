@@ -240,8 +240,12 @@ case class Workspace(equations: MapWithIds[Equation],
   }
 
   def getVariableBuckTex(varId: VarId): BuckTex = {
-    val subscripts = Map(varId -> getVarSubscript(varId)).filter(_._2.isDefined).mapValues(_.get)
-    CompileToBuckTex.showVariable(varId, subscripts)
+    val varIdToUse = varId match {
+      case _: EquationVarId => varId
+      case d: DiagramVarId => equivalentVariable(d)
+    }
+    val subscripts = Map(varIdToUse -> getVarSubscript(varIdToUse)).filter(_._2.isDefined).mapValues(_.get)
+    CompileToBuckTex.showVariable(varIdToUse, subscripts)
   }
 
   def getVarSubscript(varId: VarId): Option[Int] = {
@@ -307,7 +311,7 @@ case class Workspace(equations: MapWithIds[Equation],
   def deleteDiagram(diagramId: Int): Workspace = this.copy(diagrams = this.diagrams.delete(diagramId))
 
   def addEquationFromDiagram(diagramId: Int, equation: CustomEquation): Workspace = {
-    val equalitiesToAdd = this.diagrams(diagramId).equalitiesToAddWithEquation(equation, this.equations.nextId)
+    val equalitiesToAdd = this.diagrams(diagramId).equalitiesToAddWithEquation(equation, this.equations.nextId, diagramId)
 
     equalitiesToAdd.foldLeft(this.addEquation(equation)) ({
       case (ws, (varId1, varId2)) => ws.addEquality(varId1, varId2)
@@ -318,13 +322,16 @@ case class Workspace(equations: MapWithIds[Equation],
     this.diagrams(diagramId).vars.get(diagramVarName) match {
       case None => {
         val varId = DiagramVarId(diagramId, diagramVarName)
-//
-        this.equalities.getSet(varId).find(_ != varId) match {
-          case None => getVariableBuckTex(varId)
-          case Some(equivalentVarId) => getVariableBuckTex(equivalentVarId)
-        }
+        getVariableBuckTex(varId)
       }
       case Some(varId) => getVariableBuckTex(varId)
+    }
+  }
+
+  def equivalentVariable(diagramVarId: DiagramVarId): VarId = {
+    this.equalities.getSet(diagramVarId).find(_.isInstanceOf[EquationVarId]) match {
+      case None => diagramVarId
+      case Some(equivalentVarId) => equivalentVarId
     }
   }
 }

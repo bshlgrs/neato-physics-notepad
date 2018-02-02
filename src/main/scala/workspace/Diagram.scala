@@ -44,22 +44,19 @@ case class TriangleDiagram(vars: Map[String, VarId]) {
     }
 
     identities
-      .filter({ case (lhs, rhs) => (lhs.vars ++ rhs.vars).count(vars.contains) >= 2 })
       .map({ case (lhs, rhs) => {
-
         CustomEquation(lhs.mapVariables(getOutputVarName), rhs.mapVariables(getOutputVarName))
       }})
   }
 
-  def equalitiesToAddWithEquation(customEquation: CustomEquation, newEquationId: Int): Set[(VarId, VarId)] = {
-    (customEquation.lhs.vars ++ customEquation.rhs.vars).map((varName) => vars.get(varName) match {
-      case Some(varId) => Some((varId, EquationVarId(newEquationId, varId.varName)))
-      case None => None
-    }).collect({ case Some(x) => x })
+  def equalitiesToAddWithEquation(customEquation: CustomEquation, newEquationId: Int, diagramId: Int): Set[(VarId, VarId)] = {
+    (customEquation.lhs.vars ++ customEquation.rhs.vars).map((varName) =>
+      EquationVarId(newEquationId, varName) -> DiagramVarId(diagramId, varName)
+    )
   }
 
   @JSExport
-  def usableEquationsJs(nextEquationIdx: Int): js.Array[CustomEquation] = js.Array(usableEquations.toSeq :_*)
+  def usableEquationsJs: js.Array[CustomEquation] = js.Array(usableEquations.toSeq :_*)
 
   def set(varName: String, mbSetting: Option[VarId]): TriangleDiagram = mbSetting match {
     case None => this.copy(vars - varName)

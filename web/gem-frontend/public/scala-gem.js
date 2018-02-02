@@ -22851,36 +22851,6 @@ $c_Lworkspace_TriangleDiagram.prototype.equals__O__Z = (function(x$1) {
     return false
   }
 });
-$c_Lworkspace_TriangleDiagram.prototype.equalitiesToAddWithEquation__Lworkspace_CustomEquation__I__sci_Set = (function(customEquation, newEquationId) {
-  var this$1 = customEquation.lhs$1;
-  var jsx$3 = $f_Lcas_Expression__vars__sci_Set(this$1);
-  var this$2 = customEquation.rhs$1;
-  var this$4 = jsx$3.$$plus$plus__sc_GenTraversableOnce__sc_Set($f_Lcas_Expression__vars__sci_Set(this$2));
-  var f = new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function($this, newEquationId$1) {
-    return (function(varName$2) {
-      var varName = $as_T(varName$2);
-      var x1 = $this.vars$1.get__O__s_Option(varName);
-      if ($is_s_Some(x1)) {
-        var x2 = $as_s_Some(x1);
-        var varId = $as_Lworkspace_VarId(x2.value$2);
-        return new $c_s_Some().init___O(new $c_T2().init___O__O(varId, new $c_Lworkspace_EquationVarId().init___I__T(newEquationId$1, varId.varName__T())))
-      } else {
-        var x = $m_s_None$();
-        if ((x === x1)) {
-          return $m_s_None$()
-        } else {
-          throw new $c_s_MatchError().init___O(x1)
-        }
-      }
-    })
-  })(this, newEquationId));
-  var this$3 = $m_sci_Set$();
-  var bf = new $c_scg_GenSetFactory$$anon$1().init___scg_GenSetFactory(this$3);
-  var jsx$2 = $as_sc_TraversableLike($f_sc_TraversableLike__map__F1__scg_CanBuildFrom__O(this$4, f, bf));
-  var jsx$1 = new $c_Lworkspace_TriangleDiagram$$anonfun$equalitiesToAddWithEquation$2().init___Lworkspace_TriangleDiagram(this);
-  var this$5 = $m_sci_Set$();
-  return $as_sci_Set(jsx$2.collect__s_PartialFunction__scg_CanBuildFrom__O(jsx$1, new $c_scg_GenSetFactory$$anon$1().init___scg_GenSetFactory(this$5)))
-});
 $c_Lworkspace_TriangleDiagram.prototype.productElement__I__O = (function(x$1) {
   switch (x$1) {
     case 0: {
@@ -22895,6 +22865,9 @@ $c_Lworkspace_TriangleDiagram.prototype.productElement__I__O = (function(x$1) {
 $c_Lworkspace_TriangleDiagram.prototype.init___sci_Map = (function(vars) {
   this.vars$1 = vars;
   return this
+});
+$c_Lworkspace_TriangleDiagram.prototype.$$js$exported$prop$usableEquationsJs__O = (function() {
+  return this.usableEquationsJs__sjs_js_Array()
 });
 $c_Lworkspace_TriangleDiagram.prototype.toString__T = (function() {
   return $m_sr_ScalaRunTime$().$$undtoString__s_Product__T(this)
@@ -22912,9 +22885,6 @@ $c_Lworkspace_TriangleDiagram.prototype.set__T__s_Option__Lworkspace_TriangleDia
   } else {
     throw new $c_s_MatchError().init___O(mbSetting)
   }
-});
-$c_Lworkspace_TriangleDiagram.prototype.$$js$exported$meth$usableEquationsJs__I__O = (function(nextEquationIdx) {
-  return this.usableEquationsJs__I__sjs_js_Array(nextEquationIdx)
 });
 $c_Lworkspace_TriangleDiagram.prototype.diagramVarNames__sci_Set = (function() {
   var array = ["H", "A", "O", "\u03b8", "\u03c6"];
@@ -22947,7 +22917,24 @@ $c_Lworkspace_TriangleDiagram.prototype.getOutputVarName$1__p1__T__T = (function
     throw new $c_s_MatchError().init___O(x1)
   }
 });
-$c_Lworkspace_TriangleDiagram.prototype.usableEquationsJs__I__sjs_js_Array = (function(nextEquationIdx) {
+$c_Lworkspace_TriangleDiagram.prototype.equalitiesToAddWithEquation__Lworkspace_CustomEquation__I__I__sci_Set = (function(customEquation, newEquationId, diagramId) {
+  var this$1 = customEquation.lhs$1;
+  var jsx$1 = $f_Lcas_Expression__vars__sci_Set(this$1);
+  var this$2 = customEquation.rhs$1;
+  var this$6 = jsx$1.$$plus$plus__sc_GenTraversableOnce__sc_Set($f_Lcas_Expression__vars__sci_Set(this$2));
+  var f = new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function($this, newEquationId$1, diagramId$1) {
+    return (function(varName$2) {
+      var varName = $as_T(varName$2);
+      var self = new $c_Lworkspace_EquationVarId().init___I__T(newEquationId$1, varName);
+      var y = new $c_Lworkspace_DiagramVarId().init___I__T(diagramId$1, varName);
+      return new $c_T2().init___O__O(self, y)
+    })
+  })(this, newEquationId, diagramId));
+  var this$5 = $m_sci_Set$();
+  var bf = new $c_scg_GenSetFactory$$anon$1().init___scg_GenSetFactory(this$5);
+  return $as_sci_Set($f_sc_TraversableLike__map__F1__scg_CanBuildFrom__O(this$6, f, bf))
+});
+$c_Lworkspace_TriangleDiagram.prototype.usableEquationsJs__sjs_js_Array = (function() {
   var this$2 = $m_sjsr_package$();
   var this$1 = this.usableEquations__sci_Set();
   var col = $f_sc_SetLike__toSeq__sc_Seq(this$1);
@@ -23015,60 +23002,43 @@ $c_Lworkspace_TriangleDiagram.prototype.usableEquations__sci_Set = (function() {
     var jsx$7 = b.elems$1
   };
   var identities = $as_sci_Set(jsx$7);
-  var this$19 = $as_sc_SetLike(identities.filter__F1__O(new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function($this) {
+  var f$2 = new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function($this) {
     return (function(x0$1$2) {
       var x0$1 = $as_T2(x0$1$2);
       if ((x0$1 !== null)) {
         var lhs = $as_Lcas_Expression(x0$1.$$und1__O());
         var rhs = $as_Lcas_Expression(x0$1.$$und2__O());
-        var this$17 = $f_Lcas_Expression__vars__sci_Set(lhs).$$plus$plus__sc_GenTraversableOnce__sc_Set($f_Lcas_Expression__vars__sci_Set(rhs));
-        var p = new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function($this$1) {
-          return (function(key$2) {
-            var key = $as_T(key$2);
-            return $this$1.vars$1.contains__O__Z(key)
+        var f = new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function($this$1) {
+          return (function(name$2) {
+            var name = $as_T(name$2);
+            return $this$1.getOutputVarName$1__p1__T__T(name)
           })
         })($this));
-        return ($f_sc_TraversableOnce__count__F1__I(this$17, p) >= 2)
+        var jsx$8 = $f_Lcas_Expression__mapVariables__F1__Lcas_Expression(lhs, f);
+        var f$1 = new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function(this$2$1) {
+          return (function(name$3$2) {
+            var name$3 = $as_T(name$3$2);
+            return this$2$1.getOutputVarName$1__p1__T__T(name$3)
+          })
+        })($this));
+        return new $c_Lworkspace_CustomEquation().init___Lcas_Expression__Lcas_Expression(jsx$8, $f_Lcas_Expression__mapVariables__F1__Lcas_Expression(rhs, f$1))
       } else {
         throw new $c_s_MatchError().init___O(x0$1)
       }
     })
-  })(this))));
-  var f$2 = new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function(this$2$1) {
-    return (function(x0$2$2) {
-      var x0$2 = $as_T2(x0$2$2);
-      if ((x0$2 !== null)) {
-        var lhs$1 = $as_Lcas_Expression(x0$2.$$und1__O());
-        var rhs$1 = $as_Lcas_Expression(x0$2.$$und2__O());
-        var f = new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function($this$2) {
-          return (function(name$2) {
-            var name = $as_T(name$2);
-            return $this$2.getOutputVarName$1__p1__T__T(name)
-          })
-        })(this$2$1));
-        var jsx$8 = $f_Lcas_Expression__mapVariables__F1__Lcas_Expression(lhs$1, f);
-        var f$1 = new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function(this$2$2) {
-          return (function(name$3$2) {
-            var name$3 = $as_T(name$3$2);
-            return this$2$2.getOutputVarName$1__p1__T__T(name$3)
-          })
-        })(this$2$1));
-        return new $c_Lworkspace_CustomEquation().init___Lcas_Expression__Lcas_Expression(jsx$8, $f_Lcas_Expression__mapVariables__F1__Lcas_Expression(rhs$1, f$1))
-      } else {
-        throw new $c_s_MatchError().init___O(x0$2)
-      }
-    })
   })(this));
-  var this$18 = $m_sci_Set$();
-  var bf = new $c_scg_GenSetFactory$$anon$1().init___scg_GenSetFactory(this$18);
-  return $as_sci_Set($f_sc_TraversableLike__map__F1__scg_CanBuildFrom__O(this$19, f$2, bf))
+  var this$17 = $m_sci_Set$();
+  var bf = new $c_scg_GenSetFactory$$anon$1().init___scg_GenSetFactory(this$17);
+  return $as_sci_Set($f_sc_TraversableLike__map__F1__scg_CanBuildFrom__O(identities, f$2, bf))
 });
 $c_Lworkspace_TriangleDiagram.prototype.productIterator__sc_Iterator = (function() {
   return new $c_sr_ScalaRunTime$$anon$1().init___s_Product(this)
 });
-$c_Lworkspace_TriangleDiagram.prototype.usableEquationsJs = (function(arg$1) {
-  var prep0 = $uI(arg$1);
-  return this.$$js$exported$meth$usableEquationsJs__I__O(prep0)
+Object.defineProperty($c_Lworkspace_TriangleDiagram.prototype, "usableEquationsJs", {
+  "get": (function() {
+    return this.$$js$exported$prop$usableEquationsJs__O()
+  }),
+  "configurable": true
 });
 function $is_Lworkspace_TriangleDiagram(obj) {
   return (!(!((obj && obj.$classData) && obj.$classData.ancestors.Lworkspace_TriangleDiagram)))
@@ -23209,12 +23179,30 @@ $c_Lworkspace_Workspace.prototype.getVarIdOfNumber__I__Lworkspace_VarId = (funct
   };
   return $as_Lworkspace_VarId((this$3.isEmpty__Z() ? null : this$3.get__O()))
 });
+$c_Lworkspace_Workspace.prototype.equivalentVariable__Lworkspace_DiagramVarId__Lworkspace_VarId = (function(diagramVarId) {
+  var x1 = this.equalities$1.getSet__O__sci_Set(diagramVarId).find__F1__s_Option(new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function($this) {
+    return (function(x$22$2) {
+      var x$22 = $as_Lworkspace_VarId(x$22$2);
+      return $is_Lworkspace_EquationVarId(x$22)
+    })
+  })(this)));
+  var x = $m_s_None$();
+  if ((x === x1)) {
+    return diagramVarId
+  } else if ($is_s_Some(x1)) {
+    var x2 = $as_s_Some(x1);
+    var equivalentVarId = $as_Lworkspace_VarId(x2.value$2);
+    return equivalentVarId
+  } else {
+    throw new $c_s_MatchError().init___O(x1)
+  }
+});
 $c_Lworkspace_Workspace.prototype.$$js$exported$prop$addDiagram__O = (function() {
   return this.addDiagram__Lworkspace_Workspace()
 });
 $c_Lworkspace_Workspace.prototype.addEquationFromDiagram__I__Lworkspace_CustomEquation__Lworkspace_Workspace = (function(diagramId, equation) {
   var this$1 = this.diagrams$1;
-  var equalitiesToAdd = $as_Lworkspace_TriangleDiagram(this$1.map$1.apply__O__O(diagramId)).equalitiesToAddWithEquation__Lworkspace_CustomEquation__I__sci_Set(equation, this.equations$1.nextId$1);
+  var equalitiesToAdd = $as_Lworkspace_TriangleDiagram(this$1.map$1.apply__O__O(diagramId)).equalitiesToAddWithEquation__Lworkspace_CustomEquation__I__I__sci_Set(equation, this.equations$1.nextId$1, diagramId);
   var z = this.addEquation__Lworkspace_Equation__Lworkspace_Workspace(equation);
   var op = new $c_sjsr_AnonFunction2().init___sjs_js_Function2((function($this) {
     return (function(x0$9$2, x1$1$2) {
@@ -23490,6 +23478,9 @@ $c_Lworkspace_Workspace.prototype.equals__O__Z = (function(x$1) {
   } else {
     return false
   }
+});
+$c_Lworkspace_Workspace.prototype.$$js$exported$meth$equivalentVariable__Lworkspace_DiagramVarId__O = (function(diagramVarId) {
+  return this.equivalentVariable__Lworkspace_DiagramVarId__Lworkspace_VarId(diagramVarId)
 });
 $c_Lworkspace_Workspace.prototype.possibleRewritesForExpr__Lworkspace_VarId__sci_Set = (function(exprVarId) {
   var expr = $as_Lcas_Expression(this.expressions$1.apply__O__O(exprVarId));
@@ -23869,8 +23860,17 @@ $c_Lworkspace_Workspace.prototype.addAndAttachNumber__Lworkspace_VarId__Lworkspa
   return $as_Lworkspace_Workspace(this.addNumber__Lworkspace_PhysicalNumber__Lworkspace_Workspace(physicalNumber).attachNumber__I__Lworkspace_VarId__s_util_Try(this.numbers$1.nextId$1, varId).get__O())
 });
 $c_Lworkspace_Workspace.prototype.getVariableBuckTex__Lworkspace_VarId__Lworkspace_BuckTex = (function(varId) {
-  var y = this.getVarSubscript__Lworkspace_VarId__s_Option(varId);
-  var array = [new $c_T2().init___O__O(varId, y)];
+  if ($is_Lworkspace_EquationVarId(varId)) {
+    var varIdToUse = varId
+  } else {
+    if ((!$is_Lworkspace_DiagramVarId(varId))) {
+      throw new $c_s_MatchError().init___O(varId)
+    };
+    var x3 = $as_Lworkspace_DiagramVarId(varId);
+    var varIdToUse = this.equivalentVariable__Lworkspace_DiagramVarId__Lworkspace_VarId(x3)
+  };
+  var y = this.getVarSubscript__Lworkspace_VarId__s_Option(varIdToUse);
+  var array = [new $c_T2().init___O__O(varIdToUse, y)];
   var this$4 = new $c_scm_MapBuilder().init___sc_GenMap($m_sci_Map$EmptyMap$());
   var i = 0;
   var len = $uI(array.length);
@@ -23893,7 +23893,7 @@ $c_Lworkspace_Workspace.prototype.getVariableBuckTex__Lworkspace_VarId__Lworkspa
     })
   })(this));
   var subscripts = new $c_sci_MapLike$$anon$2().init___sci_MapLike__F1(this$5, f);
-  return $m_Lworkspace_CompileToBuckTex$().showVariable__Lworkspace_VarId__sci_Map__Lworkspace_BuckTex(varId, subscripts)
+  return $m_Lworkspace_CompileToBuckTex$().showVariable__Lworkspace_VarId__sci_Map__Lworkspace_BuckTex(varIdToUse, subscripts)
 });
 $c_Lworkspace_Workspace.prototype.addEquality__Lworkspace_VarId__Lworkspace_VarId__Lworkspace_Workspace = (function(x, y) {
   var x$29 = this.equalities$1.setEqual__O__O__Lworkspace_SetOfSets(x, y);
@@ -24065,25 +24065,10 @@ $c_Lworkspace_Workspace.prototype.diagramVarBuckTexJs__I__T__Lworkspace_BuckTex 
   var x = $m_s_None$();
   if ((x === x1)) {
     var varId = new $c_Lworkspace_DiagramVarId().init___I__T(diagramId, diagramVarName);
-    var x1$2 = this.equalities$1.getSet__O__sci_Set(varId).find__F1__s_Option(new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function($this, varId$1) {
-      return (function(x$22$2) {
-        var x$22 = $as_Lworkspace_VarId(x$22$2);
-        return (!((x$22 === null) ? (varId$1 === null) : x$22.equals__O__Z(varId$1)))
-      })
-    })(this, varId)));
-    var x$3 = $m_s_None$();
-    if ((x$3 === x1$2)) {
-      return this.getVariableBuckTex__Lworkspace_VarId__Lworkspace_BuckTex(varId)
-    } else if ($is_s_Some(x1$2)) {
-      var x2 = $as_s_Some(x1$2);
-      var equivalentVarId = $as_Lworkspace_VarId(x2.value$2);
-      return this.getVariableBuckTex__Lworkspace_VarId__Lworkspace_BuckTex(equivalentVarId)
-    } else {
-      throw new $c_s_MatchError().init___O(x1$2)
-    }
+    return this.getVariableBuckTex__Lworkspace_VarId__Lworkspace_BuckTex(varId)
   } else if ($is_s_Some(x1)) {
-    var x2$2 = $as_s_Some(x1);
-    var varId$2 = $as_Lworkspace_VarId(x2$2.value$2);
+    var x2 = $as_s_Some(x1);
+    var varId$2 = $as_Lworkspace_VarId(x2.value$2);
     return this.getVariableBuckTex__Lworkspace_VarId__Lworkspace_BuckTex(varId$2)
   } else {
     throw new $c_s_MatchError().init___O(x1)
@@ -24662,6 +24647,10 @@ $c_Lworkspace_Workspace.prototype.toJsObject__sjs_js_Object = (function() {
     "expressions": jsx$4,
     "numbers": jsx$1
   }
+});
+$c_Lworkspace_Workspace.prototype.equivalentVariable = (function(arg$1) {
+  var prep0 = $as_Lworkspace_DiagramVarId(arg$1);
+  return this.$$js$exported$meth$equivalentVariable__Lworkspace_DiagramVarId__O(prep0)
 });
 $c_Lworkspace_Workspace.prototype.diagramVarBuckTexJs = (function(arg$1, arg$2) {
   var prep0 = $uI(arg$1);
@@ -31439,50 +31428,6 @@ var $d_Lworkspace_Text = new $TypeData().initClass({
   Ljava_io_Serializable: 1
 });
 $c_Lworkspace_Text.prototype.$classData = $d_Lworkspace_Text;
-/** @constructor */
-function $c_Lworkspace_TriangleDiagram$$anonfun$equalitiesToAddWithEquation$2() {
-  $c_sr_AbstractPartialFunction.call(this)
-}
-$c_Lworkspace_TriangleDiagram$$anonfun$equalitiesToAddWithEquation$2.prototype = new $h_sr_AbstractPartialFunction();
-$c_Lworkspace_TriangleDiagram$$anonfun$equalitiesToAddWithEquation$2.prototype.constructor = $c_Lworkspace_TriangleDiagram$$anonfun$equalitiesToAddWithEquation$2;
-/** @constructor */
-function $h_Lworkspace_TriangleDiagram$$anonfun$equalitiesToAddWithEquation$2() {
-  /*<skip>*/
-}
-$h_Lworkspace_TriangleDiagram$$anonfun$equalitiesToAddWithEquation$2.prototype = $c_Lworkspace_TriangleDiagram$$anonfun$equalitiesToAddWithEquation$2.prototype;
-$c_Lworkspace_TriangleDiagram$$anonfun$equalitiesToAddWithEquation$2.prototype.applyOrElse__s_Option__F1__O = (function(x1, $default) {
-  if ($is_s_Some(x1)) {
-    var x2 = $as_s_Some(x1);
-    var x = $as_T2(x2.value$2);
-    return x
-  } else {
-    return $default.apply__O__O(x1)
-  }
-});
-$c_Lworkspace_TriangleDiagram$$anonfun$equalitiesToAddWithEquation$2.prototype.init___Lworkspace_TriangleDiagram = (function($$outer) {
-  return this
-});
-$c_Lworkspace_TriangleDiagram$$anonfun$equalitiesToAddWithEquation$2.prototype.isDefinedAt__O__Z = (function(x) {
-  return this.isDefinedAt__s_Option__Z($as_s_Option(x))
-});
-$c_Lworkspace_TriangleDiagram$$anonfun$equalitiesToAddWithEquation$2.prototype.applyOrElse__O__F1__O = (function(x, $default) {
-  return this.applyOrElse__s_Option__F1__O($as_s_Option(x), $default)
-});
-$c_Lworkspace_TriangleDiagram$$anonfun$equalitiesToAddWithEquation$2.prototype.isDefinedAt__s_Option__Z = (function(x1) {
-  return $is_s_Some(x1)
-});
-var $d_Lworkspace_TriangleDiagram$$anonfun$equalitiesToAddWithEquation$2 = new $TypeData().initClass({
-  Lworkspace_TriangleDiagram$$anonfun$equalitiesToAddWithEquation$2: 0
-}, false, "workspace.TriangleDiagram$$anonfun$equalitiesToAddWithEquation$2", {
-  Lworkspace_TriangleDiagram$$anonfun$equalitiesToAddWithEquation$2: 1,
-  sr_AbstractPartialFunction: 1,
-  O: 1,
-  F1: 1,
-  s_PartialFunction: 1,
-  s_Serializable: 1,
-  Ljava_io_Serializable: 1
-});
-$c_Lworkspace_TriangleDiagram$$anonfun$equalitiesToAddWithEquation$2.prototype.$classData = $d_Lworkspace_TriangleDiagram$$anonfun$equalitiesToAddWithEquation$2;
 /** @constructor */
 function $c_Lworkspace_VariableWrapper() {
   $c_O.call(this);
@@ -40750,14 +40695,6 @@ $c_sci_Stream$.prototype.filteredTail__sci_Stream__F1__Z__sci_Stream$Cons = (fun
 $c_sci_Stream$.prototype.empty__sc_GenTraversable = (function() {
   return $m_sci_Stream$Empty$()
 });
-$c_sci_Stream$.prototype.collectedTail__O__sci_Stream__s_PartialFunction__scg_CanBuildFrom__sci_Stream$Cons = (function(head, stream, pf, bf) {
-  var tl = new $c_sjsr_AnonFunction0().init___sjs_js_Function0((function($this, stream$1, pf$1, bf$1) {
-    return (function() {
-      return $as_sci_Stream($as_sci_Stream(stream$1.tail__O()).collect__s_PartialFunction__scg_CanBuildFrom__O(pf$1, bf$1))
-    })
-  })(this, stream, pf, bf));
-  return new $c_sci_Stream$Cons().init___O__F0(head, tl)
-});
 $c_sci_Stream$.prototype.newBuilder__scm_Builder = (function() {
   return new $c_sci_Stream$StreamBuilder().init___()
 });
@@ -42049,9 +41986,6 @@ $c_sc_AbstractTraversable.prototype.sum__s_math_Numeric__O = (function(num) {
 $c_sc_AbstractTraversable.prototype.toArray__s_reflect_ClassTag__O = (function(evidence$1) {
   return $f_sc_TraversableOnce__toArray__s_reflect_ClassTag__O(this, evidence$1)
 });
-$c_sc_AbstractTraversable.prototype.collect__s_PartialFunction__scg_CanBuildFrom__O = (function(pf, bf) {
-  return $f_sc_TraversableLike__collect__s_PartialFunction__scg_CanBuildFrom__O(this, pf, bf)
-});
 $c_sc_AbstractTraversable.prototype.reduceLeft__F2__O = (function(op) {
   return $f_sc_TraversableOnce__reduceLeft__F2__O(this, op)
 });
@@ -43238,9 +43172,6 @@ $c_sci_StringOps.prototype.sum__s_math_Numeric__O = (function(num) {
 $c_sci_StringOps.prototype.map__F1__scg_CanBuildFrom__O = (function(f, bf) {
   return $f_sc_TraversableLike__map__F1__scg_CanBuildFrom__O(this, f, bf)
 });
-$c_sci_StringOps.prototype.collect__s_PartialFunction__scg_CanBuildFrom__O = (function(pf, bf) {
-  return $f_sc_TraversableLike__collect__s_PartialFunction__scg_CanBuildFrom__O(this, pf, bf)
-});
 $c_sci_StringOps.prototype.reduceLeft__F2__O = (function(op) {
   return $f_sc_IndexedSeqOptimized__reduceLeft__F2__O(this, op)
 });
@@ -43594,9 +43525,6 @@ $c_scm_ArrayOps$ofBoolean.prototype.sum__s_math_Numeric__O = (function(num) {
 $c_scm_ArrayOps$ofBoolean.prototype.map__F1__scg_CanBuildFrom__O = (function(f, bf) {
   return $f_sc_TraversableLike__map__F1__scg_CanBuildFrom__O(this, f, bf)
 });
-$c_scm_ArrayOps$ofBoolean.prototype.collect__s_PartialFunction__scg_CanBuildFrom__O = (function(pf, bf) {
-  return $f_sc_TraversableLike__collect__s_PartialFunction__scg_CanBuildFrom__O(this, pf, bf)
-});
 $c_scm_ArrayOps$ofBoolean.prototype.reduceLeft__F2__O = (function(op) {
   return $f_sc_IndexedSeqOptimized__reduceLeft__F2__O(this, op)
 });
@@ -43846,9 +43774,6 @@ $c_scm_ArrayOps$ofByte.prototype.sum__s_math_Numeric__O = (function(num) {
 $c_scm_ArrayOps$ofByte.prototype.map__F1__scg_CanBuildFrom__O = (function(f, bf) {
   return $f_sc_TraversableLike__map__F1__scg_CanBuildFrom__O(this, f, bf)
 });
-$c_scm_ArrayOps$ofByte.prototype.collect__s_PartialFunction__scg_CanBuildFrom__O = (function(pf, bf) {
-  return $f_sc_TraversableLike__collect__s_PartialFunction__scg_CanBuildFrom__O(this, pf, bf)
-});
 $c_scm_ArrayOps$ofByte.prototype.reduceLeft__F2__O = (function(op) {
   return $f_sc_IndexedSeqOptimized__reduceLeft__F2__O(this, op)
 });
@@ -44096,9 +44021,6 @@ $c_scm_ArrayOps$ofChar.prototype.sum__s_math_Numeric__O = (function(num) {
 });
 $c_scm_ArrayOps$ofChar.prototype.map__F1__scg_CanBuildFrom__O = (function(f, bf) {
   return $f_sc_TraversableLike__map__F1__scg_CanBuildFrom__O(this, f, bf)
-});
-$c_scm_ArrayOps$ofChar.prototype.collect__s_PartialFunction__scg_CanBuildFrom__O = (function(pf, bf) {
-  return $f_sc_TraversableLike__collect__s_PartialFunction__scg_CanBuildFrom__O(this, pf, bf)
 });
 $c_scm_ArrayOps$ofChar.prototype.reduceLeft__F2__O = (function(op) {
   return $f_sc_IndexedSeqOptimized__reduceLeft__F2__O(this, op)
@@ -44349,9 +44271,6 @@ $c_scm_ArrayOps$ofDouble.prototype.sum__s_math_Numeric__O = (function(num) {
 $c_scm_ArrayOps$ofDouble.prototype.map__F1__scg_CanBuildFrom__O = (function(f, bf) {
   return $f_sc_TraversableLike__map__F1__scg_CanBuildFrom__O(this, f, bf)
 });
-$c_scm_ArrayOps$ofDouble.prototype.collect__s_PartialFunction__scg_CanBuildFrom__O = (function(pf, bf) {
-  return $f_sc_TraversableLike__collect__s_PartialFunction__scg_CanBuildFrom__O(this, pf, bf)
-});
 $c_scm_ArrayOps$ofDouble.prototype.reduceLeft__F2__O = (function(op) {
   return $f_sc_IndexedSeqOptimized__reduceLeft__F2__O(this, op)
 });
@@ -44601,9 +44520,6 @@ $c_scm_ArrayOps$ofFloat.prototype.sum__s_math_Numeric__O = (function(num) {
 $c_scm_ArrayOps$ofFloat.prototype.map__F1__scg_CanBuildFrom__O = (function(f, bf) {
   return $f_sc_TraversableLike__map__F1__scg_CanBuildFrom__O(this, f, bf)
 });
-$c_scm_ArrayOps$ofFloat.prototype.collect__s_PartialFunction__scg_CanBuildFrom__O = (function(pf, bf) {
-  return $f_sc_TraversableLike__collect__s_PartialFunction__scg_CanBuildFrom__O(this, pf, bf)
-});
 $c_scm_ArrayOps$ofFloat.prototype.reduceLeft__F2__O = (function(op) {
   return $f_sc_IndexedSeqOptimized__reduceLeft__F2__O(this, op)
 });
@@ -44852,9 +44768,6 @@ $c_scm_ArrayOps$ofInt.prototype.sum__s_math_Numeric__O = (function(num) {
 });
 $c_scm_ArrayOps$ofInt.prototype.map__F1__scg_CanBuildFrom__O = (function(f, bf) {
   return $f_sc_TraversableLike__map__F1__scg_CanBuildFrom__O(this, f, bf)
-});
-$c_scm_ArrayOps$ofInt.prototype.collect__s_PartialFunction__scg_CanBuildFrom__O = (function(pf, bf) {
-  return $f_sc_TraversableLike__collect__s_PartialFunction__scg_CanBuildFrom__O(this, pf, bf)
 });
 $c_scm_ArrayOps$ofInt.prototype.reduceLeft__F2__O = (function(op) {
   return $f_sc_IndexedSeqOptimized__reduceLeft__F2__O(this, op)
@@ -45107,9 +45020,6 @@ $c_scm_ArrayOps$ofLong.prototype.sum__s_math_Numeric__O = (function(num) {
 $c_scm_ArrayOps$ofLong.prototype.map__F1__scg_CanBuildFrom__O = (function(f, bf) {
   return $f_sc_TraversableLike__map__F1__scg_CanBuildFrom__O(this, f, bf)
 });
-$c_scm_ArrayOps$ofLong.prototype.collect__s_PartialFunction__scg_CanBuildFrom__O = (function(pf, bf) {
-  return $f_sc_TraversableLike__collect__s_PartialFunction__scg_CanBuildFrom__O(this, pf, bf)
-});
 $c_scm_ArrayOps$ofLong.prototype.reduceLeft__F2__O = (function(op) {
   return $f_sc_IndexedSeqOptimized__reduceLeft__F2__O(this, op)
 });
@@ -45358,9 +45268,6 @@ $c_scm_ArrayOps$ofRef.prototype.sum__s_math_Numeric__O = (function(num) {
 });
 $c_scm_ArrayOps$ofRef.prototype.map__F1__scg_CanBuildFrom__O = (function(f, bf) {
   return $f_sc_TraversableLike__map__F1__scg_CanBuildFrom__O(this, f, bf)
-});
-$c_scm_ArrayOps$ofRef.prototype.collect__s_PartialFunction__scg_CanBuildFrom__O = (function(pf, bf) {
-  return $f_sc_TraversableLike__collect__s_PartialFunction__scg_CanBuildFrom__O(this, pf, bf)
 });
 $c_scm_ArrayOps$ofRef.prototype.reduceLeft__F2__O = (function(op) {
   return $f_sc_IndexedSeqOptimized__reduceLeft__F2__O(this, op)
@@ -45612,9 +45519,6 @@ $c_scm_ArrayOps$ofShort.prototype.sum__s_math_Numeric__O = (function(num) {
 $c_scm_ArrayOps$ofShort.prototype.map__F1__scg_CanBuildFrom__O = (function(f, bf) {
   return $f_sc_TraversableLike__map__F1__scg_CanBuildFrom__O(this, f, bf)
 });
-$c_scm_ArrayOps$ofShort.prototype.collect__s_PartialFunction__scg_CanBuildFrom__O = (function(pf, bf) {
-  return $f_sc_TraversableLike__collect__s_PartialFunction__scg_CanBuildFrom__O(this, pf, bf)
-});
 $c_scm_ArrayOps$ofShort.prototype.reduceLeft__F2__O = (function(op) {
   return $f_sc_IndexedSeqOptimized__reduceLeft__F2__O(this, op)
 });
@@ -45862,9 +45766,6 @@ $c_scm_ArrayOps$ofUnit.prototype.sum__s_math_Numeric__O = (function(num) {
 });
 $c_scm_ArrayOps$ofUnit.prototype.map__F1__scg_CanBuildFrom__O = (function(f, bf) {
   return $f_sc_TraversableLike__map__F1__scg_CanBuildFrom__O(this, f, bf)
-});
-$c_scm_ArrayOps$ofUnit.prototype.collect__s_PartialFunction__scg_CanBuildFrom__O = (function(pf, bf) {
-  return $f_sc_TraversableLike__collect__s_PartialFunction__scg_CanBuildFrom__O(this, pf, bf)
 });
 $c_scm_ArrayOps$ofUnit.prototype.reduceLeft__F2__O = (function(op) {
   return $f_sc_IndexedSeqOptimized__reduceLeft__F2__O(this, op)
@@ -46162,9 +46063,6 @@ $c_sjs_js_ArrayOps.prototype.map__F1__scg_CanBuildFrom__O = (function(f, bf) {
 $c_sjs_js_ArrayOps.prototype.init___sjs_js_Array = (function(array) {
   this.scala$scalajs$js$ArrayOps$$array$f = array;
   return this
-});
-$c_sjs_js_ArrayOps.prototype.collect__s_PartialFunction__scg_CanBuildFrom__O = (function(pf, bf) {
-  return $f_sc_TraversableLike__collect__s_PartialFunction__scg_CanBuildFrom__O(this, pf, bf)
 });
 $c_sjs_js_ArrayOps.prototype.reduceLeft__F2__O = (function(op) {
   var length = $uI(this.scala$scalajs$js$ArrayOps$$array$f.length);
@@ -51094,28 +50992,6 @@ $c_sci_Stream.prototype.take__I__sci_Stream = (function(n) {
       })
     })(this, n));
     return new $c_sci_Stream$Cons().init___O__F0(hd$1, tl$1)
-  }
-});
-$c_sci_Stream.prototype.collect__s_PartialFunction__scg_CanBuildFrom__O = (function(pf, bf) {
-  if ((!$is_sci_Stream$StreamBuilder(bf.apply__O__scm_Builder(this)))) {
-    return $f_sc_TraversableLike__collect__s_PartialFunction__scg_CanBuildFrom__O(this, pf, bf)
-  } else {
-    var rest = this;
-    var newHead = new $c_sr_ObjectRef().init___O(null);
-    var runWith = pf.runWith__F1__F1(new $c_sjsr_AnonFunction1().init___sjs_js_Function1((function($this, newHead$1) {
-      return (function(b$2) {
-        newHead$1.elem$1 = b$2
-      })
-    })(this, newHead)));
-    while (true) {
-      var this$2 = rest;
-      if (($f_sc_TraversableOnce__nonEmpty__Z(this$2) && (!$uZ(runWith.apply__O__O(rest.head__O()))))) {
-        rest = $as_sci_Stream(rest.tail__O())
-      } else {
-        break
-      }
-    };
-    return (rest.isEmpty__Z() ? $m_sci_Stream$Empty$() : $m_sci_Stream$().collectedTail__O__sci_Stream__s_PartialFunction__scg_CanBuildFrom__sci_Stream$Cons(newHead.elem$1, rest, pf, bf))
   }
 });
 $c_sci_Stream.prototype.reduceLeft__F2__O = (function(f) {

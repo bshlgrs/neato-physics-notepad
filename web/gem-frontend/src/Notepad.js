@@ -167,7 +167,18 @@ class Notepad extends Component {
       currentlySelected: { type: 'equation', id: newEqId }
     });
     // bleh
-    setTimeout(() => { this.refreshStoredPositions(); }, 1);
+    // setTimeout(() => { this.refreshStoredPositions(); }, 1);
+  }
+  addEquationFromDiagram(diagramId, equation) {
+    // const
+    const ws = this.props.workspace;
+    const newEqId = ws.nextEqId;
+    const newPosition = Immutable.Map({x: Math.random() * 300, y: Math.random() * 300});
+    this.props.setWorkspace(ws.addEquationFromDiagram(diagramId, equation));
+    this.props.setPositions(this.props.positions.set('equation-' + newEqId, newPosition));
+    this.setState({
+      currentlySelected: { type: 'equation', id: newEqId }
+    });
   }
   addExpression(varId) {
     const newPosition = Immutable.Map({x: Math.random() * 300, y: Math.random() * 300});
@@ -422,6 +433,10 @@ class Notepad extends Component {
     this.props.setWorkspace(this.props.workspace.deleteNumber(id));
     this.setState({ currentlySelected: {type: null, id: null} });
   }
+  deleteDiagram(id) {
+    this.props.setWorkspace(this.props.workspace.deleteDiagram(id));
+    this.setState({ currentlySelected: {type: null, id: null} });
+  }
   detachNumber(id) {
     this.props.setWorkspace(this.props.workspace.detachNumber(id));
     this.setState({ currentlySelected: {type: null, id: null} });
@@ -609,8 +624,10 @@ class Notepad extends Component {
                      ws={this.props.workspace}
                      deleteExpression={(id) => this.deleteExpression(id)}
                      deleteEquation={(id) => this.deleteEquation(id)}
+                     deleteDiagram={(id) => this.deleteDiagram(id)}
                      removeEquality={(varId) => this.removeEquality(varId)}
                      deleteNumber={(id) => this.deleteNumber(id)}
+                     addEquationFromDiagram={(diagramId, eq) => this.addEquationFromDiagram(diagramId, eq)}
                      changeDimension={(id, dim) => this.props.setWorkspace(ws.changeDimension(id, dim))}
             />}
         </div>

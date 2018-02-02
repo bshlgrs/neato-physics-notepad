@@ -58,7 +58,7 @@ class InfoBox extends React.Component {
                             changeDimension={this.props.changeDimension}
                           />
     } else if (selectedType === "triangle") {
-      return <TriangleInfoBox />;
+      return <TriangleInfoBox {...this.props} />;
     }
     return null;
   };
@@ -138,14 +138,23 @@ class TriangleInfoBox extends React.Component {
   }
 
   render () {
+    const {deleteDiagram, removeEquality, selectedId, ws, addEquationFromDiagram} = this.props;
+    const diagram = ws.diagrams.apply(selectedId);
     return <div className="info-box">
       <p>Triangle</p>
 
-      {false && <div>
-      <div>H
-      </div> A O θ φ</div>}
+      <p>Usable equations:</p>
+      <div>{diagram.usableEquationsJs.map((eq, idx) =>
+        <div
+          className='search-result'
+          onMouseDown={() => addEquationFromDiagram(selectedId, eq)}
+          key={idx}>
+          <BuckTex el={eq.showNaked} />
+        </div>
+      )}</div>
 
-      <button className="btn btn-danger" onClick={() => {}}>
+      <button className="btn btn-danger"
+        onClick={() => { deleteDiagram(selectedId) }} >
         <i className="fa fa-trash" style={{marginRight: "10px"}}/>
         Delete triangle</button>
     </div>
