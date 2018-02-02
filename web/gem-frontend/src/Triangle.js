@@ -4,7 +4,7 @@ import Gem from './Gem';
 
 class Triangle extends React.Component {
   render () {
-    const { triangle, triangleId, registerVar } = this.props;
+    const { triangle, triangleId, registerVar, onVarMouseDown } = this.props;
     // debugger;
     // Variables
       // Variables can be unspecified, custom, or made equal to something else.
@@ -26,6 +26,7 @@ class Triangle extends React.Component {
         const varId = Gem.DiagramVarId(triangleId, varName);
         const el = this.props.workspace.diagramVarBuckTexJs(triangleId, varName);
         return <div className="diagram-variable"
+          onMouseDown={(e) => onVarMouseDown(e, varId)}
           ref={(ref) => registerVar(varId, ref)}
           style={{position: "absolute", top, left}}
           key={varName}>

@@ -537,6 +537,7 @@ class Notepad extends Component {
                 triangle={triangle}
                 triangleId={id}
                 workspace={ws}
+                onVarMouseDown={(e, varId) => this.handleVariableClick(e, varId)}
                 registerVar={(varId, ref) => { this.varRefs[varId] = ref; }}
                 onMouseDown={(e) => {
                   const rel = {
