@@ -144,9 +144,9 @@ class TriangleInfoBox extends React.Component {
       <p>Triangle</p>
 
       <p>Usable equations:</p>
-      <div>{diagram.usableEquationsJs.map((eq, idx) =>
+      <div className='addable-equations'>{diagram.usableEquationsJs.map((eq, idx) =>
         <div
-          className='search-result'
+          className='addable-equation'
           onMouseDown={() => addEquationFromDiagram(selectedId, eq)}
           key={idx}>
           <BuckTex el={eq.showNaked} />

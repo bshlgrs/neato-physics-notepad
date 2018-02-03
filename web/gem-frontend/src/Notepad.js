@@ -470,6 +470,30 @@ class Notepad extends Component {
               this.renderVarDragLine()}
             {this.renderVarEqualityLines()}
           </svg>
+
+          {ws.diagrams.keysJs.map((id) => {
+            const triangle = ws.diagrams.getJs(id);
+            const { x, y } = this.props.positions.get('diagram-' + id).toJS();
+            const top = y;
+            const left = x;
+            return <div key={id} style={{position: "absolute", top, left}}>
+              <Triangle
+                triangle={triangle}
+                triangleId={id}
+                workspace={ws}
+                onVarMouseDown={(e, varId) => this.handleVariableClick(e, varId)}
+                registerVar={(varId, ref) => { this.varRefs[varId] = ref; }}
+                onMouseDown={(e) => {
+                  const rel = {
+                    x: e.pageX - left,
+                    y: e.pageY - top
+                  }
+                  return this.handleStartDragWithRel(e, 'diagram-' + id, rel, { type: 'triangle', id: id });
+                }}
+                  />
+            </div>
+          })}
+
           {ws.equationIds.map((equationId, idx) => {
             const pos = this.props.positions.get('equation-' + equationId);
             const muted = currentAction === DRAGGING_FROM_EXPR_VAR && (
@@ -541,29 +565,6 @@ class Notepad extends Component {
             </div>;
           })}
 
-          {ws.diagrams.keysJs.map((id) => {
-            const triangle = ws.diagrams.getJs(id);
-            const { x, y } = this.props.positions.get('diagram-' + id).toJS();
-            const top = y;
-            const left = x;
-            return <div key={id} style={{position: "absolute", top, left}}>
-              <Triangle
-                triangle={triangle}
-                triangleId={id}
-                workspace={ws}
-                onVarMouseDown={(e, varId) => this.handleVariableClick(e, varId)}
-                registerVar={(varId, ref) => { this.varRefs[varId] = ref; }}
-                onMouseDown={(e) => {
-                  const rel = {
-                    x: e.pageX - left,
-                    y: e.pageY - top
-                  }
-                  return this.handleStartDragWithRel(e, 'diagram-' + id, rel, { type: 'triangle', id: id });
-                }}
-                  />
-            </div>
-          })}
-
           <div className='reset-button-div'>
             <button className="btn btn-large btn-danger" onClick={() => this.reset()} >
               Reset
@@ -593,29 +594,31 @@ class Notepad extends Component {
               }}
               ref={(el) => { this.searchBarEl = el; }}
               placeholder="Search for equations or type numbers here"/>
-            {this.props.library.relevantEquationIds(this.state.searchBarText).map((eqId) => {
-              const equation = this.props.library.getByEqId(eqId);
-              return <div key={eqId} className='search-result'
-                onMouseDown={() => this.addEquation(equation)}>
-                <BuckTex el={equation.showNaked} />
-                <p>{equation.name}</p>
-              </div>;
-            })}
-            {(() => {
-              const dim = Gem.PhysicalNumber.parsePhysicalNumber(this.state.searchBarText);
-              return dim ?
-                <div className='physical-number'
-                  onMouseDown={() => this.handleSearchBarSubmit()}>
-                  <BuckTex el={dim.toBuckTex} /></div> :
-                null;
-            })()}
-            {(() => {
-              const eq = Gem.EquationParser.parseEquationJs(this.state.searchBarText);
-              return eq && <div className='search-result' onMouseDown={() => this.addEquation(eq)}>
-                <BuckTex el={eq.showNaked} />
-                <p>Custom equation</p>
-              </div>;
-            })()}
+            <div className='search-results'>
+              {this.props.library.relevantEquationIds(this.state.searchBarText).map((eqId) => {
+                const equation = this.props.library.getByEqId(eqId);
+                return <div key={eqId} className='search-result'
+                  onMouseDown={() => this.addEquation(equation)}>
+                  <BuckTex el={equation.showNaked} />
+                  <p>{equation.name}</p>
+                </div>;
+              })}
+              {(() => {
+                const dim = Gem.PhysicalNumber.parsePhysicalNumber(this.state.searchBarText);
+                return dim ?
+                  <div className='physical-number'
+                    onMouseDown={() => this.handleSearchBarSubmit()}>
+                    <BuckTex el={dim.toBuckTex} /></div> :
+                  null;
+              })()}
+              {(() => {
+                const eq = Gem.EquationParser.parseEquationJs(this.state.searchBarText);
+                return eq && <div className='search-result' onMouseDown={() => this.addEquation(eq)}>
+                  <BuckTex el={eq.showNaked} />
+                  <p>Custom equation</p>
+                </div>;
+              })()}
+            </div>
           </div>
 
           {this.state.currentlySelected.type &&

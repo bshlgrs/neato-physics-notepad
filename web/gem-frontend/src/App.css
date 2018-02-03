@@ -95,6 +95,7 @@
 .search-div {
   padding: 20px;
   flex-grow: 1;
+  overflow: scroll;
 }
 
 .search-bar {
@@ -124,7 +125,6 @@
   padding: 6px;
   margin: 10px;
   background-color: lightgrey;
-
 }
 
 .search-result p {
@@ -175,4 +175,17 @@ textarea {
   border-radius: 4px;
   outline: none;
   padding: 20px;
+}
+
+
+.addable-equations {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.addable-equation {
+  font-size: 24px;
+  padding: 6px;
+  margin: 10px;
+  background-color: lightgrey;
 }
