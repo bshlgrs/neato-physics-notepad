@@ -10,10 +10,10 @@ import scala.util.Try
 case class PhysicalNumber(value: Double, siDimension: SiDimension, originalInput: Option[(Double, Dimension)], name: Option[String] = None) {
   lazy val toBuckTex: BuckTex = originalInput match {
     case None => siUnitToBuckTex
-    case Some((originalValue, originalDimension)) => CompileToBuckTex.horizontalBox(List(Text("%.4g".format(originalValue) + " "), originalDimension.toBuckTex(originalValue)))
+    case Some((originalValue, originalDimension)) => CompileToBuckTex.horizontalBox(List(Text(Util.showNumber(originalValue) + " "), originalDimension.toBuckTex(originalValue)))
   }
 
-  lazy val siUnitToBuckTex: BuckTex = CompileToBuckTex.horizontalBox(List(Text("%.4g".format(value) + " "), siDimension.toBuckTex))
+  lazy val siUnitToBuckTex: BuckTex = CompileToBuckTex.horizontalBox(List(Text(Util.showNumber(value) + " "), siDimension.toBuckTex))
 
   def valueInOtherUnits(dimension: Dimension): Double = {
     assert(dimension.siDimension == siDimension)

@@ -539,7 +539,7 @@ class Notepad extends Component {
             {this.props.library.relevantEquationIds(this.state.searchBarText).map((eqId) => {
               const equation = this.props.library.getByEqId(eqId);
               return <div key={eqId} className='search-result'
-                onClick={() => this.addEquation(equation)}>
+                onMouseDown={() => this.addEquation(equation)}>
                 <BuckTex el={equation.showNaked} />
                 <p>{equation.name}</p>
               </div>;
@@ -548,13 +548,13 @@ class Notepad extends Component {
               const dim = Gem.PhysicalNumber.parsePhysicalNumber(this.state.searchBarText);
               return dim ?
                 <div className='physical-number'
-                  onClick={() => this.handleSearchBarSubmit()}>
+                  onMouseDown={() => this.handleSearchBarSubmit()}>
                   <BuckTex el={dim.toBuckTex} /></div> :
                 null;
             })()}
             {(() => {
               const eq = Gem.EquationParser.parseEquationJs(this.state.searchBarText);
-              return eq && <div className='search-result' onClick={() => this.addEquation(eq)}>
+              return eq && <div className='search-result' onMouseDown={() => this.addEquation(eq)}>
                 <BuckTex el={eq.showNaked} />
                 <p>Custom equation</p>
               </div>;

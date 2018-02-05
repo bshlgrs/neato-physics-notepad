@@ -6,7 +6,7 @@ import workspace._
 import scala.scalajs.js
 import scala.scalajs.js.annotation.{JSExport, JSExportTopLevel, ScalaJSDefined}
 
-
+@JSExport
 case class SiDimension(units: Map[SiUnit, RationalNumber[String]])  {
   def *(other: SiDimension): SiDimension = SiDimension(
     (units.keys ++ other.units.keys)
@@ -14,6 +14,9 @@ case class SiDimension(units: Map[SiUnit, RationalNumber[String]])  {
       .filter(_._2 != RationalNumber(0))
       .toMap
   )
+
+  @JSExport
+  def equals(other: SiDimension): Boolean = this == other
 
   def /(other: SiDimension): SiDimension = this * (other ** -1)
   def **(other: Int): SiDimension = SiDimension(this.units.mapValues(x => (x * other).asInstanceOf[RationalNumber[String]]))

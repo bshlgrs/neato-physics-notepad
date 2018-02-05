@@ -89,7 +89,7 @@ object CompileToBuckTex {
         ))
       }
       case Variable(buckTex) => buckTex
-      case RealNumber(r) => Text(r.toString)
+      case RealNumber(r) => Text(Util.showNumber(r))
       case NamedNumber(_, n, _) => showVarWithStr(n, "")
       case RationalNumber(n, 1) => Text(n.toString)
       case RationalNumber(1, 2) => Text("½")

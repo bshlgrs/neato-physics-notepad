@@ -42,6 +42,7 @@ class EquationEditorApp extends Component {
       })
       .then((resp) => resp.json())
       .then((data) => {
+        debugger;
         this.setState({
           equations: this.state.equations.set(data.id, Immutable.fromJS(newEq).set('created_at', 'zzz'+(new Date()).getTime())),
           newEq: emptyEquation,

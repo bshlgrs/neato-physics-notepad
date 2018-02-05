@@ -81,7 +81,8 @@ class NumberInfoBox extends React.Component {
     const dimensionInputBoxContents = this.state.dimensionInputBoxContents;
     const newDimension = Gem.Dimension.parseJs(dimensionInputBoxContents);
     const newNumberValue = newDimension ? number.value / newDimension.totalConstant : null;
-
+    console.log(newDimension && newDimension.siDimension);
+    console.log(number.siDimension);
     return <div className='info-box expression-info-box'>
       <BuckTex el={number.toBuckTex} />
 
@@ -97,7 +98,7 @@ class NumberInfoBox extends React.Component {
           <input value={dimensionInputBoxContents}
                  onChange={(e) => this.setState({dimensionInputBoxContents: e.target.value})}/>
           {!newDimension && "not a dimension"}
-          {newDimension && (newDimension.siDimension.equalUnits(number.siDimension) ?
+          {newDimension && (newDimension.siDimension.equals(number.siDimension) ?
             <BuckTex el={Gem.PhysicalNumber.applyWithDimension(newNumberValue, newDimension).toBuckTex} /> :
             "Units do not match"
           )}

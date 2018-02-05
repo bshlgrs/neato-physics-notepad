@@ -39,14 +39,53 @@ object Util {
 //
 //      }
 //    }
+    val roundingFactor = math.pow(10, math.log10(value).floor)
+    val roundedNum = (value / roundingFactor * 100000).round * roundingFactor / 100000
+    val string = roundedNum.toString
 
-    ???
+    def fixUpString(inString: String): String = {
+      if (inString.take(6).contains('.')) {
+        val shortenedStr = inString.take(6).reverse.dropWhile(_ == '0').reverse
+        if (shortenedStr.last == '.') {
+          shortenedStr.dropRight(1)
+        } else {
+          shortenedStr
+        }
+      } else {
+        inString
+      }
+    }
 
-    /*
-    * Cases:
-    *
-    *
-    * */
+    if (string.contains('E')) {
+      val Array(multiplier, exponent) = string.split('E')
+      s"${fixUpString(multiplier)}e$exponent"
+    } else if (math.abs(value) > 0.000001) {
+      fixUpString(string)
+    } else {
+      string
+    }
+
+  }
+
+  def main(args: Array[String]): Unit = {
+    println(showNumber(1.123123))
+    println(showNumber(1.12312))
+    println(showNumber(1.1231))
+    println(showNumber(1.123))
+    println(showNumber(1.12))
+    println(showNumber(1.1))
+    println(showNumber(1))
+    println(showNumber(1.1200000004))
+    println(showNumber(11200.000004))
+    println("hah!")
+    println(showNumber(0.434))
+    println(showNumber(0.0434))
+    println(showNumber(0.00434))
+    println(showNumber(0.000434))
+    println(showNumber(0.0000434))
+    println(showNumber(0.00000434))
+    println(showNumber(0.000000434))
+    println(showNumber(0.0000000434))
   }
 }
 
