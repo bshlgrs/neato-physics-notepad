@@ -49,7 +49,7 @@ object EquationParser {
       case (x, None) => Variable(x)
       case (x, Some(subscript)) => Variable(x + "_" + subscript)
     }))
-  lazy val parens: P[Expression[String]] = P( "(" ~/ expr0 ~ ")" )
+  lazy val parens: P[Expression[String]] = P( "(" ~/ expr0 ~/ ")" )
 //  lazy val functionCall: P[Expression[String]] = P(CharsWhile(_.isLetter).rep(1).! ~ "(" ~ expr.rep(sep=",") ~ ")").map({
 //    case (name: String, args: Seq[Expression[String]]) => SpecialFunction(name, args.toList)
 //  })
@@ -57,12 +57,12 @@ object EquationParser {
     case (name: String, args: Seq[Expression[_]]) => SpecialFunction.build(name, args.toList)
   })
 
-  val atom: P[Expression[String]] = P( number | functionCall | variable | parens )
+  val atom: P[Expression[String]] = P(number | parens | functionCall | variable)
 
-  val expr2: P[Expression[String]] = P("-".!.? ~ (atom ~ ("**"|"^") ~ atom | atom)).map({
-    case (mbMinus: Option[String], x: Expression[_]) =>
+  val expr2: P[Expression[String]] = P("-".!.? ~ atom ~ (("**" | "^") ~ atom).?).map({
+    case (mbMinus: Option[String], x: Expression[_], None) =>
        x.asInstanceOf[Expression[String]] * (if (mbMinus.isDefined) -1 else 1)
-    case (mbMinus: Option[String], (x: Expression[_], y: Expression[_])) =>
+    case (mbMinus: Option[String], x: Expression[_], Some(y: Expression[_])) =>
       (Expression.makePower(x.asInstanceOf[Expression[String]], y.asInstanceOf[Expression[String]])
         * (if (mbMinus.isDefined) -1 else 1))
   })

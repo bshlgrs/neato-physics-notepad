@@ -1,4 +1,4 @@
-import cas.{EquationParser, RealNumber, Variable}
+import cas.{EquationParser, RationalNumber, RealNumber, Variable}
 import org.scalatest.FunSpec
 import workspace._
 
@@ -30,6 +30,11 @@ class EquationParsingTests extends FunSpec {
 
     it("allows carat for exponentiation") {
       assert(EquationParser.parseEquation("l = x^2").contains(CustomEquation(Variable("l"), Variable("x") ** 2)))
+    }
+
+    it("can handle parentheses") {
+//      print(EquationParser.expr.parse("(v+2)"))
+      assert(EquationParser.parseEquation("y = (v+2)").contains(CustomEquation(Variable[String]("y"), Variable[String]("v") + RationalNumber[String](2))))
     }
   }
 }

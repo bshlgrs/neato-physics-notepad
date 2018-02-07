@@ -39,3 +39,7 @@
   - I think the right answer might be to
 - I can't represent Newton-meters (for torque) apart from as Joules.
 - I sometimes get confused between the kind of equality that is "these variables are referring to the same thing" and "these variables have the same value"
+
+## Bugs
+
+- Lorentz factor crashes with a dimension inference error

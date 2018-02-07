@@ -295,14 +295,14 @@ sealed trait Expression[A] {
 
   def calculateDimension(getDimensionDirectly: A => DimensionInference): DimensionInference = this match {
     case Sum(terms) => {
-      val calculatedDimensions: List[DimensionInference] = terms.toList.map(_.calculateDimension(getDimensionDirectly))
+      val calculatedDimensions: List[DimensionInference] = terms.map(_.calculateDimension(getDimensionDirectly))
 
       calculatedDimensions.reduce((x: DimensionInference, y: DimensionInference) => {
         x.combineWithEquals(y)
       })
     }
     case Product(factors) => {
-      val calculatedDimensions: List[DimensionInference] = factors.toList.map(_.calculateDimension(getDimensionDirectly))
+      val calculatedDimensions: List[DimensionInference] = factors.map(_.calculateDimension(getDimensionDirectly))
       calculatedDimensions.reduce((x: DimensionInference, y: DimensionInference) => x.combine(y, _ * _))
     }
     case Power(base, exponent) => exponent.calculateDimension(getDimensionDirectly) match {
@@ -451,7 +451,7 @@ case class SpecialFunction[A](name: String, args: List[Expression[A]]) extends E
 
 object SpecialFunction {
   def build[A](name: String, args: List[Expression[A]]): Expression[A] = name match {
-    case "sqrt" => args.head.sqrt
+    case "sqrt" => args.headOption.getOrElse(RationalNumber[A](0)).sqrt
     case _ => SpecialFunction(name, args)
   }
 }

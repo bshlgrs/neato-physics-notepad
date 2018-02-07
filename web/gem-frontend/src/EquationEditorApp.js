@@ -42,15 +42,17 @@ class EquationEditorApp extends Component {
       })
       .then((resp) => resp.json())
       .then((data) => {
+        const newEqWithId = newEq.set('id', data.id).set('created_at', 'zzz'+(new Date()).getTime());
         debugger;
         this.setState({
-          equations: this.state.equations.set(data.id, Immutable.fromJS(newEq).set('created_at', 'zzz'+(new Date()).getTime())),
+          equations: this.state.equations.set(data.id, newEqWithId),
           newEq: emptyEquation,
           currentAction: null
         });
       });
   }
   deleteEquation (id) {
+    const that = this;
     fetch("/api/equations/" + id,
       { headers: {
           'Accept': 'application/json',
@@ -59,8 +61,9 @@ class EquationEditorApp extends Component {
         method: "DELETE"
       })
       .then((data) => {
+        debugger;
         this.setState({
-          equations: this.state.equations.delete(id)
+          equations: this.state.equations.delete(id + "")
         })
       });
   }
@@ -109,23 +112,23 @@ class EquationEditorApp extends Component {
         <div className='col-xs-10 col-xs-offset-1'>
           <h1>Equation editor</h1>
           {this.state.loading && <p><i className='fa fa-spinner fa-pulse' style={{paddingRight: "10px"}} /> Loading</p>}
-          {this.state.equations ? this.state.equations.toList().sortBy((x) => x.get('created_at')).map((eq, id) => {
-            if (this.state.editedId === id && this.state.currentAction === 'editing') {
+          {this.state.equations ? this.state.equations.toList().sortBy((x) => x.get('created_at')).map((eq) => {
+            if (this.state.editedId === eq.get('id') && this.state.currentAction === 'editing') {
               return <EquationEditor
                 key={eq.get('id')}
                 eq={this.state.editingEq}
                 changeEq={(newEq) => this.setState({editingEq: newEq})}
                 createText="Save"
                 discardText="Discard changes"
-                onCreate={() => this.updateEquation(id)}
+                onCreate={() => this.updateEquation(eq.get('id'))}
                 onDiscard={() => this.setState({ currentAction: null, newEq: emptyEquation })}
               />
             } else {
               return <EquationShow
                 key={eq.get('id')}
                 eq={eq}
-                onDelete={() => this.deleteEquation(id)}
-                startEditing={() => this.setState({ currentAction: 'editing', editedId: id, editingEq: eq })}
+                onDelete={() => this.deleteEquation(eq.get('id'))}
+                startEditing={() => this.setState({ currentAction: 'editing', editedId: eq.get('id'), editingEq: eq.get('id') })}
               />;
             }
 
@@ -208,39 +211,41 @@ class SpaceSeparatedListInput extends React.Component {
   }
 }
 
-const EquationShow = (props) => {
-  const { eq, startEditing, onDelete } = props;
-  const { content, name } = eq.toJS();
-  const { eqString, dimensions, varNames, description, constantsUsed } = content || {};
+class EquationShow extends React.PureComponent {
+  render () {
+    const { eq, startEditing, onDelete } = this.props;
+    const { content, name } = eq.toJS();
+    const { eqString, dimensions, varNames, description, constantsUsed } = content || {};
 
-  const newEq = Gem.EquationParser.parseEquationJs(eqString || "");
-  return <div className="panel panel-default">
-    <div className="panel-body">
-      <div>
-        <p><strong>Name:</strong> {name}</p>
-        <p><strong>Description:</strong> {description}</p>
-        <p><strong>Constants used:</strong> {constantsUsed.join(" ")}</p>
-        <p><strong>Equation text:</strong> {eqString}</p>
+    const newEq = Gem.EquationParser.parseEquationJs(eqString || "");
+    return <div className="panel panel-default">
+      <div className="panel-body">
+        <div>
+          <p><strong>Name:</strong> {name}</p>
+          <p><strong>Description:</strong> {description}</p>
+          <p><strong>Constants used:</strong> {constantsUsed.join(" ")}</p>
+          <p><strong>Equation text:</strong> {eqString}</p>
+        </div>
+        {newEq && <div>
+          <BuckTex el={newEq.showNaked} />
+          <ul>{newEq.varsJs.filter((x) => constantsUsed.indexOf(x) === -1).map((varSym) => {
+            const dim = dimensions[varSym] || "";
+            const parsedDim = dim && Gem.Dimension.parseJs(dim);
+            return <li key={varSym}>
+              {varSym}:&nbsp;
+              <span>{varNames[varSym] || ""}</span> ::&nbsp;
+              {parsedDim ? <BuckTex el={parsedDim.siDimension.toBuckTex} inline /> :
+                <span>dim failed to parse: {dim}</span>}
+            </li>;
+          })}</ul>
+        </div>}
+        <div className='btn-group'>
+          <button onClick={startEditing}className='btn btn-default'>Edit</button>
+          <button onClick={onDelete} className='btn btn-danger'>Delete</button>
+        </div>
       </div>
-      {newEq && <div>
-        <BuckTex el={newEq.showNaked} />
-        <ul>{newEq.varsJs.filter((x) => constantsUsed.indexOf(x) === -1).map((varSym) => {
-          const dim = dimensions[varSym] || "";
-          const parsedDim = dim && Gem.Dimension.parseJs(dim);
-          return <li key={varSym}>
-            {varSym}:&nbsp;
-            <span>{varNames[varSym] || ""}</span> ::&nbsp;
-            {parsedDim ? <BuckTex el={parsedDim.siDimension.toBuckTex} inline /> :
-              <span>dim failed to parse: {dim}</span>}
-          </li>;
-        })}</ul>
-      </div>}
-      <div className='btn-group'>
-        <button onClick={startEditing}className='btn btn-default'>Edit</button>
-        <button onClick={onDelete} className='btn btn-danger'>Delete</button>
-      </div>
-    </div>
-  </div>;
+    </div>;
+  }
 }
 
 export default EquationEditorApp;

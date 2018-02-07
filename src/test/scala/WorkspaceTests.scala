@@ -276,6 +276,16 @@ class WorkspaceTests extends FunSpec {
       println(ws.getDimensionCalc(VarId(0, "E_K")))
 
     }
+
+    it("can do it on another case") {
+      val lorentzFactor = LibraryEquation("Lorentz factor", EquationParser.parseExpression("γ - 1/sqrt(1-v^2/c^2)").get, 1, (f) => ???,
+        Map("γ" -> SiDimension.Dimensionless, "v" -> Meter/Second, "c" -> Meter/Second),
+        Map("γ" -> "Lorentz factor", "v" -> "Velocity", "c" -> "Speed of light"),
+        Set("c")
+      )
+
+      val ws = Workspace.empty.addEquation(lorentzFactor).getDimensionCalc(VarId(0, "v"))
+    }
   }
 
   describe("number inference") {
