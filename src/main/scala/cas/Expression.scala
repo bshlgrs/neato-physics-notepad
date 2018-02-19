@@ -450,6 +450,13 @@ case class NamedNumber[A](value: Double, name: String, dimension: SiDimension) e
 case class SpecialFunction[A](name: String, args: List[Expression[A]]) extends Expression[A]
 
 object SpecialFunction {
+  def sin[A](thing: Expression[A]): Expression[A] = SpecialFunction("sin", List(thing))
+  def cos[A](thing: Expression[A]): Expression[A] = SpecialFunction("cos", List(thing))
+  def tan[A](thing: Expression[A]): Expression[A] = SpecialFunction("tan", List(thing))
+  def asin[A](thing: Expression[A]): Expression[A] = SpecialFunction("asin", List(thing))
+  def acos[A](thing: Expression[A]): Expression[A] = SpecialFunction("acos", List(thing))
+  def atan[A](thing: Expression[A]): Expression[A] = SpecialFunction("atan", List(thing))
+
   def build[A](name: String, args: List[Expression[A]]): Expression[A] = name match {
     case "sqrt" => args.headOption.getOrElse(RationalNumber[A](0)).sqrt
     case _ => SpecialFunction(name, args)

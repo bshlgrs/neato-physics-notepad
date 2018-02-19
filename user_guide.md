@@ -10,7 +10,7 @@ This problem was solved by pulling in the definition of kinetic and potential en
 
 Terms used here:
 
-- **Equation**: a declaration of facts. These have their variables in green. These might be built in equations, like the definition of kinetic energy, or they might be custom equations that you typed in yourself. 
+- **Equation**: a declaration of facts. These have their variables in green. These might be built in equations, like the definition of kinetic energy, or they might be custom equations that you typed in yourself.
     - Equations can have their variables connected by those dotted lines. That means that those variables are equal to each other and can be interchanged during algebraic manipulation.
 - **Expression**: an inference obtained by algebra on the equations. In this example there is an expression for v. Expressions are in purple.
 - **Number**: a physical value. These have specified dimensions.
@@ -22,11 +22,15 @@ Things you can do:
 
 ## Using built-in equations
 
-Type relevant search terms into the search bar, click or press enter. 
+Type relevant search terms into the search bar, click or press enter.
 
 ## Making custom equations
 
-Type the equation you want into the search bar. Exponentiation is expressed with "**".
+Type the equation you want into the search bar. Exponentiation is expressed with "**" or "^". Here are some example validly written equations:
+
+- `E_K = 1/2 * m * v**2`
+- `foo = sqrt(bar)`
+- `foo = 1.2 * m + f`
 
 ## Adding numerical values
 

@@ -6,6 +6,7 @@ import Immutable from 'immutable';
 import BuckTex from './BuckTex';
 import InfoBox from './InfoBox';
 import Textarea from 'react-textarea-autosize';
+import Triangle from './Triangle';
 
 const DRAGGING = "dragging";
 const DRAGGING_FROM_VAR = "dragging-from-var";
@@ -82,7 +83,7 @@ class Notepad extends Component {
   }
   reset () {
     this.resetLocalVars();
-    this.props.setWorkspace(Gem.Workspace());
+    this.props.setWorkspace(Gem.WorkspaceOps.empty);
     this.props.setPositions(Immutable.Map());
     this.setState(this.getInitialState());
   }
@@ -166,7 +167,18 @@ class Notepad extends Component {
       currentlySelected: { type: 'equation', id: newEqId }
     });
     // bleh
-    setTimeout(() => { this.refreshStoredPositions(); }, 1);
+    // setTimeout(() => { this.refreshStoredPositions(); }, 1);
+  }
+  addEquationFromDiagram(diagramId, equation) {
+    // const
+    const ws = this.props.workspace;
+    const newEqId = ws.nextEqId;
+    const newPosition = Immutable.Map({x: Math.random() * 300, y: Math.random() * 300});
+    this.props.setWorkspace(ws.addEquationFromDiagram(diagramId, equation));
+    this.props.setPositions(this.props.positions.set('equation-' + newEqId, newPosition));
+    this.setState({
+      currentlySelected: { type: 'equation', id: newEqId }
+    });
   }
   addExpression(varId) {
     const newPosition = Immutable.Map({x: Math.random() * 300, y: Math.random() * 300});
@@ -185,10 +197,13 @@ class Notepad extends Component {
   }
   handleStartDrag(e, thingId, ref, selectionObject) {
     if (e.button !== 0) return;
-
+    const rel = getRelativePositionOfEvent(e, ref, this.equationSpaceDiv);
+    this.handleStartDragWithRel(e, thingId, rel, selectionObject);
+  }
+  handleStartDragWithRel(e, thingId, rel, selectionObject) {
     this.setState({
       currentAction: DRAGGING,
-      rel: getRelativePositionOfEvent(e, ref, this.equationSpaceDiv),
+      rel: rel,
       draggedThingId: thingId,
       currentlySelected: selectionObject
     });
@@ -238,6 +253,7 @@ class Notepad extends Component {
         draggedOntoVarId = this.props.workspace.varIdStringToVarId(varIdStr);
       }
     });
+
     return draggedOntoVarId;
   }
   getDraggedOntoNumberId(pageX, pageY) {
@@ -334,16 +350,17 @@ class Notepad extends Component {
   }
   renderVarEqualityLines () {
     const ws = this.props.workspace;
+    let shouldForceUpdate = false;
 
     if (!this.varPositions) {
       return null;
     }
 
-    return ws.allVarsGroupedByEquality.map((list, idx) => {
+    const result = ws.allVarsGroupedByEquality.map((list, idx) => {
       const positionList = list.map((varId) => {
         const pos = this.varPositions[varId];
         if (!pos) {
-          setTimeout(() => this.forceUpdate(), 10);
+          shouldForceUpdate = true;
         }
         return pos ? [pos.left, pos.top] : null;
       }).filter((x) => x);
@@ -375,6 +392,12 @@ class Notepad extends Component {
         })}
       </g>
     });
+
+    if (shouldForceUpdate) {
+      setTimeout(() => this.forceUpdate(), 10);
+    }
+
+    return result;
   }
   handleSearchBarSubmit () {
     const num = Gem.PhysicalNumber.parsePhysicalNumber(this.state.searchBarText.trim());
@@ -410,12 +433,24 @@ class Notepad extends Component {
     this.props.setWorkspace(this.props.workspace.deleteNumber(id));
     this.setState({ currentlySelected: {type: null, id: null} });
   }
+  deleteDiagram(id) {
+    this.props.setWorkspace(this.props.workspace.deleteDiagram(id));
+    this.setState({ currentlySelected: {type: null, id: null} });
+  }
   detachNumber(id) {
     this.props.setWorkspace(this.props.workspace.detachNumber(id));
     this.setState({ currentlySelected: {type: null, id: null} });
   }
   removeEquality(varId) {
     this.props.setWorkspace(this.props.workspace.removeEquality(varId));
+  }
+
+  addTriangle () {
+    const newDiagramId = this.props.workspace.diagrams.nextId;
+    const newWs = this.props.workspace.addDiagram;
+    this.props.setPositions(this.props.positions.set('diagram-' + newDiagramId,
+      Immutable.fromJS({x: 100, y: 100})));
+    this.props.setWorkspace(newWs);
   }
 
   render() {
@@ -429,12 +464,36 @@ class Notepad extends Component {
     return (
       <div className="main-app-div">
         <div className="equation-space" ref={(div) => { this.equationSpaceDiv = div; }}
-          style={currentAction === DRAGGING_FROM_VAR ? {cursor: 'crosshair'} : {}}>
+          style={currentAction === DRAGGING_FROM_VAR ? {cursor: 'crosshair'} : {}} >
           <svg style={{position: 'absolute', left: 0, top: 0, height: "100%", width: "100%"}}>
             {(currentAction === DRAGGING_FROM_VAR || currentAction === DRAGGING_FROM_EXPR_VAR) &&
               this.renderVarDragLine()}
             {this.renderVarEqualityLines()}
           </svg>
+
+          {ws.diagrams.keysJs.map((id) => {
+            const triangle = ws.diagrams.getJs(id);
+            const { x, y } = this.props.positions.get('diagram-' + id).toJS();
+            const top = y;
+            const left = x;
+            return <div key={id} style={{position: "absolute", top, left}}>
+              <Triangle
+                triangle={triangle}
+                triangleId={id}
+                workspace={ws}
+                onVarMouseDown={(e, varId) => this.handleVariableClick(e, varId)}
+                registerVar={(varId, ref) => { this.varRefs[varId] = ref; }}
+                onMouseDown={(e) => {
+                  const rel = {
+                    x: e.pageX - left,
+                    y: e.pageY - top
+                  }
+                  return this.handleStartDragWithRel(e, 'diagram-' + id, rel, { type: 'triangle', id: id });
+                }}
+                  />
+            </div>
+          })}
+
           {ws.equationIds.map((equationId, idx) => {
             const pos = this.props.positions.get('equation-' + equationId);
             const muted = currentAction === DRAGGING_FROM_EXPR_VAR && (
@@ -442,11 +501,6 @@ class Notepad extends Component {
                 .filter((x) => x[1] === equationId)
                 .length === 0
             );
-
-            // if (currentAction === DRAGGING_FROM_EXPR_VAR) {
-            //   const that = this;
-            //   debugger;
-            // }
 
             return <div
               key={idx}
@@ -515,6 +569,10 @@ class Notepad extends Component {
             <button className="btn btn-large btn-danger" onClick={() => this.reset()} >
               Reset
             </button>
+
+            {<button className="btn btn-large btn-default" onClick={() => this.addTriangle()} >
+              Add triangle
+            </button>}
           </div>
         </div>
         <div className="sidebar">
@@ -536,29 +594,31 @@ class Notepad extends Component {
               }}
               ref={(el) => { this.searchBarEl = el; }}
               placeholder="Search for equations or type numbers here"/>
-            {this.props.library.relevantEquationIds(this.state.searchBarText).map((eqId) => {
-              const equation = this.props.library.getByEqId(eqId);
-              return <div key={eqId} className='search-result'
-                onMouseDown={() => this.addEquation(equation)}>
-                <BuckTex el={equation.showNaked} />
-                <p>{equation.name}</p>
-              </div>;
-            })}
-            {(() => {
-              const dim = Gem.PhysicalNumber.parsePhysicalNumber(this.state.searchBarText);
-              return dim ?
-                <div className='physical-number'
-                  onMouseDown={() => this.handleSearchBarSubmit()}>
-                  <BuckTex el={dim.toBuckTex} /></div> :
-                null;
-            })()}
-            {(() => {
-              const eq = Gem.EquationParser.parseEquationJs(this.state.searchBarText);
-              return eq && <div className='search-result' onMouseDown={() => this.addEquation(eq)}>
-                <BuckTex el={eq.showNaked} />
-                <p>Custom equation</p>
-              </div>;
-            })()}
+            <div className='search-results'>
+              {this.props.library.relevantEquationIds(this.state.searchBarText).map((eqId) => {
+                const equation = this.props.library.getByEqId(eqId);
+                return <div key={eqId} className='search-result'
+                  onMouseDown={() => this.addEquation(equation)}>
+                  <BuckTex el={equation.showNaked} />
+                  <p>{equation.name}</p>
+                </div>;
+              })}
+              {(() => {
+                const dim = Gem.PhysicalNumber.parsePhysicalNumber(this.state.searchBarText);
+                return dim ?
+                  <div className='physical-number'
+                    onMouseDown={() => this.handleSearchBarSubmit()}>
+                    <BuckTex el={dim.toBuckTex} /></div> :
+                  null;
+              })()}
+              {(() => {
+                const eq = Gem.EquationParser.parseEquationJs(this.state.searchBarText);
+                return eq && <div className='search-result' onMouseDown={() => this.addEquation(eq)}>
+                  <BuckTex el={eq.showNaked} />
+                  <p>Custom equation</p>
+                </div>;
+              })()}
+            </div>
           </div>
 
           {this.state.currentlySelected.type &&
@@ -567,8 +627,10 @@ class Notepad extends Component {
                      ws={this.props.workspace}
                      deleteExpression={(id) => this.deleteExpression(id)}
                      deleteEquation={(id) => this.deleteEquation(id)}
+                     deleteDiagram={(id) => this.deleteDiagram(id)}
                      removeEquality={(varId) => this.removeEquality(varId)}
                      deleteNumber={(id) => this.deleteNumber(id)}
+                     addEquationFromDiagram={(diagramId, eq) => this.addEquationFromDiagram(diagramId, eq)}
                      changeDimension={(id, dim) => this.props.setWorkspace(ws.changeDimension(id, dim))}
             />}
         </div>

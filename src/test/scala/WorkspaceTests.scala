@@ -37,13 +37,13 @@ class WorkspaceTests extends FunSpec {
       val ws = Workspace.empty
         .addEquation(keEquation)
         .addEquation(peEquation)
-        .addEquality(VarId(0, "m"), VarId(1, "m"))
-        .addEquality(VarId(0, "E_K"), VarId(1, "E_P"))
-        .addExpression(VarId(0, "v"))
+        .addEquality(EquationVarId(0, "m"), EquationVarId(1, "m"))
+        .addEquality(EquationVarId(0, "E_K"), EquationVarId(1, "E_P"))
+        .addExpression(EquationVarId(0, "v"))
 
-      assert(ws.expressions(VarId(0, "v")).equivalent((RationalNumber(2) * Variable(VarId(0, "E_K")) / Variable(VarId(0, "m"))).sqrt))
+      assert(ws.expressions(EquationVarId(0, "v")).equivalent((RationalNumber[VarId](2) * Variable[VarId](EquationVarId(0, "E_K")) / Variable[VarId](EquationVarId(0, "m"))).sqrt))
 
-      val ws2 = ws.rewriteExpression(VarId(0, "v"), VarId(0, "E_K"), 1)
+      val ws2 = ws.rewriteExpression(EquationVarId(0, "v"), EquationVarId(0, "E_K"), 1)
     }
   }
 
@@ -51,12 +51,12 @@ class WorkspaceTests extends FunSpec {
     val ws = Workspace.empty
       .addEquation(keEquation)
       .addEquation(peEquation)
-      .addEquality(VarId(0, "m"), VarId(1, "m"))
+      .addEquality(EquationVarId(0, "m"), EquationVarId(1, "m"))
 
     it("knows about allowed rewrites") {
-      val ws2 = ws.addExpression(VarId(0, "v"))
+      val ws2 = ws.addExpression(EquationVarId(0, "v"))
 
-//      assert(ws2.possibleRewritesForExpr(VarId(0, "v")) == Set((VarId(0, "m"), 1)))
+//      assert(ws2.possibleRewritesForExpr(EquationVarId(0, "v")) == Set((EquationVarId(0, "m"), 1)))
     }
   }
 
@@ -65,12 +65,12 @@ class WorkspaceTests extends FunSpec {
       val ws = Workspace.empty
         .addEquation(keEquation)
         .addEquation(peEquation)
-        .addEquality(VarId(0, "m"), VarId(1, "m"))
-        .addEquality(VarId(0, "E_K"), VarId(1, "E_P"))
-        .addExpression(VarId(0, "v"))
-        .rewriteExpression(VarId(0, "v"), VarId(0, "E_K"), 1)
+        .addEquality(EquationVarId(0, "m"), EquationVarId(1, "m"))
+        .addEquality(EquationVarId(0, "E_K"), EquationVarId(1, "E_P"))
+        .addExpression(EquationVarId(0, "v"))
+        .rewriteExpression(EquationVarId(0, "v"), EquationVarId(0, "E_K"), 1)
 
-      println(ws.expressions(VarId(0, "v")))
+      println(ws.expressions(EquationVarId(0, "v")))
     }
 
   }
@@ -80,12 +80,12 @@ class WorkspaceTests extends FunSpec {
       val ws = Workspace.empty
         .addEquation(EquationParser.parseEquation("KE = 1/2 * m * v**2").get)
         .addEquation(EquationParser.parseEquation("PE = m * g * h").get)
-        .addEquality(VarId(0, "m"), VarId(1, "m"))
-        .addEquality(VarId(0, "KE"), VarId(1, "PE"))
-        .addExpression(VarId(0, "v"))
-        .rewriteExpression(VarId(0, "v"), VarId(0, "KE"), 1)
+        .addEquality(EquationVarId(0, "m"), EquationVarId(1, "m"))
+        .addEquality(EquationVarId(0, "KE"), EquationVarId(1, "PE"))
+        .addExpression(EquationVarId(0, "v"))
+        .rewriteExpression(EquationVarId(0, "v"), EquationVarId(0, "KE"), 1)
 
-      assert(ws.expressions(VarId(0, "v")) == (Variable(VarId(1, "g")) * Variable(VarId(1, "h")) * 2).sqrt)
+      assert(ws.expressions(EquationVarId(0, "v")) == (Variable(EquationVarId(1, "g")) * Variable(EquationVarId(1, "h")) * 2).sqrt)
       ws.allVarIds.map(ws.getDimension)
       ws.allVarIds.map(varId => ws.addExpression(varId).getExpressionBuckTex(varId))
     }
@@ -93,61 +93,61 @@ class WorkspaceTests extends FunSpec {
 
   describe("regressions") {
     it("does one thing") {
-      val E_T = VarId(2, "E_T")
+      val E_T = EquationVarId(2, "E_T")
       val ws = Workspace.empty
         .addEquation(EquationParser.parseEquation("KE = 1/2 * m * v**2").get)
         .addEquation(EquationParser.parseEquation("PE = m * g * h").get)
         .addEquation(EquationParser.parseEquation("E_T = KE + PE").get)
-        .addEquality(VarId(0, "KE"), VarId(2, "KE"))
-        .addEquality(VarId(1, "PE"), VarId(2, "PE"))
+        .addEquality(EquationVarId(0, "KE"), EquationVarId(2, "KE"))
+        .addEquality(EquationVarId(1, "PE"), EquationVarId(2, "PE"))
         .addExpression(E_T)
 
-      assert(ws.expressions(VarId(2, "E_T")) == Variable(VarId(2, "KE")) + Variable(VarId(2, "PE")))
+      assert(ws.expressions(EquationVarId(2, "E_T")) == Variable(EquationVarId(2, "KE")) + Variable(EquationVarId(2, "PE")))
 
-      val ws2 = ws.rewriteExpression(E_T, VarId(0, "KE"), 0)
-      assert(ws2.expressions(VarId(2, "E_T")) == Variable(VarId(0, "m")) * (Variable(VarId(0, "v")) ** 2) / 2 + Variable(VarId(1, "PE")))
+      val ws2 = ws.rewriteExpression(E_T, EquationVarId(0, "KE"), 0)
+      assert(ws2.expressions(EquationVarId(2, "E_T")) == Variable(EquationVarId(0, "m")) * (Variable(EquationVarId(0, "v")) ** 2) / 2 + Variable(EquationVarId(1, "PE")))
 
       ws2.allVarIds.map(ws2.getDimension)
       ws.allVarIds.map(varId => ws.addExpression(varId).getExpressionBuckTex(varId))
     }
 
     it("does another thing") {
-      val E_T = VarId(2, "E_T")
+      val E_T = EquationVarId(2, "E_T")
       val ws = Workspace.empty
         .addEquation(keEquation)
         .addEquation(peEquation)
         .addEquation(EquationParser.parseEquation("E_T = E_K + E_P").get)
-        .addEquality(VarId(0, "E_K"), VarId(2, "E_K"))
-        .addEquality(VarId(1, "E_P"), VarId(2, "E_P"))
+        .addEquality(EquationVarId(0, "E_K"), EquationVarId(2, "E_K"))
+        .addEquality(EquationVarId(1, "E_P"), EquationVarId(2, "E_P"))
         .addExpression(E_T)
 
-      assert(ws.expressions(VarId(2, "E_T")) == Variable(VarId(2, "E_K")) + Variable(VarId(2, "E_P")))
+      assert(ws.expressions(EquationVarId(2, "E_T")) == Variable(EquationVarId(2, "E_K")) + Variable(EquationVarId(2, "E_P")))
 
-      val ws2 = ws.rewriteExpression(E_T, VarId(0, "E_K"), 0)
-      assert(ws2.expressions(VarId(2, "E_T")) == Variable(VarId(0, "m")) * (Variable(VarId(0, "v")) ** 2) / 2 + Variable(VarId(1, "E_P")))
+      val ws2 = ws.rewriteExpression(E_T, EquationVarId(0, "E_K"), 0)
+      assert(ws2.expressions(EquationVarId(2, "E_T")) == Variable(EquationVarId(0, "m")) * (Variable(EquationVarId(0, "v")) ** 2) / 2 + Variable(EquationVarId(1, "E_P")))
 
-      val ws3 = ws2.rewriteExpression(E_T, VarId(1, "E_P"), 1)
+      val ws3 = ws2.rewriteExpression(E_T, EquationVarId(1, "E_P"), 1)
 
-      val potential_energy_expr = Variable(VarId(1,"h")) * Variable(VarId(1,"m")) * Variable(VarId(1,"g"))
-      assert(ws3.expressions(VarId(2, "E_T")).equivalent(Variable(VarId(0, "m")) * (Variable(VarId(0, "v")) ** 2) / 2 +
+      val potential_energy_expr = Variable[VarId](EquationVarId(1,"h")) * Variable[VarId](EquationVarId(1,"m")) * Variable[VarId](EquationVarId(1,"g"))
+      assert(ws3.expressions(EquationVarId(2, "E_T")).equivalent(Variable[VarId](EquationVarId(0, "m")) * (Variable[VarId](EquationVarId(0, "v")) ** 2) / 2 +
         potential_energy_expr))
 
       ws3.allVarIds.map(varId => ws.addExpression(varId).getExpressionBuckTex(varId))
     }
 
     it("does a third thing") {
-      val E_T = VarId(2, "E_T")
+      val E_T = EquationVarId(2, "E_T")
       val ws = Workspace.empty
         .addEquation(keEquation)
         .addEquation(peEquation)
         .addEquation(EquationParser.parseEquation("E_T = E_K + E_P").get)
-        .addEquality(VarId(0, "E_K"), VarId(2, "E_K"))
-        .addEquality(VarId(1, "E_P"), VarId(2, "E_P"))
+        .addEquality(EquationVarId(0, "E_K"), EquationVarId(2, "E_K"))
+        .addEquality(EquationVarId(1, "E_P"), EquationVarId(2, "E_P"))
         .addExpression(E_T)
-        .rewriteExpression(E_T, VarId(0, "E_K"), 0)
+        .rewriteExpression(E_T, EquationVarId(0, "E_K"), 0)
 
       ws.addNumber(PhysicalNumber(5, SiDimension.SiJoule))
-          .attachNumber(0, VarId(2, "E_T"))
+          .attachNumber(0, EquationVarId(2, "E_T"))
       ws.allVarIds.map(varId => ws.addExpression(varId).getExpressionBuckTex(varId))
     }
 
@@ -155,23 +155,23 @@ class WorkspaceTests extends FunSpec {
       val ws = Workspace.empty
         .addEquation(keEquation)
         .addEquation(peEquation)
-        .addEquality(VarId(0, "m"), VarId(1, "m"))
-        .addEquality(VarId(0, "E_K"), VarId(1, "E_P"))
-        .addExpression(VarId(0, "v"))
-        .rewriteExpression(VarId(0, "v"), VarId(0, "E_K"), 1)
+        .addEquality(EquationVarId(0, "m"), EquationVarId(1, "m"))
+        .addEquality(EquationVarId(0, "E_K"), EquationVarId(1, "E_P"))
+        .addExpression(EquationVarId(0, "v"))
+        .rewriteExpression(EquationVarId(0, "v"), EquationVarId(0, "E_K"), 1)
       println(ws.expressions)
-      println(ws.possibleRewritesForExpr(VarId(0, "v")))
+      println(ws.possibleRewritesForExpr(EquationVarId(0, "v")))
       ws.allVarIds.map(varId => ws.addExpression(varId).getExpressionBuckTex(varId))
     }
 
     it("does a fourth thing") {
       val expr = Workspace.empty
         .addEquation(ampereEquation)
-        .addExpression(VarId(0, "Q"))
+        .addExpression(EquationVarId(0, "Q"))
         .addNumber(PhysicalNumber(240, Second))
-        .attachNumber(0, VarId(0, "t"))
+        .attachNumber(0, EquationVarId(0, "t"))
         .get
-        .getExpressionBuckTex(VarId(0, "Q"))
+        .getExpressionBuckTex(EquationVarId(0, "Q"))
 
     }
 
@@ -179,24 +179,24 @@ class WorkspaceTests extends FunSpec {
       val ws = Workspace.empty
         .addEquation(ampereEquation)
         .addEquation(EquationParser.parseEquation("Q = n_e * q_e").get)
-        .addExpression(VarId(1, "n_e"))
-        .addEquality(VarId(0, "Q"), VarId(1, "Q"))
+        .addExpression(EquationVarId(1, "n_e"))
+        .addEquality(EquationVarId(0, "Q"), EquationVarId(1, "Q"))
 
       ws.allVarIds.map(ws.getDimension)
       ws.allVarIds.map(varId => ws.addExpression(varId).getExpressionBuckTex(varId))
       println(ws)
 
-      println(ws.possibleRewritesForExpr(VarId(1, "n_e")))
-      println(ws.checkRewriteAttemptIsValid(VarId(1, "n_e"), VarId(0, "Q"), 0))
+      println(ws.possibleRewritesForExpr(EquationVarId(1, "n_e")))
+      println(ws.checkRewriteAttemptIsValid(EquationVarId(1, "n_e"), EquationVarId(0, "Q"), 0))
     }
 
     it("does a sixth thing") {
       val ws = Workspace.empty
         .addEquation(springEquation)
         .addEquation(keEquation)
-        .addEquality(VarId(0, "E_S"), VarId(1, "E_K"))
-        .addExpression(VarId(1, "v"))
-        .rewriteExpression(VarId(1, "v"), VarId(1, "E_K"), 0)
+        .addEquality(EquationVarId(0, "E_S"), EquationVarId(1, "E_K"))
+        .addExpression(EquationVarId(1, "v"))
+        .rewriteExpression(EquationVarId(1, "v"), EquationVarId(1, "E_K"), 0)
 
       ws.allVarIds.map(ws.getDimension)
       ws.allVarIds.map(varId => ws.addExpression(varId).getExpressionBuckTex(varId))
@@ -210,23 +210,23 @@ class WorkspaceTests extends FunSpec {
         .addEquation(springEquation)
         .addNumber(num1)
         .addNumber(num2)
-        .attachNumber(0, VarId(0, "m")).get
+        .attachNumber(0, EquationVarId(0, "m")).get
 
       ws.allVarIds.map(ws.getDimension)
       ws.allVarIds.map(varId => ws.addExpression(varId).getExpressionBuckTex(varId))
-      assert(ws.getNumber(VarId(0, "m")).contains(num1))
+      assert(ws.getNumber(EquationVarId(0, "m")).contains(num1))
 
-      val ws2 = ws.attachNumber(1, VarId(0, "m")).get
-      assert(ws2.getNumber(VarId(0, "m")).contains(num2))
+      val ws2 = ws.attachNumber(1, EquationVarId(0, "m")).get
+      assert(ws2.getNumber(EquationVarId(0, "m")).contains(num2))
     }
 
     it("does an eighth thing") {
       val ws = Workspace.empty
         .addEquation(peEquation)
         .addEquation(keEquation)
-        .addEquality(VarId(0, "E_P"), VarId(1, "E_K"))
+        .addEquality(EquationVarId(0, "E_P"), EquationVarId(1, "E_K"))
 
-      assert(ws.getDimension(VarId(0, "E_P")).contains(SiDimension.SiJoule))
+      assert(ws.getDimension(EquationVarId(0, "E_P")).contains(SiDimension.SiJoule))
       ws.allVarIds.map(ws.getDimension)
       ws.allVarIds.map(varId => ws.addExpression(varId).getExpressionBuckTex(varId))
     }
@@ -236,10 +236,10 @@ class WorkspaceTests extends FunSpec {
         .addEquation(peEquation)
         .addEquation(keEquation)
         .addEquation(EquationParser.parseEquation("E_A = E_B + E_C").get)
-        .addEquality(VarId(0, "E_P"), VarId(2, "E_A"))
-        .addEquality(VarId(1, "E_K"), VarId(2, "E_B"))
+        .addEquality(EquationVarId(0, "E_P"), EquationVarId(2, "E_A"))
+        .addEquality(EquationVarId(1, "E_K"), EquationVarId(2, "E_B"))
 
-      ws.getDimension(VarId(2, "E_B"))
+      ws.getDimension(EquationVarId(2, "E_B"))
 //        ws.allVarIds.map(ws.getDimension)
 //      ws.allVarIds.map(varId => ws.addExpression(varId).getExpressionBuckTex(varId))
       println(ws)
@@ -250,7 +250,7 @@ class WorkspaceTests extends FunSpec {
         .addEquation(resistivityEquation)
         .addEquation(keEquation)
 
-      println(ws.getDimensionCalc(VarId(0, "I")))
+      println(ws.getDimensionCalc(EquationVarId(0, "I")))
       //        ws.allVarIds.map(ws.getDimension)
       //      ws.allVarIds.map(varId => ws.addExpression(varId).getExpressionBuckTex(varId))
       println(ws)
@@ -271,36 +271,51 @@ class WorkspaceTests extends FunSpec {
     it("can do it") {
       val ws = Workspace.empty.addEquation(keEquation)
         .addEquation(EquationParser.parseEquation("E_P = m * g * h").get)
-          .addEquality(VarId(0, "E_K"), VarId(1, "E_P"))
+          .addEquality(EquationVarId(0, "E_K"), EquationVarId(1, "E_P"))
 
-      println(ws.getDimensionCalc(VarId(0, "E_K")))
+      println(ws.getDimensionCalc(EquationVarId(0, "E_K")))
 
     }
 
     it("can do it on another case") {
-      val lorentzFactor = LibraryEquation("Lorentz factor", EquationParser.parseExpression("γ - 1/sqrt(1-v^2/c^2)").get, 1, (f) => ???,
+      val realEquation = EquationParser.parseExpression("γ - 1/sqrt(1-v^2/c^2)").get
+      val lorentzFactor = LibraryEquation("Lorentz factor", EquationParser.parseExpression("γ - 1/(1 - c/v)").get, 1, (f) => ???,
         Map("γ" -> SiDimension.Dimensionless, "v" -> Meter/Second, "c" -> Meter/Second),
         Map("γ" -> "Lorentz factor", "v" -> "Velocity", "c" -> "Speed of light"),
         Set("c")
       )
 
-      val ws = Workspace.empty.addEquation(lorentzFactor).getDimensionCalc(VarId(0, "v"))
+      val expr = EquationParser.parseExpression("γ - 1/(1 - c/v)").get.solve("v").head
+//      val ws = Workspace.empty.addEquation(lorentzFactor).getDimensionCalc(EquationVarId(0, "v"))
+      println(expr)
+      println(expr.calculateDimension(
+          Map("c" -> Meter / Second, "γ" -> SiDimension.Dimensionless).mapValues(ConcreteDimensionInference))
+      )
+      assert(false) // fixme
     }
   }
 
   describe("number inference") {
     it("can do it") {
       val ws = Workspace.empty.addEquation(keEquation)
-        .addAndAttachNumber(VarId(0, "E_K"), PhysicalNumber(3, SiDimension.SiJoule))
-        .addAndAttachNumber(VarId(0, "v"), PhysicalNumber(5, Meter / Second))
-        .addExpression(VarId(0, "m"))
+        .addAndAttachNumber(EquationVarId(0, "E_K"), PhysicalNumber(3, SiDimension.SiJoule))
+        .addAndAttachNumber(EquationVarId(0, "v"), PhysicalNumber(5, Meter / Second))
+        .addExpression(EquationVarId(0, "m"))
         .addEquation(peEquation)
-        .addAndAttachNumber(VarId(1, "g"), PhysicalNumber(7, Meter / Second / Second))
-        .addAndAttachNumber(VarId(1, "h"), PhysicalNumber(11, Meter))
-        .addEquality(VarId(0, "m"), VarId(1, "m"))
-        .addExpression(VarId(1, "E_P"))
+        .addAndAttachNumber(EquationVarId(1, "g"), PhysicalNumber(7, Meter / Second / Second))
+        .addAndAttachNumber(EquationVarId(1, "h"), PhysicalNumber(11, Meter))
+        .addEquality(EquationVarId(0, "m"), EquationVarId(1, "m"))
+        .addExpression(EquationVarId(1, "E_P"))
 
       println(ws.recursivelyEvaluatedNumbers)
+    }
+  }
+
+  describe("diagrams") {
+    it("lets you use them") {
+      val ws = Workspace.empty.addDiagram.addEquation(peEquation)
+
+      println(ws.allVarIds)
     }
   }
 }

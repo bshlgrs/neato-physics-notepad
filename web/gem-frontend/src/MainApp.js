@@ -13,8 +13,8 @@ ReactModal.setAppElement("#root")
 const blankState = {
   title: "",
   description: "",
-  workspace: Gem.Workspace(),
-  positions: Immutable.Map(),
+  workspace: Gem.WorkspaceOps.empty,
+  positions: Immutable.fromJS({}),
   currentAction: null,
   creatorToken: null,
   notepadId: null,
@@ -35,6 +35,7 @@ class MainApp extends Component {
       content: {
         workspace: this.state.workspace.toJsObject,
         positions: this.state.positions.toJS()
+        // TODO: triangles here
       }
     }
   }
@@ -198,6 +199,7 @@ class MainApp extends Component {
       setPositions={(positions) => this.setState({positions: positions})}
       title={this.state.title}
       description={this.state.description}
+      triangles={this.state.triangles}
       setDescription={(description) => this.setState({description: description})} />
     </div>
   }

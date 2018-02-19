@@ -70,7 +70,7 @@ class EquationEditorApp extends Component {
   updateEquation () {
     function filterKeysToList(map, list) {
       const out = {};
-      list.map((x) => {
+      list.foreach((x) => {
         if (map[x]) {
           out[x] = map[x];
         }

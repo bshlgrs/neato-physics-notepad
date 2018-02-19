@@ -12,8 +12,9 @@ class InfoBox extends React.Component {
         el={ws.getEquationBuckTex(selectedId)}
       />
       <p>{equation.name}</p>
+      <p>{equation.description}</p>
       {equation.varsJs.map((varSymbol) => {
-        const varId = Gem.VarId(selectedId, varSymbol);
+        const varId = Gem.EquationVarId(selectedId, varSymbol);
         const varName = equation.varNameJs(varSymbol);
         const dimension = ws.getDimensionJs(varId);
 
@@ -56,6 +57,8 @@ class InfoBox extends React.Component {
                             detachNumber={this.props.detachNumber}
                             changeDimension={this.props.changeDimension}
                           />
+    } else if (selectedType === "triangle") {
+      return <TriangleInfoBox {...this.props} />;
     }
     return null;
   };
@@ -126,6 +129,36 @@ class NumberInfoBox extends React.Component {
           </button>}
       </div>
     </div>;
+  }
+}
+
+class TriangleInfoBox extends React.Component {
+  constructor () {
+    super();
+    this.state = {};
+  }
+
+  render () {
+    const {deleteDiagram, removeEquality, selectedId, ws, addEquationFromDiagram} = this.props;
+    const diagram = ws.diagrams.apply(selectedId);
+    return <div className="info-box">
+      <p>Triangle</p>
+
+      <p>Usable equations:</p>
+      <div className='addable-equations'>{diagram.usableEquationsJs.map((eq, idx) =>
+        <div
+          className='addable-equation'
+          onMouseDown={() => addEquationFromDiagram(selectedId, eq)}
+          key={idx}>
+          <BuckTex el={eq.showNaked} />
+        </div>
+      )}</div>
+
+      <button className="btn btn-danger"
+        onClick={() => { deleteDiagram(selectedId) }} >
+        <i className="fa fa-trash" style={{marginRight: "10px"}}/>
+        Delete triangle</button>
+    </div>
   }
 }
 

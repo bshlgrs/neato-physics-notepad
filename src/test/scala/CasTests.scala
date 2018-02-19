@@ -154,6 +154,15 @@ class CasTests extends FunSpec {
 //      assert((ke + pe).solve(ke) == List(pe * RationalNumber(-1)))
 //      assert((ke - pe).solve(ke) == List(pe))
 //    }
+    it("can do a thing that looks like Lorentz boost") {
+      val expr = EquationParser.parseExpression("γ - 1/(1 - v/c)").get.solve("v").head
+      println(expr)
+    }
+
+    it("can do a relatively easy one") {
+      val expr = EquationParser.parseExpression("γ - 1/(v/c)").get.solve("v").head
+      assert(expr == Variable("c") / Variable("γ"))
+    }
   }
 
   describe("vars") {
