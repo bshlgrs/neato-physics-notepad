@@ -1,4 +1,4 @@
-import cas.{EquationParser, Expression, RationalNumber, Variable}
+import cas._
 import org.scalatest.FunSpec
 import workspace._
 import workspace.dimensions._
@@ -215,6 +215,7 @@ class WorkspaceTests extends FunSpec {
       ws.allVarIds.map(ws.getDimension)
       ws.allVarIds.map(varId => ws.addExpression(varId).getExpressionBuckTex(varId))
       assert(ws.getNumber(EquationVarId(0, "m")).contains(num1))
+      assert(ws.detachNumber(0).getNumber(EquationVarId(0, "m")).isEmpty)
 
       val ws2 = ws.attachNumber(1, EquationVarId(0, "m")).get
       assert(ws2.getNumber(EquationVarId(0, "m")).contains(num2))
@@ -279,7 +280,7 @@ class WorkspaceTests extends FunSpec {
 
     it("can do it on another case") {
       val realEquation = EquationParser.parseExpression("γ - 1/sqrt(1-v^2/c^2)").get
-      val lorentzFactor = LibraryEquation("Lorentz factor", EquationParser.parseExpression("γ - 1/(1 - c/v)").get, 1, (f) => ???,
+      val lorentzFactor = LibraryEquation("Lorentz factor", realEquation, 1, (f) => ???,
         Map("γ" -> SiDimension.Dimensionless, "v" -> Meter/Second, "c" -> Meter/Second),
         Map("γ" -> "Lorentz factor", "v" -> "Velocity", "c" -> "Speed of light"),
         Set("c")
@@ -287,11 +288,17 @@ class WorkspaceTests extends FunSpec {
 
       val expr = EquationParser.parseExpression("γ - 1/(1 - c/v)").get.solve("v").head
 //      val ws = Workspace.empty.addEquation(lorentzFactor).getDimensionCalc(EquationVarId(0, "v"))
-      println(expr)
-      println(expr.calculateDimension(
-          Map("c" -> Meter / Second, "γ" -> SiDimension.Dimensionless).mapValues(ConcreteDimensionInference))
-      )
-      assert(false) // fixme
+//      println(expr)
+      val dims = Map("c" -> Meter / Second, "γ" -> SiDimension.Dimensionless).mapValues(ConcreteDimensionInference)
+
+      assert(expr.calculateDimension(dims) == ConcreteDimensionInference(Meter / Second))
+
+      assert(realEquation.solve("v").head.calculateDimension(dims) == ConcreteDimensionInference(Meter / Second))
+
+      val realSolution = realEquation.solve("v").head
+      val numExpr = realSolution.mapVariablesToExpressions(Map[String, Expression[String]]("γ" -> RealNumber(1.4), "c" -> RealNumber(3e8)))
+
+      println(numExpr.evaluate)
     }
   }
 

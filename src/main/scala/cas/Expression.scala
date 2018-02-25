@@ -37,6 +37,7 @@ sealed trait Expression[A] {
 
   def solve(x: A, lhs: Expression[A] = RationalNumber(0)): Set[Expression[A]] = {
     assert(!lhs.vars.contains(x))
+
     this match {
       case Sum(set) => {
         val (termsWithX, termsWithoutX) = set.partition(_.vars.contains(x))
@@ -52,7 +53,20 @@ sealed trait Expression[A] {
           case _ => {
             // This is situations like solving ax + bx == c for x -- you should do it by factoring.
             // TODO: implement that
-            Set()
+            this.asQuadraticEquationIn(x) match {
+              case None => Set()
+              case Some((a, b, c1)) => {
+                val c = c1 - lhs
+                val zero = RationalNumber[A](0)
+                if (a == zero) {
+                  Set(-b / c)
+                } else {
+                  val two = RationalNumber[A](2)
+                  val discriminant = b ** two - RationalNumber(4) * a * c
+                  Set((-b + discriminant.sqrt) / (two * a), (-b - discriminant.sqrt) / (two * a))
+                }
+              }
+            }
           }
         }
       }
@@ -67,7 +81,6 @@ sealed trait Expression[A] {
             factorsWithX.head.solve(x, factorsWithoutX.map(_ ** RationalNumber[A](-1)).reduce(_ * _) * lhs)
           }
           case 2 => {
-            // This equation might be quadratic, in which case you have a chance of solving it.
             Set()
           }
           case _ => Set() // this is hard
@@ -78,12 +91,59 @@ sealed trait Expression[A] {
       case _: NamedNumber[A] => Set()
       case Power(base, power) => (base.vars.contains(x), power.vars.contains(x)) match {
         case (true, false) => // eg x^2
-          Set(lhs ** (RationalNumber(1)/power))
+          base.solve(x, lhs ** (RationalNumber(1)/power))
         case (false, false) => Set()
         case (false, true) => ??? // We should be able to handle this with a logarithm
         case (true, true) => Set() // Transcendental equation, you're hosed
       }
       case SpecialFunction(_, _) => Set()
+    }
+  }
+
+  type QuadraticEquation = (Expression[A], Expression[A], Expression[A])
+
+  private def asQuadraticEquationIn(name: A): Option[QuadraticEquation] = {
+    /**
+      * Returns (a, b, c), as in ax**2 + bx + c
+      *
+      */
+    val zero: Expression[A] = RationalNumber[A](0)
+
+    if (this.vars.contains(name)) {
+      val one: Expression[A] = RationalNumber[A](1)
+      this match {
+        case Sum(factors) =>
+          val mbFactors = factors.map(_.asQuadraticEquationIn(name))
+          if (mbFactors.contains(None))
+            None
+          else {
+            val res: QuadraticEquation = mbFactors.map(_.get)
+              .fold(zero, zero, zero) ({ case ((a1, b1, c1), (a2, b2, c2)) => (a1 + a2, b1 + b2, c1 + c2) })
+            Some(res)
+          }
+        case Variable(name2) =>
+          if (name == name2) { Some(zero, zero, this) }
+          else throw new RuntimeException("this shouldn't be possible")
+        case Product(factors) =>
+          val (factorsWithX, factorsWithoutX) = factors.partition(_.vars.contains(name))
+
+          factorsWithX.size match {
+            case 0 => throw new RuntimeException("this shouldn't be possible 2")
+            case 1 =>
+              factorsWithX.head match {
+                case Variable(name2) =>
+                  assert(name2 == name, "this should be mandatory asdf")
+                  Some(zero, factorsWithoutX.reduce(_ * _), zero)
+                case Power(Variable(name2), RationalNumber(2, 1)) if name == name2 =>
+                  Some(factorsWithoutX.reduce(_ * _), zero, zero)
+              }
+            case _ => None
+          }
+        case Power(Variable(name2), RationalNumber(2, 1)) if name2 == name => Some(one, zero, zero)
+        case _ => None
+      }
+    } else {
+      Some(zero, zero, this)
     }
   }
 
@@ -174,6 +234,7 @@ sealed trait Expression[A] {
 
   def -(other: Expression[A]): Expression[A] = this + RationalNumber(-1) * other
   def -(other: Int): Expression[A] = this - RationalNumber[A](other)
+  def unary_- : Expression[A] = RationalNumber[A](0) - this
 
   def /(other: Expression[A]): Expression[A] = this * (other ** RationalNumber[A](-1))
   def /(other: Int): Expression[A] = this / RationalNumber[A](other)
@@ -262,21 +323,21 @@ sealed trait Expression[A] {
     }
   }
 
-  def evaluate: Option[Double] = this match {
+  def evaluate: Option[ComplexNumber] = this match {
     case Sum(terms) => {
       val termValues = terms.map(_.evaluate)
       if (termValues.forall(_.isDefined)) {
-        Some(termValues.map(_.get).sum)
+        Some(termValues.map(_.get).reduce(_ + _))
       } else None
     }
     case Product(factors) => {
       val factorsValues = factors.map(_.evaluate)
       if (factorsValues.forall(_.isDefined)) {
-        Some(factorsValues.map(_.get).product)
+        Some(factorsValues.map(_.get).reduce(_ * _))
       } else None
     }
     case Power(lhs, rhs) => (lhs.evaluate, rhs.evaluate) match {
-      case (Some(lhsVal), Some(rhsVal)) => Some(math.pow(lhsVal, rhsVal))
+      case (Some(lhsVal), Some(rhsVal)) => Some(lhsVal ** rhsVal)
       case _ => None
     }
     case _: Variable[_] => None
@@ -284,12 +345,12 @@ sealed trait Expression[A] {
     case NamedNumber(x, _, _) => Some(x)
     case RationalNumber(n, d) => Some(n.toDouble / d)
     case SpecialFunction(name, args) => this match {
-      case SpecialFunction("sin", List(x)) => x.evaluate.map(Math.sin)
-      case SpecialFunction("cos", List(x)) => x.evaluate.map(Math.cos)
-      case SpecialFunction("tan", List(x)) => x.evaluate.map(Math.tan)
-      case SpecialFunction("asin", List(x)) => x.evaluate.map(Math.asin)
-      case SpecialFunction("acos", List(x)) => x.evaluate.map(Math.acos)
-      case SpecialFunction("atan", List(x)) => x.evaluate.map(Math.atan)
+      case SpecialFunction("sin", List(x)) => x.evaluate.map(x => Math.sin(x.getAsReal))
+      case SpecialFunction("cos", List(x)) => x.evaluate.map(x => Math.cos(x.getAsReal))
+      case SpecialFunction("tan", List(x)) => x.evaluate.map(x => Math.tan(x.getAsReal))
+      case SpecialFunction("asin", List(x)) => x.evaluate.map(x => Math.asin(x.getAsReal))
+      case SpecialFunction("acos", List(x)) => x.evaluate.map(x => Math.acos(x.getAsReal))
+      case SpecialFunction("atan", List(x)) => x.evaluate.map(x => Math.atan(x.getAsReal))
     }
   }
 
@@ -297,7 +358,7 @@ sealed trait Expression[A] {
     case Sum(terms) => {
       val calculatedDimensions: List[DimensionInference] = terms.map(_.calculateDimension(getDimensionDirectly))
 
-      calculatedDimensions.reduce((x: DimensionInference, y: DimensionInference) => {
+        calculatedDimensions.reduce((x: DimensionInference, y: DimensionInference) => {
         x.combineWithEquals(y)
       })
     }
@@ -321,7 +382,7 @@ sealed trait Expression[A] {
               exponent.evaluate match {
                 case None => BottomDimensionInference
                 case Some(x) => {
-                  ConcreteDimensionInference(baseDimension ** RationalNumber.makeFromDouble[String](x).get)
+                  ConcreteDimensionInference(baseDimension ** RationalNumber.makeFromDouble[String](x.getAsReal).get)
                 }
               }
             }

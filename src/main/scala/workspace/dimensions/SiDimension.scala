@@ -24,6 +24,7 @@ case class SiDimension(units: Map[SiUnit, RationalNumber[String]])  {
 
   @JSExport
   lazy val toBuckTex: BuckTex = this match {
+    case SiDimension.Dimensionless => Text("dimensionless")
     case SiDimension.SiJoule => Text("J")
     case SiDimension.SiNewton => Text("N")
     case SiDimension.SiCoulomb => Text("C")

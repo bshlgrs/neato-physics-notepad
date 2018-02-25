@@ -365,7 +365,7 @@ class Notepad extends Component {
         return pos ? [pos.left, pos.top] : null;
       }).filter((x) => x);
 
-      const numberId = ws.getNumberIdOfVar(list[0]);
+      const numberId = ws.getNumberIdOfVarJs(list[0]);
 
       if(numberId !== null) {
         const numberPos = this.numberPositions[numberId];

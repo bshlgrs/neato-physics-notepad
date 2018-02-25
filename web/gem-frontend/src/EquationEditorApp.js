@@ -70,7 +70,7 @@ class EquationEditorApp extends Component {
   updateEquation () {
     function filterKeysToList(map, list) {
       const out = {};
-      list.foreach((x) => {
+      list.forEach((x) => {
         if (map[x]) {
           out[x] = map[x];
         }
@@ -107,6 +107,7 @@ class EquationEditorApp extends Component {
       });
   }
   render () {
+    console.log('editing eq', this.state.editingEq);
     return <div className='container'>
       <div className='row'>
         <div className='col-xs-10 col-xs-offset-1'>
@@ -128,7 +129,7 @@ class EquationEditorApp extends Component {
                 key={eq.get('id')}
                 eq={eq}
                 onDelete={() => this.deleteEquation(eq.get('id'))}
-                startEditing={() => this.setState({ currentAction: 'editing', editedId: eq.get('id'), editingEq: eq.get('id') })}
+                startEditing={() => this.setState({ currentAction: 'editing', editedId: eq.get('id'), editingEq: eq })}
               />;
             }
 
@@ -154,6 +155,7 @@ class EquationEditorApp extends Component {
 
 const EquationEditor = (props) => {
   const { eq, changeEq, onCreate, onDiscard, createText, discardText } = props;
+  console.log(eq, eq.toJS);
   const { content, name } = eq.toJS();
   const { eqString, dimensions, varNames, description, constantsUsed } = content || {};
   const newEq = Gem.EquationParser.parseEquationJs(eqString || "");

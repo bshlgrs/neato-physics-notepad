@@ -113,10 +113,12 @@ case class Workspace(equations: MapWithIds[Equation],
     case _ => false
   }).map(_._1)
 
-  def getNumberIdOfVar(varId: VarId): Any = numbers.find({
+  def getNumberIdOfVar(varId: VarId): Option[Int] = numbers.find({
     case (_, (n, Some(varId2))) => equalities.testEqual(varId, varId2)
     case _ => false
-  }).map(_._1).orNull
+  }).map(_._1)
+
+  def getNumberIdOfVarJs(varId: VarId): Any = getNumberIdOfVar(varId).orNull
 
   def attachNumber(numberId: Int, varId: VarId): Try[Workspace] = {
     val (number, mbCurrentAttachedVar) = numbers(numberId)
@@ -126,7 +128,10 @@ case class Workspace(equations: MapWithIds[Equation],
     }
 
     if (dimsMatch) {
-      val detachedWs = this.detachNumber(numberId)
+      val detachedWs: Workspace = this.getNumberIdOfVar(varId) match {
+        case Some(numberId2) => this.detachNumber(numberId2)
+        case _ => this
+      }
       Success(detachedWs.copy(numbers = detachedWs.numbers.set(numberId, number -> Some(varId))))
     } else {
       Failure({throw new RuntimeException(s"Dimensions did not match: ${this.getDimension(varId)}, ${number.siDimension}")})
@@ -215,7 +220,7 @@ case class Workspace(equations: MapWithIds[Equation],
         v -> e.mapVariablesToExpressions(varId2 => knownNumbers.get(equalities.getSet(varId2)) match {
           case None => Variable(varId2)
           case Some(value) => RealNumber[VarId](value)
-      })}}).mapValues(_.evaluate).collect({ case (k, Some(v)) => equalities.getSet(k) -> v })
+      })}}).mapValues(_.evaluate).collect({ case (k, Some(v)) => equalities.getSet(k) -> v.getAsReal })
       if (newNumbers != knownNumbers) {
         evalNumbers(newNumbers)
       } else newNumbers

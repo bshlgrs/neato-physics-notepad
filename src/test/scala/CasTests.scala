@@ -163,6 +163,12 @@ class CasTests extends FunSpec {
       val expr = EquationParser.parseExpression("γ - 1/(v/c)").get.solve("v").head
       assert(expr == Variable("c") / Variable("γ"))
     }
+
+    it("can do quadratic equations") {
+      val solutions = EquationParser.parseExpression("y - 1 + 2*x + x**2").get.solve("x")
+      println(solutions)
+      assert(solutions.size == 2)
+    }
   }
 
   describe("vars") {
@@ -199,6 +205,7 @@ class CasTests extends FunSpec {
       assert((x * y).differentiate("x") == y)
     }
   }
+
 
   describe("guessing floating point numbers") {
     it ("can guess") {
