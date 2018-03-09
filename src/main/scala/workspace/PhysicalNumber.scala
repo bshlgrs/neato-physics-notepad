@@ -1,6 +1,5 @@
 package workspace
 
-import cas.{CompileToBuckTex, Text}
 import shared.{BuckTex, CompileToBuckTex, Text, Util}
 import workspace.dimensions.{Dimension, DimensionJs, SiDimension, SiDimensionJs}
 
