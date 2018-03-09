@@ -5,7 +5,6 @@ import workspace.SetOfSets
 import workspace.dimensions._
 
 import scala.scalajs.js
-import scala.scalajs.js.annotation.{JSExport, JSExportTopLevel, ScalaJSDefined}
 
 sealed trait Expression[A] {
   import ExpressionDisplay.wrap
@@ -198,6 +197,11 @@ sealed trait Expression[A] {
     case _ => Sum(List(this)) + Sum(List(other))
   }
 
+  def termsList: List[Expression[A]] = this match {
+    case Sum(terms) => terms
+    case _ => List(this)
+  }
+
   def +(other: Int): Expression[A] = this + RationalNumber[A](other)
 
   def *(other: Expression[A]): Expression[A] = (this, other) match {
@@ -354,6 +358,23 @@ sealed trait Expression[A] {
     }
   }
 
+  def expand: Expression[A] = this.mapOverNodesBottomUp({
+    case Product(factors) => {
+//      println("$$$", this, factors)
+//      println(shared.Util.cartesianProduct(factor s.map(_.termsList)))
+      shared.Util.cartesianProduct(factors.map(_.termsList)).map(_.reduce(_ * _)).reduce(_ + _)
+    }
+    case x => x
+  })
+
+  def mapOverNodesBottomUp[B](f: Expression[A] => Expression[A]): Expression[A] = this match {
+    case Sum(terms) => f(terms.map(_.mapOverNodesBottomUp(f)).reduce(_ + _))
+    case Product(factors) => f(factors.map(_.mapOverNodesBottomUp(f)).reduce(_ * _))
+    case Power(base, power) => f(base.mapOverNodesBottomUp(f) ** power.mapOverNodesBottomUp(f))
+    case SpecialFunction(name, args) => f(SpecialFunction(name, args.map(_.mapOverNodesBottomUp(f))))
+    case _ => f(this)
+  }
+
   def calculateDimension(getDimensionDirectly: A => DimensionInference): DimensionInference = this match {
     case Sum(terms) => {
       val calculatedDimensions: List[DimensionInference] = terms.map(_.calculateDimension(getDimensionDirectly))
@@ -427,6 +448,10 @@ sealed trait Expression[A] {
     }
     case SpecialFunction("sin", List(angle)) => angle.differentiate(wrt) * SpecialFunction("cos", List(angle))
     case SpecialFunction("cos", List(angle)) => angle.differentiate(wrt) * SpecialFunction("sin", List(angle)) * -1
+    case SpecialFunction("tan", List(angle)) => angle.differentiate(wrt) * SpecialFunction("sin", List(angle)) * -1
+    case SpecialFunction("asin", List(angle)) => RationalNumber(1)/(RationalNumber(1) - (angle ** 2)).sqrt
+    case SpecialFunction("acos", List(angle)) => RationalNumber(-1)/(RationalNumber(1) - (angle ** 2)).sqrt
+    case SpecialFunction("atan", List(angle)) => RationalNumber(1)/(RationalNumber(1) + (angle ** 2))
     case _ => {
       throw new NotImplementedError(s"don't know how to differentiate $this")
     }
@@ -449,10 +474,6 @@ sealed trait Expression[A] {
       js.Dynamic.literal("className" -> "SpecialFunction", "name" -> name, "args" -> js.Array(args.map(_.toJsObject) :_*))
   }
 }
-
-//trait ExpressionJs extends
-
-
 
 trait ExpressionJs extends js.Object {
   val className: String
@@ -495,11 +516,7 @@ case class Variable[A](name: A) extends Expression[A]
 sealed trait Constant[A] extends Expression[A]
 
 case class RealNumber[A](value: Double) extends Constant[A]
-case class RationalNumber[A](numerator: Int, denominator: Int = 1) extends Constant[A] {
-  assert(denominator > 0, "denominator must be > 0")
 
-  def toDouble: Double = numerator.toDouble / denominator
-}
 
 trait RationalNumberJs extends js.Object {
   val numerator: Int
@@ -524,33 +541,6 @@ object SpecialFunction {
   }
 }
 
-object RationalNumber {
-  def zero = RationalNumber(0)
-  def one = RationalNumber(1)
-  def two = RationalNumber(2)
-  def half = RationalNumber(1, 2)
-
-  def build[A](numerator: Int, denominator: Int): RationalNumber[A] = {
-    assert(denominator != 0, "denominator is zero")
-    if (denominator < 0)
-      build(-numerator, -denominator)
-    else {
-      val gcd = Expression.euclidsAlgorithm(math.abs(numerator), math.abs(denominator))
-      if(denominator <= 0) {
-        println("oh dear")
-      }
-      RationalNumber(numerator / gcd, denominator / gcd)
-    }
-  }
-
-  def makeFromDouble[A](double: Double): Option[RationalNumber[A]] = {
-    (for {
-      i <- Range(1, 10) // inclusive
-      maybeNum = double * i
-      if math.abs(maybeNum - maybeNum.round) < 0.0001
-    } yield RationalNumber[A](maybeNum.round.toInt, i)).headOption
-  }
-}
 
 object Expression {
   val Zero = RationalNumber(0)
@@ -593,61 +583,4 @@ object Expression {
   def buildGoofily(factors: Map[String, Int]): Expression[String] = buildGoofily(RationalNumber(1), factors)
 }
 
-object ExpressionDisplay {
-  def fractionDisplay[A](list: List[Expression[A]],
-                         multiplySymbol: String,
-                         toStringWithBinding: Expression[A] => (String, Int),
-                         wrapWithSurd: String => String,
-                         wrapWithFraction: (String, String) => String): String = {
-    // TODO: Do something cleverer here: support grouped square roots and fractions
-    val denominatorItems = list.collect({ case x@Power(_, RationalNumber(n, _)) if n < 0 => x })
-    val numeratorItems = list.filterNot(denominatorItems.contains)
 
-    val flippedDenominatorItems = denominatorItems.collect(
-      { case Power(base, RationalNumber(n, d)) => Expression.makePower(base, RationalNumber(-n, d)): Expression[A] }
-    )
-
-    def groupWithRadical(items: List[Expression[A]]): String = {
-      val itemsInsideRadical = items.collect({ case x@Power(_, RationalNumber(1, 2)) => x: Expression[A]})
-      val outsideItems = items.filterNot(itemsInsideRadical.contains)
-
-      val radicalStr = if (itemsInsideRadical.nonEmpty) {
-        val insideItemStrings = orderWithConstantsFirst(itemsInsideRadical)
-          .collect({ case Power(base, _) => wrap(toStringWithBinding(base), 1)})
-
-        wrapWithSurd(insideItemStrings.mkString(multiplySymbol))
-      } else ""
-
-      s"${orderWithConstantsFirst(outsideItems).map((x) => wrap(toStringWithBinding(x), 1)).mkString(multiplySymbol)} $radicalStr"
-    }
-
-    if (denominatorItems.nonEmpty) {
-      if (numeratorItems.isEmpty) {
-        wrapWithFraction("1", groupWithRadical(flippedDenominatorItems))
-      } else {
-        wrapWithFraction(groupWithRadical(numeratorItems), groupWithRadical(flippedDenominatorItems))
-      }
-    } else {
-      groupWithRadical(numeratorItems)
-    }
-  }
-
-  def orderWithConstantsFirst[A](stuff: List[Expression[A]]): List[Expression[A]] = {
-    val foo = (x: Expression[A]) => x match {
-      case _: Constant[A] => 1
-      case n: NamedNumber[A] => 2
-      case v: Variable[A] => 3
-      case _ => 3
-    }
-
-    stuff.sortBy(foo)
-  }
-
-  def wrap(tuple: (String, Int), binding: Int): String = if (tuple._2 >= binding) tuple._1 else s"(${tuple._1})"
-
-  // todo: use these
-  def unicodeForNumberSuperscript(int: Int): Char = "⁰¹²³⁴⁵⁶⁷⁸⁹".charAt(int)
-  def unicodeForNumberSubscript(int: Int): Char = "₀₁₂₃₄₅₆₇₈₉".charAt(int)
-
-  def makeIntSuperscripted(int: Int): String = int.toString.map(char => unicodeForNumberSuperscript("0123456789".indexOf(char)))
-}

@@ -40,7 +40,6 @@ object EquationLibrary {
       Try(LibraryEquationJs.parse(eq)) match {
         case Success(leq: LibraryEquation) => List(leq.id -> leq)
         case Failure(x) => {
-          println(x)
           Nil
         }
       }

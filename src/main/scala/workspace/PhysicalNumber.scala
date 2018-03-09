@@ -1,6 +1,8 @@
 package workspace
 
-import workspace.dimensions.{SiDimensionJs, Dimension, DimensionJs, SiDimension}
+import cas.{CompileToBuckTex, Text}
+import shared.{BuckTex, CompileToBuckTex, Text, Util}
+import workspace.dimensions.{Dimension, DimensionJs, SiDimension, SiDimensionJs}
 
 import scala.scalajs.js
 import scala.scalajs.js.annotation.{JSExport, JSExportAll, JSExportTopLevel, ScalaJSDefined}

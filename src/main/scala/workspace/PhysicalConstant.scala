@@ -22,5 +22,7 @@ object PhysicalConstant {
   val avogadroConstant = PhysicalConstant("N_A", NamedNumber(6.022140858e23, "N_A", Mole.invert))
   val faradayConstant = PhysicalConstant("F", NamedNumber(96485.333, "F", SiCoulomb / Mole))
 
-  val constants: Set[PhysicalConstant] = Set(G, k_E, pi, hbar, plankConstant, speedOfLight)
+  val constants: Set[PhysicalConstant] = Set(G, k_E, pi, hbar, plankConstant, speedOfLight,
+    vacuumPermeability, vacuumPermittivity,
+    elementaryCharge, boltzmannConstant, avogadroConstant, faradayConstant)
 }

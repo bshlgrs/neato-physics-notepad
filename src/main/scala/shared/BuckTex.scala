@@ -1,7 +1,8 @@
-package workspace
+package shared
 
-import cas.ExpressionDisplay.{orderWithConstantsFirst}
+import cas.ExpressionDisplay.orderWithConstantsFirst
 import cas._
+import workspace._
 
 import scala.scalajs.js
 import scala.scalajs.js.annotation.{JSExport, JSExportAll}

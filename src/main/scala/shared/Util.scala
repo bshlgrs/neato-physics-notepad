@@ -1,8 +1,7 @@
-package workspace
-import scala.annotation._
-import scala.collection.immutable
+package shared
+
 import scala.scalajs.js
-import scala.scalajs.js.annotation.{JSExport, JSExportAll, JSExportTopLevel, ScalaJSDefined}
+import scala.scalajs.js.annotation.{JSExport, JSExportAll, JSExportTopLevel}
 
 
 object Util {
@@ -67,25 +66,15 @@ object Util {
 
   }
 
-  def main(args: Array[String]): Unit = {
-    println(showNumber(1.123123))
-    println(showNumber(1.12312))
-    println(showNumber(1.1231))
-    println(showNumber(1.123))
-    println(showNumber(1.12))
-    println(showNumber(1.1))
-    println(showNumber(1))
-    println(showNumber(1.1200000004))
-    println(showNumber(11200.000004))
-    println("hah!")
-    println(showNumber(0.434))
-    println(showNumber(0.0434))
-    println(showNumber(0.00434))
-    println(showNumber(0.000434))
-    println(showNumber(0.0000434))
-    println(showNumber(0.00000434))
-    println(showNumber(0.000000434))
-    println(showNumber(0.0000000434))
+  def cartesianProduct[A](listOfSets: Iterable[Iterable[A]]): Iterable[List[A]] = listOfSets match {
+    case Nil => Set(List())
+    case set :: sets => {
+      val restProducts = cartesianProduct(sets)
+      for {
+        x <- set
+        restProduct <- restProducts
+      } yield x :: restProduct
+    }
   }
 }
 

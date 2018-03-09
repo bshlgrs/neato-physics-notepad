@@ -27,30 +27,23 @@
 - Smarter expression calculations
 - Differentiation
 - Building differences/sums
-- Crowdsourced equations
-- Quadratic equations
 - Built-in numbers. It would be nice to be able to search for “mass of sun” or “charge of electron” in the equation search thing and have that get you the result.
-- Smarter inference of dimensions
 - When you add a custom equation with variables that match already existing variables, these should be added with the equality intact
 - The search bar interface should be unified--various functions should return an array of "search results" that are then concatenated;
     each should come with its onClick handler etc.
 - Variable aliases
 - Solve trigonometric equations
 - It should keep track of the facts you've used in all your expressions and let you know when they're violated.
-- Better parsing of equations. Eg, sqrt.
-- Parse floating point numbers
-
+- Handle returning multiple solutions
+- Change units on expressions that have numbers
 
 ## Conceptual problems
 
 - I don't know how to represent angles.
-  - I think the right answer might be to
 - I can't represent Newton-meters (for torque) apart from as Joules.
 - I sometimes get confused between the kind of equality that is "these variables are referring to the same thing" and "these variables have the same value"
 
 ## Bugs
-
-- Lorentz factor crashes with a dimension inference error
 
 ## Notes from user study
 
@@ -61,3 +54,5 @@
 ## Things to ask a Scala expert about
 
 - Should my Expression type be covariant?  
+- Why do I have to explicitly type so many things in the CAS?
+- How do I split out the CAS into a different project?

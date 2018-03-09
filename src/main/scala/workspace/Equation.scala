@@ -1,6 +1,7 @@
 package workspace
 
 import cas._
+import shared.{BuckTex, CompileToBuckTex, Text}
 import workspace.dimensions.{Dimension, SiDimension}
 
 import scala.scalajs.js

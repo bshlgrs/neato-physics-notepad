@@ -1,5 +1,6 @@
 import org.scalatest.FunSpec
 import cas._
+import shared.{CompileToBuckTex, Text}
 import workspace._
 import workspace.dimensions.{ConcreteDimensionInference, Kilogram, Meter}
 
@@ -63,9 +64,9 @@ class CasTests extends FunSpec {
         assert((h.sqrt * m.sqrt * g.sqrt * (m ** RationalNumber[String](-1, 2)) * two.sqrt).equivalent(g.sqrt * h.sqrt * two.sqrt))
       }
 
-//      it("is distributive") {
-//        assert((x + y) * z == x * z + y * z)
-//      }
+      it("is distributive") {
+        assert(((x + y) * z).expand.equivalent(x * z + y * z))
+      }
     }
 
     describe("division") {
@@ -224,6 +225,14 @@ class CasTests extends FunSpec {
         case "m2" => ConcreteDimensionInference(Kilogram)
         case "r" => ConcreteDimensionInference(Meter)
       }))
+    }
+  }
+
+  describe("expanding") {
+    it("can expand simple things") {
+      assert(((x + y) * (x + z)).expand.equivalent(x * x + x * y + x * z + y * z))
+      assert((x * (x + z)).expand.equivalent(x ** 2 + x * z))
+      assert((y * (x + z)).expand.equivalent(y * x + y * z))
     }
   }
 }

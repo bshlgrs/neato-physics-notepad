@@ -1,6 +1,7 @@
 package workspace.dimensions
 
-import cas.{RationalNumber, RationalNumberJs}
+import cas._
+import shared._
 import workspace._
 
 import scala.scalajs.js

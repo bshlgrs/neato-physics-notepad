@@ -1,6 +1,7 @@
 package workspace.dimensions
 
-import cas.{Expression, ExpressionJs, RationalNumber, RationalNumberJs}
+import cas._
+import shared.{BuckTex, CompileToBuckTex, Sup, Text}
 import workspace._
 
 import scala.util.Try

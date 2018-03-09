@@ -1,5 +1,6 @@
 import cas.{EquationParser, Variable}
 import org.scalatest.FunSpec
+import shared.Util
 import workspace._
 
 class UtilTests extends FunSpec {
@@ -25,6 +26,12 @@ class UtilTests extends FunSpec {
      - If the shorter version of the number is just as accurate, use it
      - ???
        */
+    }
+  }
+
+  describe("cartesian product") {
+    it ("works") {
+      assert(Util.cartesianProduct(List(List(1, 2, 3), List(4, 5))) == Set(List(1, 4), List(2, 4), List(3, 4), List(1, 5), List(2, 5), List(3, 5)))
     }
   }
 }

@@ -2,6 +2,7 @@ package workspace
 
 import scala.util.{Failure, Success, Try}
 import cas._
+import shared.{BuckTex, CompileToBuckTex, MapWithIds, Util}
 import workspace.dimensions._
 
 import scala.scalajs.js
@@ -371,7 +372,6 @@ object WorkspaceJs {
       case js.Tuple2(varIdJs: VarIdJs, expr: ExpressionJs) => VarIdJs.parse(varIdJs) -> ExpressionJs.parseToVarIdExpr(expr)
     }).toMap)
     val numbers = annotateFailWithMessage("numbers", MapWithIds(ws.numbers.map({ case js.Tuple3(id: Int, num: PhysicalNumberJs, mbVarId: js.UndefOr[VarIdJs]) =>
-      println(scalajs.js.JSON.stringify(num))
       id -> (annotateFailWithMessage("parse1", PhysicalNumberJs.parse(num)) -> annotateFailWithMessage("parse2", mbVarId.toOption.map(VarIdJs.parse)))
     }).toMap))
 
